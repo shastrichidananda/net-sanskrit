@@ -36,6 +36,8 @@ footer{border-top:1px solid var(--line);padding:22px 0;color:var(--muted);font-s
 <script>
 const unitList=document.getElementById('unit-list');
 for(let n=1;n<=10;n++){const card=document.createElement('div');card.className='unit';card.innerHTML='<span class="unit-num">'+String(n).padStart(2,'0')+'</span><span class="unit-info"><strong>Unit '+n+'</strong><span>Question bank and mock tests</span></span><span class="unit-arrow" aria-hidden="true">›</span>';unitList.appendChild(card);}
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
 </script>
 </body>
 </html>
