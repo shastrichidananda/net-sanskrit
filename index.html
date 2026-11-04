@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,39 +7,489 @@
 <meta name="theme-color" content="#f5f1e8">
 <title>NET Sanskrit | UGC NET Paper 2</title>
 <meta name="description" content="Unit-wise UGC NET Sanskrit Paper 2 mock test portal.">
+
 <style>
-:root{--ivory:#f5f1e8;--paper:#fffdf8;--navy:#172b49;--saffron:#c8872e;--ink:#263244;--muted:#687386;--line:#e7dfd1}
-*{box-sizing:border-box}body{margin:0;background:var(--ivory);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
-.wrap{width:min(1100px,calc(100% - 40px));margin:auto}header{background:rgba(255,253,248,.92);border-bottom:1px solid var(--line)}
-.nav{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:12px;color:var(--navy);font-weight:800;letter-spacing:-.03em;font-size:1.25rem}
-.brand-mark{width:38px;height:38px;border-radius:12px;background:var(--navy);color:white;display:grid;place-items:center;font-family:Georgia,serif;font-size:1.2rem}.nav-note{font-size:.9rem;color:var(--muted)}
-.hero{padding:64px 0 38px}.eyebrow{display:inline-flex;align-items:center;gap:8px;color:#8a5a1e;background:#f2e5d0;border:1px solid #ead7b8;border-radius:999px;padding:6px 12px;font-size:.78rem;font-weight:750;letter-spacing:.06em;text-transform:uppercase}
-h1{color:var(--navy);font-family:Georgia,"Times New Roman",serif;font-size:clamp(2.3rem,5vw,4rem);line-height:1.08;letter-spacing:-.04em;margin:18px 0 12px}.hero p{max-width:650px;color:var(--muted);font-size:1.06rem;margin:0}
-.hero-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px}.exam-chip{min-width:165px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:15px 18px;box-shadow:0 5px 18px #172b4909}
-.exam-chip strong{display:block;color:var(--navy);font-size:1.45rem}.exam-chip span{color:var(--muted);font-size:.8rem}
-.section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;margin:30px 0 16px}h2{margin:0;color:var(--navy);font-family:Georgia,"Times New Roman",serif;font-size:1.65rem}.section-head p{margin:4px 0 0;color:var(--muted);font-size:.9rem}
-.units{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding-bottom:54px}.unit{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;min-height:105px;box-shadow:0 5px 18px #172b4908}
-.unit-num{width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;border-radius:14px;background:#f1e7d7;color:#8b5c20;font-family:Georgia,serif;font-size:1.2rem;font-weight:700}
-.unit-info{flex:1}.unit-info strong{display:block;color:var(--navy);font-size:1rem}.unit-info span{display:block;color:var(--muted);font-size:.82rem;margin-top:3px}.unit-arrow{color:var(--saffron);font-size:1.35rem}
-.notice{background:#f0e9dc;border:1px solid #e3d5bf;border-radius:14px;padding:16px 18px;color:#5d5141;font-size:.9rem;margin:0 0 48px}.notice strong{color:var(--navy)}
-footer{border-top:1px solid var(--line);padding:22px 0;color:var(--muted);font-size:.82rem}footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-@media(max-width:650px){.wrap{width:min(100% - 28px,1100px)}.nav{min-height:66px}.nav-note{font-size:.78rem}.hero{padding:45px 0 25px}.hero-row{display:block}.exam-chip{display:inline-block;margin-top:22px}.units{grid-template-columns:1fr;gap:10px}.unit{padding:16px;min-height:92px}.section-head{display:block}}
+:root {
+  --ivory:#f5f1e8;
+  --paper:#fffdf8;
+  --navy:#172b49;
+  --saffron:#c8872e;
+  --ink:#263244;
+  --muted:#687386;
+  --line:#e7dfd1;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--ivory);color:var(--ink);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  line-height:1.5
+}
+.wrap{width:min(1100px,calc(100% - 40px));margin:auto}
+header{background:rgba(255,253,248,.92);border-bottom:1px solid var(--line)}
+.nav{
+  min-height:76px;display:flex;align-items:center;
+  justify-content:space-between;gap:20px
+}
+.brand{
+  display:flex;align-items:center;gap:12px;
+  color:var(--navy);font-weight:800;letter-spacing:-.03em;
+  font-size:1.25rem;text-decoration:none
+}
+.brand-mark{
+  width:38px;height:38px;border-radius:12px;background:var(--navy);
+  color:white;display:grid;place-items:center;
+  font-family:Georgia,serif;font-size:1.2rem
+}
+.nav-note{font-size:.9rem;color:var(--muted)}
+.auth-actions{display:flex;align-items:center;gap:10px}
+.auth-btn{
+  border:1px solid var(--navy);border-radius:9px;
+  padding:9px 16px;font-weight:700;cursor:pointer;
+  font-size:.88rem
+}
+.login-btn{background:transparent;color:var(--navy)}
+.register-btn{background:var(--navy);color:white}
+.auth-btn:hover{opacity:.85}
+.user-label{font-size:.85rem;color:var(--navy);font-weight:650}
+.hero{padding:64px 0 38px}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;color:#8a5a1e;
+  background:#f2e5d0;border:1px solid #ead7b8;border-radius:999px;
+  padding:6px 12px;font-size:.78rem;font-weight:750;
+  letter-spacing:.06em;text-transform:uppercase
+}
+h1{
+  color:var(--navy);font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(2.3rem,5vw,4rem);line-height:1.08;
+  letter-spacing:-.04em;margin:18px 0 12px
+}
+.hero p{max-width:650px;color:var(--muted);font-size:1.06rem;margin:0}
+.hero-row{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:24px
+}
+.exam-chip{
+  min-width:165px;background:var(--paper);border:1px solid var(--line);
+  border-radius:16px;padding:15px 18px;box-shadow:0 5px 18px #172b4909
+}
+.exam-chip strong{display:block;color:var(--navy);font-size:1.45rem}
+.exam-chip span{color:var(--muted);font-size:.8rem}
+.section-head{
+  display:flex;justify-content:space-between;align-items:end;
+  gap:16px;margin:30px 0 16px
+}
+h2{
+  margin:0;color:var(--navy);
+  font-family:Georgia,"Times New Roman",serif;font-size:1.65rem
+}
+.section-head p{margin:4px 0 0;color:var(--muted);font-size:.9rem}
+.units{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;padding-bottom:54px
+}
+.unit{
+  background:var(--paper);border:1px solid var(--line);
+  border-radius:16px;padding:20px;display:flex;align-items:center;
+  gap:16px;min-height:105px;box-shadow:0 5px 18px #172b4908
+}
+.unit-num{
+  width:48px;height:48px;flex:0 0 48px;display:grid;
+  place-items:center;border-radius:14px;background:#f1e7d7;
+  color:#8b5c20;font-family:Georgia,serif;font-size:1.2rem;font-weight:700
+}
+.unit-info{flex:1}
+.unit-info strong{display:block;color:var(--navy);font-size:1rem}
+.unit-info span{display:block;color:var(--muted);font-size:.82rem;margin-top:3px}
+.unit-arrow{color:var(--saffron);font-size:1.35rem}
+.notice{
+  background:#f0e9dc;border:1px solid #e3d5bf;border-radius:14px;
+  padding:16px 18px;color:#5d5141;font-size:.9rem;margin:0 0 48px
+}
+.notice strong{color:var(--navy)}
+footer{border-top:1px solid var(--line);padding:22px 0;color:var(--muted);font-size:.82rem}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* Login and registration window */
+.modal-backdrop{
+  display:none;position:fixed;inset:0;background:#172b4970;
+  z-index:1000;align-items:center;justify-content:center;
+  padding:18px
+}
+.modal-backdrop.show{display:flex}
+.auth-modal{
+  width:min(440px,100%);background:var(--paper);
+  border:1px solid var(--line);border-radius:18px;
+  padding:28px;box-shadow:0 20px 70px #172b4930;
+  position:relative
+}
+.modal-close{
+  position:absolute;right:17px;top:13px;border:0;background:transparent;
+  color:var(--muted);font-size:1.6rem;cursor:pointer
+}
+.auth-modal h2{font-size:1.8rem;margin:0 0 5px}
+.modal-description{color:var(--muted);font-size:.9rem;margin:0 0 20px}
+.auth-form{display:grid;gap:13px}
+.auth-form label{font-size:.85rem;color:var(--navy);font-weight:650}
+.auth-form input{
+  width:100%;margin-top:5px;padding:12px 13px;
+  border:1px solid var(--line);border-radius:9px;
+  background:white;font-size:1rem;color:var(--ink)
+}
+.auth-form input:focus{outline:2px solid #c8872e70;border-color:var(--saffron)}
+.auth-submit{
+  border:0;border-radius:9px;background:var(--navy);
+  color:white;padding:13px;font-size:.95rem;font-weight:750;
+  cursor:pointer;margin-top:5px
+}
+.auth-submit:disabled{opacity:.6;cursor:wait}
+.auth-switch{
+  text-align:center;font-size:.88rem;color:var(--muted);margin:17px 0 0
+}
+.auth-switch button{
+  border:0;background:transparent;color:#8a5a1e;
+  font-weight:750;cursor:pointer
+}
+.auth-message{
+  display:none;padding:11px 12px;border-radius:9px;
+  font-size:.86rem;margin:0 0 14px;overflow-wrap:anywhere
+}
+.auth-message.show{display:block}
+.auth-message.error{background:#fbe9e7;color:#9b2c24}
+.auth-message.success{background:#e9f4e9;color:#27613a}
+@media(max-width:650px){
+  .wrap{width:min(100% - 28px,1100px)}
+  .nav{min-height:66px;gap:8px}
+  .brand{font-size:1.05rem;gap:8px}
+  .brand-mark{width:34px;height:34px}
+  .nav-note{display:none}
+  .auth-actions{gap:6px}
+  .auth-btn{padding:8px 10px;font-size:.78rem}
+  .hero{padding:45px 0 25px}
+  .hero-row{display:block}
+  .exam-chip{display:inline-block;margin-top:22px}
+  .units{grid-template-columns:1fr;gap:10px}
+  .unit{padding:16px;min-height:92px}
+  .section-head{display:block}
+  .auth-modal{padding:24px 20px}
+}
 </style>
 </head>
+
 <body>
-<header><div class="wrap nav"><a class="brand" href="#"><span class="brand-mark">सं</span><span>NET Sanskrit</span></a><span class="nav-note">UGC NET · Paper 2 · Sanskrit</span></div></header>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#">
+      <span class="brand-mark">सं</span>
+      <span>NET Sanskrit</span>
+    </a>
+    <div class="auth-actions">
+      <span class="user-label" id="user-label"></span>
+      <button class="auth-btn login-btn" id="login-open">Login</button>
+      <button class="auth-btn register-btn" id="register-open">Register</button>
+      <button class="auth-btn login-btn" id="logout-button" hidden>Logout</button>
+    </div>
+  </div>
+</header>
+
 <main class="wrap">
-<section class="hero"><div class="hero-row"><div><span class="eyebrow">Subject Code 25</span><h1>Prepare with purpose.</h1><p>Unit-wise mock tests for UGC NET Sanskrit Paper 2. Choose a unit to practise with questions selected from its question bank.</p></div><div class="exam-chip"><strong>100 MCQs</strong><span>per mock test · 2 marks each</span></div></div></section>
-<section aria-labelledby="units-heading"><div class="section-head"><div><h2 id="units-heading">Choose a unit</h2><p>Ten separate units · focused practice</p></div></div><div class="units" id="unit-list"></div></section>
-<aside class="notice"><strong>How practice will work:</strong> Each test will randomly select 100 different questions from the chosen unit. Your score, correct answers and answer review will be shown after you submit the test.</aside>
+  <section class="hero">
+    <div class="hero-row">
+      <div>
+        <span class="eyebrow">Subject Code 25</span>
+        <h1>Prepare with purpose.</h1>
+        <p>Unit-wise mock tests for UGC NET Sanskrit Paper 2. Choose a unit to practise with questions selected from its question bank.</p>
+      </div>
+      <div class="exam-chip">
+        <strong>100 MCQs</strong>
+        <span>per mock test · 2 marks each</span>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="units-heading">
+    <div class="section-head">
+      <div>
+        <h2 id="units-heading">Choose a unit</h2>
+        <p>Ten separate units · focused practice</p>
+      </div>
+    </div>
+    <div class="units" id="unit-list"></div>
+  </section>
+
+  <aside class="notice">
+    <strong>How practice will work:</strong>
+    Each test will randomly select 100 different questions from the chosen unit.
+    Your score, correct answers and answer review will be shown after you submit the test.
+  </aside>
 </main>
-<footer><div class="wrap"><span>NET Sanskrit · UGC NET Paper 2</span><span>Independent practice portal</span></div></footer>
-<script>
-const unitList=document.getElementById('unit-list');
-for(let n=1;n<=10;n++){const card=document.createElement('div');card.className='unit';card.innerHTML='<span class="unit-num">'+String(n).padStart(2,'0')+'</span><span class="unit-info"><strong>Unit '+n+'</strong><span>Question bank and mock tests</span></span><span class="unit-arrow" aria-hidden="true">›</span>';unitList.appendChild(card);}
-</script>
+
+<footer>
+  <div class="wrap">
+    <span>NET Sanskrit · UGC NET Paper 2</span>
+    <span>Independent practice portal</span>
+  </div>
+</footer>
+
+<!-- Authentication window -->
+<div class="modal-backdrop" id="auth-backdrop">
+  <section class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+    <h2 id="auth-title">Student Login</h2>
+    <p class="modal-description" id="auth-description">Log in to your NET Sanskrit account.</p>
+
+    <div class="auth-message" id="auth-message" role="status"></div>
+
+    <form class="auth-form" id="auth-form">
+      <label id="name-field" hidden>
+        Full name
+        <input id="full-name" type="text" autocomplete="name" placeholder="Enter your full name">
+      </label>
+
+      <label>
+        Email address
+        <input id="email" type="email" autocomplete="email" required placeholder="Enter your email">
+      </label>
+
+      <label>
+        Password
+        <input id="password" type="password" autocomplete="current-password" required minlength="6" placeholder="Enter your password">
+      </label>
+
+      <button class="auth-submit" id="auth-submit" type="submit">Login</button>
+    </form>
+
+    <p class="auth-switch" id="auth-switch">
+      New student?
+      <button type="button" id="switch-register">Create an account</button>
+    </p>
+  </section>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
+
+<script>
+const unitList = document.getElementById('unit-list');
+
+for (let n = 1; n <= 10; n++) {
+  const card = document.createElement('div');
+  card.className = 'unit';
+  card.innerHTML =
+    '<span class="unit-num">' + String(n).padStart(2, '0') + '</span>' +
+    '<span class="unit-info"><strong>Unit ' + n +
+    '</strong><span>Question bank and mock tests</span></span>' +
+    '<span class="unit-arrow" aria-hidden="true">›</span>';
+  unitList.appendChild(card);
+}
+
+/* Supabase connection */
+const supabaseUrl = window.NET_SANSKRIT_SUPABASE_URL;
+const supabaseKey = window.NET_SANSKRIT_SUPABASE_PUBLISHABLE_KEY;
+
+let supabaseClient = null;
+
+if (window.supabase && supabaseUrl && supabaseKey) {
+  supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+} else {
+  console.error('Supabase configuration is missing. Check supabase-config.js.');
+}
+
+/* Authentication interface */
+const backdrop = document.getElementById('auth-backdrop');
+const authForm = document.getElementById('auth-form');
+const authTitle = document.getElementById('auth-title');
+const authDescription = document.getElementById('auth-description');
+const authSubmit = document.getElementById('auth-submit');
+const authMessage = document.getElementById('auth-message');
+const authSwitch = document.getElementById('auth-switch');
+const nameField = document.getElementById('name-field');
+const fullNameInput = document.getElementById('full-name');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
+const loginOpen = document.getElementById('login-open');
+const registerOpen = document.getElementById('register-open');
+const logoutButton = document.getElementById('logout-button');
+const userLabel = document.getElementById('user-label');
+
+let authMode = 'login';
+
+function showMessage(message, type) {
+  authMessage.textContent = message;
+  authMessage.className = 'auth-message show ' + type;
+}
+
+function clearMessage() {
+  authMessage.textContent = '';
+  authMessage.className = 'auth-message';
+}
+
+function openAuth(mode) {
+  authMode = mode;
+  clearMessage();
+  authForm.reset();
+  updateAuthForm();
+  backdrop.classList.add('show');
+}
+
+function closeAuth() {
+  backdrop.classList.remove('show');
+}
+
+function updateAuthForm() {
+  const isRegister = authMode === 'register';
+
+  authTitle.textContent = isRegister ? 'Create Student Account' : 'Student Login';
+  authDescription.textContent = isRegister
+    ? 'Register to begin your UGC NET Sanskrit preparation.'
+    : 'Log in to your NET Sanskrit account.';
+
+  nameField.hidden = !isRegister;
+  fullNameInput.required = isRegister;
+  passwordInput.autocomplete = isRegister ? 'new-password' : 'current-password';
+  authSubmit.textContent = isRegister ? 'Create Account' : 'Login';
+
+  authSwitch.innerHTML = isRegister
+    ? 'Already registered? <button type="button" id="switch-login">Login</button>'
+    : 'New student? <button type="button" id="switch-register">Create an account</button>';
+
+  const switchButton = authSwitch.querySelector('button');
+  switchButton.addEventListener('click', () => {
+    authMode = isRegister ? 'login' : 'register';
+    clearMessage();
+    updateAuthForm();
+  });
+}
+
+loginOpen.addEventListener('click', () => openAuth('login'));
+registerOpen.addEventListener('click', () => openAuth('register'));
+document.getElementById('modal-close').addEventListener('click', closeAuth);
+
+backdrop.addEventListener('click', event => {
+  if (event.target === backdrop) closeAuth();
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') closeAuth();
+});
+
+/* Register and login */
+authForm.addEventListener('submit', async event => {
+  event.preventDefault();
+
+  if (!supabaseClient) {
+    showMessage('Connection error. Please check the Supabase configuration.', 'error');
+    return;
+  }
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  const fullName = fullNameInput.value.trim();
+
+  authSubmit.disabled = true;
+  authSubmit.textContent = 'Please wait...';
+  clearMessage();
+
+  try {
+    if (authMode === 'register') {
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName
+          },
+          emailRedirectTo: window.location.origin
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.session) {
+        showMessage('Your account has been created. You are now logged in.', 'success');
+        updateUser(data.user);
+        setTimeout(closeAuth, 1500);
+      } else {
+        showMessage(
+          'Registration successful! Please check your email and click the verification link before logging in.',
+          'success'
+        );
+      }
+    } else {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      showMessage('Login successful!', 'success');
+      updateUser(data.user);
+      setTimeout(closeAuth, 1000);
+    }
+  } catch (error) {
+    showMessage(error.message || 'Something went wrong. Please try again.', 'error');
+  } finally {
+    authSubmit.disabled = false;
+    authSubmit.textContent = authMode === 'register' ? 'Create Account' : 'Login';
+  }
+});
+
+/* Show logged-in user */
+function updateUser(user) {
+  if (user) {
+    const displayName =
+      user.user_metadata?.full_name ||
+      user.email ||
+      'Student';
+
+    userLabel.textContent = displayName;
+    loginOpen.hidden = true;
+    registerOpen.hidden = true;
+    logoutButton.hidden = false;
+  } else {
+    userLabel.textContent = '';
+    loginOpen.hidden = false;
+    registerOpen.hidden = false;
+    logoutButton.hidden = true;
+  }
+}
+
+/* Logout */
+logoutButton.addEventListener('click', async () => {
+  if (!supabaseClient) return;
+
+  const { error } = await supabaseClient.auth.signOut();
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  updateUser(null);
+});
+
+/* Restore existing login session */
+async function checkSession() {
+  if (!supabaseClient) return;
+
+  const { data, error } = await supabaseClient.auth.getSession();
+
+  if (error) {
+    console.error(error.message);
+    return;
+  }
+
+  updateUser(data.session?.user || null);
+}
+
+if (supabaseClient) {
+  checkSession();
+
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
+    updateUser(session?.user || null);
+  });
+}
+</script>
+
 </body>
 </html>
