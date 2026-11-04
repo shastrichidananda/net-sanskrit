@@ -231,7 +231,7 @@ const supabaseClient = window.supabase && window.NET_SANSKRIT_SUPABASE_URL && wi
 
 let currentUser=null, currentAttempt=null, currentQuestions=[], currentQuestion=0;
 let currentUnit=null, lastResult=null, reviewAttemptId=null, authMode='login';
-
+let seenTrackingPromise=Promise.resolve();
 function message(text,type='error'){
  $('global-message').textContent=text;
  $('global-message').className='message '+type;
@@ -338,6 +338,9 @@ async function startTest(unit){
 }
 function renderQuestion(){
  const q=currentQuestions[currentQuestion];
+   seenTrackingPromise=seenTrackingPromise.then(
+ ()=>markQuestionSeen(q.question_number)
+);
  $('question-number').textContent='QUESTION '+q.question_number+' OF '+currentQuestions.length;
  $('question-text').textContent=q.question_text;
  $('options-list').innerHTML='';
@@ -360,7 +363,19 @@ function renderQuestion(){
   $('question-grid').appendChild(b);
  });
 }
-async function saveAnswer(number,answer){
+async function markQuestionSeen(number){
+ try{
+  const {error}=await supabaseClient.rpc('mark_question_seen',{
+   p_attempt_id:currentAttempt,
+   p_question_number:number
+  });
+  if(error)throw error;
+  $('save-status').textContent='Question viewed';
+ }catch(e){
+  $('save-status').textContent='Tracking error: '+e.message;
+ }
+}
+  async function saveAnswer(number,answer){
  $('save-status').textContent='Saving answer...';
  try{
   const {error}=await supabaseClient.rpc('save_test_answer',{
@@ -379,7 +394,7 @@ $('submit-test').onclick=async()=>{
  const answered=currentQuestions.filter(q=>q.selected_option).length;
  if(!confirm('Submit your test now? You have answered '+answered+' of '+currentQuestions.length+' questions. You cannot change answers after submission.'))return;
  $('submit-test').disabled=true;
- try{
+ try{await seenTrackingPromise;
   const {data,error}=await supabaseClient.rpc('submit_unit_test',{p_attempt_id:currentAttempt});
   if(error)throw error;
   lastResult=Array.isArray(data)?data[0]:data;
@@ -389,7 +404,19 @@ $('submit-test').onclick=async()=>{
   $('result-correct').textContent=lastResult.correct??0;
   $('result-incorrect').textContent=lastResult.incorrect??0;
   $('result-unanswered').textContent='Unanswered: '+(lastResult.unanswered??0)+' · Total questions: '+(lastResult.total??100);
-  showView('result');
+  const {data:progressData,error:progressError}=await supabaseClient.rpc(
+ 'get_question_bank_progress',
+ {p_unit_id:currentUnit.id}
+);
+if(progressError)throw progressError;
+
+const progress=Array.isArray(progressData)?progressData[0]:progressData;
+
+$('round-complete-panel').classList.toggle(
+ 'hidden',
+ !progress?.round_complete
+);
+   showView('result');
  }catch(e){message('Submission failed: '+e.message);}
  finally{$('submit-test').disabled=false;}
 };
@@ -421,6 +448,27 @@ async function showReview(attemptId){
 }
 $('review-button').onclick=()=>showReview(reviewAttemptId);
 $('result-dashboard').onclick=openDashboard;
+  $('restart-question-bank').onclick=async()=>{
+ if(!confirm('Restart this unit question bank? Your previous test scores and history will remain saved.'))return;
+
+ const button=$('restart-question-bank');
+ button.disabled=true;
+
+ try{
+  const {error}=await supabaseClient.rpc('restart_question_bank',{
+   p_unit_id:currentUnit.id
+  });
+  if(error)throw error;
+
+  $('round-complete-panel').classList.add('hidden');
+  alert('Question bank restarted! You can now begin a fresh round.');
+  openDashboard();
+ }catch(e){
+  alert('Could not restart question bank: '+e.message);
+ }finally{
+  button.disabled=false;
+ }
+};
 $('review-dashboard').onclick=openDashboard;
 $('dashboard-open').onclick=openDashboard;
 $('login-open').onclick=()=>openAuth('login');
