@@ -392,7 +392,7 @@ async function showReview(attemptId){
   const {data,error}=await supabaseClient.rpc('get_test_review',{p_attempt_id:attemptId});
   if(error)throw error;
   $('review-list').innerHTML='';
-  (data||[]).forEach(q=>{
+  (data||[]).filter(q=>q.selected_option).forEach(q=>{
    const item=document.createElement('div');item.className='review-item';
    const title=document.createElement('strong');title.textContent='Question '+q.question_number;
    const question=document.createElement('p');question.textContent=q.question_text;
