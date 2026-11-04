@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#f5f1e8">
 <title>NET Sanskrit | UGC NET Paper 2</title>
-<meta name="description" content="Unit-wise UGC NET Sanskrit Paper 2 mock test portal.">
+<meta name="description" content="UGC NET Sanskrit Paper 2 mock test portal.">
 
 <style>
 :root {
@@ -19,477 +19,451 @@
   --line:#e7dfd1;
 }
 *{box-sizing:border-box}
-body{
-  margin:0;background:var(--ivory);color:var(--ink);
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-  line-height:1.5
-}
-.wrap{width:min(1100px,calc(100% - 40px));margin:auto}
-header{background:rgba(255,253,248,.92);border-bottom:1px solid var(--line)}
-.nav{
-  min-height:76px;display:flex;align-items:center;
-  justify-content:space-between;gap:20px
-}
-.brand{
-  display:flex;align-items:center;gap:12px;
-  color:var(--navy);font-weight:800;letter-spacing:-.03em;
-  font-size:1.25rem;text-decoration:none
-}
-.brand-mark{
-  width:38px;height:38px;border-radius:12px;background:var(--navy);
-  color:white;display:grid;place-items:center;
-  font-family:Georgia,serif;font-size:1.2rem
-}
-.nav-note{font-size:.9rem;color:var(--muted)}
-.auth-actions{display:flex;align-items:center;gap:10px}
-.auth-btn{
-  border:1px solid var(--navy);border-radius:9px;
-  padding:9px 16px;font-weight:700;cursor:pointer;
-  font-size:.88rem
-}
-.login-btn{background:transparent;color:var(--navy)}
-.register-btn{background:var(--navy);color:white}
-.auth-btn:hover{opacity:.85}
-.user-label{font-size:.85rem;color:var(--navy);font-weight:650}
-.hero{padding:64px 0 38px}
-.eyebrow{
-  display:inline-flex;align-items:center;gap:8px;color:#8a5a1e;
-  background:#f2e5d0;border:1px solid #ead7b8;border-radius:999px;
-  padding:6px 12px;font-size:.78rem;font-weight:750;
-  letter-spacing:.06em;text-transform:uppercase
-}
-h1{
-  color:var(--navy);font-family:Georgia,"Times New Roman",serif;
-  font-size:clamp(2.3rem,5vw,4rem);line-height:1.08;
-  letter-spacing:-.04em;margin:18px 0 12px
-}
-.hero p{max-width:650px;color:var(--muted);font-size:1.06rem;margin:0}
-.hero-row{
-  display:flex;align-items:flex-end;justify-content:space-between;gap:24px
-}
-.exam-chip{
-  min-width:165px;background:var(--paper);border:1px solid var(--line);
-  border-radius:16px;padding:15px 18px;box-shadow:0 5px 18px #172b4909
-}
-.exam-chip strong{display:block;color:var(--navy);font-size:1.45rem}
-.exam-chip span{color:var(--muted);font-size:.8rem}
-.section-head{
-  display:flex;justify-content:space-between;align-items:end;
-  gap:16px;margin:30px 0 16px
-}
-h2{
-  margin:0;color:var(--navy);
-  font-family:Georgia,"Times New Roman",serif;font-size:1.65rem
-}
-.section-head p{margin:4px 0 0;color:var(--muted);font-size:.9rem}
-.units{
-  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:14px;padding-bottom:54px
-}
-.unit{
-  background:var(--paper);border:1px solid var(--line);
-  border-radius:16px;padding:20px;display:flex;align-items:center;
-  gap:16px;min-height:105px;box-shadow:0 5px 18px #172b4908
-}
-.unit-num{
-  width:48px;height:48px;flex:0 0 48px;display:grid;
-  place-items:center;border-radius:14px;background:#f1e7d7;
-  color:#8b5c20;font-family:Georgia,serif;font-size:1.2rem;font-weight:700
-}
+body{margin:0;background:var(--ivory);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.5}
+.wrap{width:min(1100px,calc(100% - 32px));margin:auto}
+header{background:var(--paper);border-bottom:1px solid var(--line)}
+.nav{min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;color:var(--navy);font-weight:800;font-size:1.2rem;text-decoration:none}
+.brand-mark{width:38px;height:38px;border-radius:12px;background:var(--navy);color:white;display:grid;place-items:center;font-family:Georgia,serif}
+.auth-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.user-label{font-size:.85rem;color:var(--navy);font-weight:700}
+button{font:inherit;cursor:pointer}
+.btn{border:1px solid var(--navy);border-radius:9px;padding:9px 15px;font-weight:700;background:transparent;color:var(--navy)}
+.btn.primary{background:var(--navy);color:white}
+.btn.gold{background:var(--saffron);border-color:var(--saffron);color:white}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+main{padding-bottom:45px}
+.hero{padding:55px 0 30px}
+.eyebrow{display:inline-block;color:#8a5a1e;background:#f2e5d0;border:1px solid #ead7b8;border-radius:999px;padding:6px 12px;font-size:.78rem;font-weight:750;text-transform:uppercase}
+h1{color:var(--navy);font-family:Georgia,serif;font-size:clamp(2.3rem,5vw,4rem);line-height:1.1;margin:16px 0 10px}
+h2{color:var(--navy);font-family:Georgia,serif;margin:0 0 6px}
+p{color:var(--muted)}
+.hero-row{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.exam-chip,.stat,.panel,.unit,.question-card,.result-card{background:var(--paper);border:1px solid var(--line);border-radius:15px;padding:18px}
+.exam-chip strong{display:block;color:var(--navy);font-size:1.5rem}
+.section-head{display:flex;justify-content:space-between;align-items:end;margin:25px 0 15px;gap:15px}
+.units{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.unit{display:flex;align-items:center;gap:14px;text-align:left;width:100%;color:var(--ink);min-height:90px}
+.unit:hover{border-color:var(--saffron);transform:translateY(-1px)}
+.unit-num{width:45px;height:45px;flex:0 0 45px;border-radius:13px;background:#f1e7d7;color:#8b5c20;display:grid;place-items:center;font-family:Georgia,serif;font-weight:bold}
 .unit-info{flex:1}
-.unit-info strong{display:block;color:var(--navy);font-size:1rem}
-.unit-info span{display:block;color:var(--muted);font-size:.82rem;margin-top:3px}
-.unit-arrow{color:var(--saffron);font-size:1.35rem}
-.notice{
-  background:#f0e9dc;border:1px solid #e3d5bf;border-radius:14px;
-  padding:16px 18px;color:#5d5141;font-size:.9rem;margin:0 0 48px
-}
-.notice strong{color:var(--navy)}
-footer{border-top:1px solid var(--line);padding:22px 0;color:var(--muted);font-size:.82rem}
-footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-
-/* Login and registration window */
-.modal-backdrop{
-  display:none;position:fixed;inset:0;background:#172b4970;
-  z-index:1000;align-items:center;justify-content:center;
-  padding:18px
-}
-.modal-backdrop.show{display:flex}
-.auth-modal{
-  width:min(440px,100%);background:var(--paper);
-  border:1px solid var(--line);border-radius:18px;
-  padding:28px;box-shadow:0 20px 70px #172b4930;
-  position:relative
-}
-.modal-close{
-  position:absolute;right:17px;top:13px;border:0;background:transparent;
-  color:var(--muted);font-size:1.6rem;cursor:pointer
-}
-.auth-modal h2{font-size:1.8rem;margin:0 0 5px}
-.modal-description{color:var(--muted);font-size:.9rem;margin:0 0 20px}
-.auth-form{display:grid;gap:13px}
-.auth-form label{font-size:.85rem;color:var(--navy);font-weight:650}
-.auth-form input{
-  width:100%;margin-top:5px;padding:12px 13px;
-  border:1px solid var(--line);border-radius:9px;
-  background:white;font-size:1rem;color:var(--ink)
-}
-.auth-form input:focus{outline:2px solid #c8872e70;border-color:var(--saffron)}
-.auth-submit{
-  border:0;border-radius:9px;background:var(--navy);
-  color:white;padding:13px;font-size:.95rem;font-weight:750;
-  cursor:pointer;margin-top:5px
-}
-.auth-submit:disabled{opacity:.6;cursor:wait}
-.auth-switch{
-  text-align:center;font-size:.88rem;color:var(--muted);margin:17px 0 0
-}
-.auth-switch button{
-  border:0;background:transparent;color:#8a5a1e;
-  font-weight:750;cursor:pointer
-}
-.auth-message{
-  display:none;padding:11px 12px;border-radius:9px;
-  font-size:.86rem;margin:0 0 14px;overflow-wrap:anywhere
-}
-.auth-message.show{display:block}
-.auth-message.error{background:#fbe9e7;color:#9b2c24}
-.auth-message.success{background:#e9f4e9;color:#27613a}
+.unit-info strong{display:block;color:var(--navy)}
+.unit-info small{color:var(--muted)}
+.unit-arrow{color:var(--saffron);font-size:1.4rem}
+.notice{background:#f0e9dc;border:1px solid #e3d5bf;border-radius:13px;padding:15px;margin:25px 0;color:#5d5141}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+.stat strong{display:block;color:var(--navy);font-size:1.6rem}
+.stat span{font-size:.82rem;color:var(--muted)}
+.panel{margin:18px 0}
+.history-row{display:grid;grid-template-columns:1fr auto auto;gap:15px;align-items:center;border-bottom:1px solid var(--line);padding:13px 0}
+.history-row:last-child{border:0}
+.muted{color:var(--muted);font-size:.85rem}
+.hidden{display:none!important}
+.message{padding:12px;border-radius:9px;background:#f0e9dc;color:#5d5141;margin:12px 0}
+.message.error{background:#fbe9e7;color:#9b2c24}
+.message.success{background:#e9f4e9;color:#27613a}
+.auth-backdrop{display:none;position:fixed;inset:0;background:#172b4970;z-index:20;align-items:center;justify-content:center;padding:16px}
+.auth-backdrop.show{display:flex}
+.auth-modal{width:min(430px,100%);background:var(--paper);border-radius:17px;padding:25px;position:relative}
+.auth-modal h2{font-size:1.7rem}
+.close{position:absolute;right:15px;top:10px;border:0;background:none;font-size:1.6rem;color:var(--muted)}
+.auth-form{display:grid;gap:12px}
+.auth-form label{font-size:.85rem;font-weight:650;color:var(--navy)}
+.auth-form input{display:block;width:100%;margin-top:5px;padding:12px;border:1px solid var(--line);border-radius:8px;font-size:1rem}
+.auth-form button{margin-top:6px}
+.auth-switch{text-align:center;font-size:.88rem}
+.auth-switch button{border:0;background:none;color:#8a5a1e;font-weight:bold}
+.test-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:25px 0}
+.progress{height:8px;background:#e7dfd1;border-radius:20px;overflow:hidden;margin:12px 0 22px}
+.progress div{height:100%;background:var(--saffron);width:0}
+.question-card{padding:24px}
+.question-number{color:#8a5a1e;font-weight:750;font-size:.85rem}
+.question-text{color:var(--navy);font-size:1.15rem;font-weight:700;margin:15px 0 20px;white-space:pre-wrap}
+.option{display:flex;gap:12px;align-items:flex-start;padding:13px;border:1px solid var(--line);border-radius:10px;margin:9px 0;background:white;cursor:pointer}
+.option:has(input:checked){border-color:var(--saffron);background:#fbf4e9}
+.option input{margin-top:5px;accent-color:var(--navy)}
+.test-controls{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:18px}
+.question-grid{display:flex;gap:7px;flex-wrap:wrap;margin:18px 0}
+.qjump{width:38px;height:38px;border:1px solid var(--line);border-radius:8px;background:white;color:var(--navy)}
+.qjump.current{background:var(--navy);color:white}
+.qjump.answered{border-color:var(--saffron);background:#f2e5d0}
+.review-item{padding:16px;border-bottom:1px solid var(--line)}
+.review-item:last-child{border:0}
+.correct{color:#27613a;font-weight:750}
+.incorrect{color:#a3322a;font-weight:750}
+footer{border-top:1px solid var(--line);padding:20px 0;color:var(--muted);font-size:.82rem}
 @media(max-width:650px){
-  .wrap{width:min(100% - 28px,1100px)}
-  .nav{min-height:66px;gap:8px}
-  .brand{font-size:1.05rem;gap:8px}
-  .brand-mark{width:34px;height:34px}
-  .nav-note{display:none}
-  .auth-actions{gap:6px}
-  .auth-btn{padding:8px 10px;font-size:.78rem}
-  .hero{padding:45px 0 25px}
-  .hero-row{display:block}
-  .exam-chip{display:inline-block;margin-top:22px}
-  .units{grid-template-columns:1fr;gap:10px}
-  .unit{padding:16px;min-height:92px}
-  .section-head{display:block}
-  .auth-modal{padding:24px 20px}
+ .hero{padding:35px 0 20px}.hero-row{display:block}.exam-chip{display:inline-block;margin-top:15px}
+ .units{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}
+ .history-row{grid-template-columns:1fr auto}.history-row .history-date{grid-column:1/-1}
+ .question-card{padding:17px}.nav{min-height:65px}.user-label{max-width:115px;overflow-wrap:anywhere}
 }
 </style>
 </head>
 
 <body>
-
 <header>
-  <div class="wrap nav">
-    <a class="brand" href="#">
-      <span class="brand-mark">सं</span>
-      <span>NET Sanskrit</span>
-    </a>
-    <div class="auth-actions">
-      <span class="user-label" id="user-label"></span>
-      <button class="auth-btn login-btn" id="login-open">Login</button>
-      <button class="auth-btn register-btn" id="register-open">Register</button>
-      <button class="auth-btn login-btn" id="logout-button" hidden>Logout</button>
-    </div>
+ <div class="wrap nav">
+  <a class="brand" href="#" id="brand-home"><span class="brand-mark">सं</span><span>NET Sanskrit</span></a>
+  <div class="auth-actions">
+   <span class="user-label" id="user-label"></span>
+   <button class="btn" id="login-open">Login</button>
+   <button class="btn primary" id="register-open">Register</button>
+   <button class="btn hidden" id="dashboard-open">Dashboard</button>
+   <button class="btn hidden" id="logout-button">Logout</button>
   </div>
+ </div>
 </header>
 
 <main class="wrap">
+ <section id="home-view">
   <section class="hero">
-    <div class="hero-row">
-      <div>
-        <span class="eyebrow">Subject Code 25</span>
-        <h1>Prepare with purpose.</h1>
-        <p>Unit-wise mock tests for UGC NET Sanskrit Paper 2. Choose a unit to practise with questions selected from its question bank.</p>
-      </div>
-      <div class="exam-chip">
-        <strong>100 MCQs</strong>
-        <span>per mock test · 2 marks each</span>
-      </div>
+   <div class="hero-row">
+    <div>
+     <span class="eyebrow">Subject Code 25</span>
+     <h1>Prepare with purpose.</h1>
+     <p>Unit-wise mock tests for UGC NET Sanskrit Paper 2. Choose a unit and practise with randomly selected questions.</p>
     </div>
+    <div class="exam-chip"><strong>100 MCQs</strong><span class="muted">per test · 2 marks each</span></div>
+   </div>
   </section>
+  <div class="section-head"><div><h2>Choose a unit</h2><p>Ten separate units · focused practice</p></div></div>
+  <div class="units" id="public-units"></div>
+  <aside class="notice"><strong>How practice works:</strong> Each test selects 100 random questions from the chosen unit. Your score and answer review appear after submission.</aside>
+ </section>
 
-  <section aria-labelledby="units-heading">
-    <div class="section-head">
-      <div>
-        <h2 id="units-heading">Choose a unit</h2>
-        <p>Ten separate units · focused practice</p>
-      </div>
-    </div>
-    <div class="units" id="unit-list"></div>
-  </section>
+ <section id="dashboard-view" class="hidden">
+  <div class="hero">
+   <span class="eyebrow">Student dashboard</span>
+   <h1 id="welcome-title">Welcome!</h1>
+   <p>Your UGC NET Sanskrit preparation at a glance.</p>
+  </div>
+  <div class="stats">
+   <div class="stat"><strong id="stat-attempts">0</strong><span>Tests attempted</span></div>
+   <div class="stat"><strong id="stat-average">—</strong><span>Average marks</span></div>
+   <div class="stat"><strong id="stat-best">—</strong><span>Best marks</span></div>
+  </div>
+  <div class="section-head"><div><h2>Choose a unit</h2><p>Unlimited attempts · 100 questions per test</p></div></div>
+  <div class="units" id="dashboard-units"></div>
+  <div class="panel">
+   <h2>My test history</h2>
+   <p class="muted">Your previous submitted tests and scores.</p>
+   <div id="history-list" class="muted">Loading your history...</div>
+  </div>
+  <div id="admin-note" class="notice hidden"><strong>Administrator account detected.</strong> Admin question-management tools will be added in the next stage.</div>
+ </section>
 
-  <aside class="notice">
-    <strong>How practice will work:</strong>
-    Each test will randomly select 100 different questions from the chosen unit.
-    Your score, correct answers and answer review will be shown after you submit the test.
-  </aside>
+ <section id="test-view" class="hidden">
+  <div class="test-top">
+   <div><span class="eyebrow" id="test-unit-label">Unit test</span><h2 id="test-heading">Mock Test</h2><span class="muted" id="save-status">Loading questions...</span></div>
+   <button class="btn" id="exit-test">Exit test</button>
+  </div>
+  <div class="progress"><div id="test-progress"></div></div>
+  <div class="question-card">
+   <div class="question-number" id="question-number"></div>
+   <div class="question-text" id="question-text"></div>
+   <div id="options-list"></div>
+  </div>
+  <div class="test-controls">
+   <button class="btn" id="previous-question">← Previous</button>
+   <button class="btn primary" id="next-question">Next →</button>
+  </div>
+  <div class="panel">
+   <strong>Question navigator</strong>
+   <div class="question-grid" id="question-grid"></div>
+   <button class="btn gold" id="submit-test">Submit test</button>
+  </div>
+ </section>
+
+ <section id="result-view" class="hidden">
+  <div class="hero"><span class="eyebrow">Test completed</span><h1>Your result</h1><p id="result-unit"></p></div>
+  <div class="stats">
+   <div class="stat"><strong id="result-marks">0/200</strong><span>Marks</span></div>
+   <div class="stat"><strong id="result-correct">0</strong><span>Correct</span></div>
+   <div class="stat"><strong id="result-incorrect">0</strong><span>Incorrect</span></div>
+  </div>
+  <div class="panel">
+   <p id="result-unanswered"></p>
+   <button class="btn primary" id="review-button">Review answers</button>
+   <button class="btn" id="result-dashboard">Back to dashboard</button>
+  </div>
+ </section>
+
+ <section id="review-view" class="hidden">
+  <div class="hero"><span class="eyebrow">Answer review</span><h1>Review your answers</h1><p>Compare your answers with the correct options and explanations.</p></div>
+  <div class="panel" id="review-list">Loading review...</div>
+  <button class="btn primary" id="review-dashboard">Back to dashboard</button>
+ </section>
+ <div id="global-message" class="message hidden"></div>
 </main>
 
-<footer>
-  <div class="wrap">
-    <span>NET Sanskrit · UGC NET Paper 2</span>
-    <span>Independent practice portal</span>
-  </div>
-</footer>
+<footer><div class="wrap">NET Sanskrit · UGC NET Paper 2 · Independent practice portal</div></footer>
 
-<!-- Authentication window -->
-<div class="modal-backdrop" id="auth-backdrop">
-  <section class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
-    <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
-    <h2 id="auth-title">Student Login</h2>
-    <p class="modal-description" id="auth-description">Log in to your NET Sanskrit account.</p>
-
-    <div class="auth-message" id="auth-message" role="status"></div>
-
-    <form class="auth-form" id="auth-form">
-      <label id="name-field" hidden>
-        Full name
-        <input id="full-name" type="text" autocomplete="name" placeholder="Enter your full name">
-      </label>
-
-      <label>
-        Email address
-        <input id="email" type="email" autocomplete="email" required placeholder="Enter your email">
-      </label>
-
-      <label>
-        Password
-        <input id="password" type="password" autocomplete="current-password" required minlength="6" placeholder="Enter your password">
-      </label>
-
-      <button class="auth-submit" id="auth-submit" type="submit">Login</button>
-    </form>
-
-    <p class="auth-switch" id="auth-switch">
-      New student?
-      <button type="button" id="switch-register">Create an account</button>
-    </p>
-  </section>
+<div class="auth-backdrop" id="auth-backdrop">
+ <section class="auth-modal" role="dialog" aria-modal="true">
+  <button class="close" id="modal-close">&times;</button>
+  <h2 id="auth-title">Student Login</h2>
+  <p class="muted" id="auth-description">Log in to your account.</p>
+  <div id="auth-message" class="message hidden"></div>
+  <form class="auth-form" id="auth-form">
+   <label id="name-field" class="hidden">Full name<input id="full-name" type="text" placeholder="Your full name"></label>
+   <label>Email address<input id="email" type="email" required autocomplete="email" placeholder="Your email"></label>
+   <label>Password<input id="password" type="password" required minlength="6" placeholder="Your password"></label>
+   <button class="btn primary" id="auth-submit" type="submit">Login</button>
+  </form>
+  <p class="auth-switch" id="auth-switch"></p>
+ </section>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
-
 <script>
-const unitList = document.getElementById('unit-list');
+const $ = id => document.getElementById(id);
+const supabaseClient = window.supabase && window.NET_SANSKRIT_SUPABASE_URL && window.NET_SANSKRIT_SUPABASE_PUBLISHABLE_KEY
+ ? window.supabase.createClient(window.NET_SANSKRIT_SUPABASE_URL,window.NET_SANSKRIT_SUPABASE_PUBLISHABLE_KEY)
+ : null;
 
-for (let n = 1; n <= 10; n++) {
-  const card = document.createElement('div');
-  card.className = 'unit';
-  card.innerHTML =
-    '<span class="unit-num">' + String(n).padStart(2, '0') + '</span>' +
-    '<span class="unit-info"><strong>Unit ' + n +
-    '</strong><span>Question bank and mock tests</span></span>' +
-    '<span class="unit-arrow" aria-hidden="true">›</span>';
-  unitList.appendChild(card);
+let currentUser=null, currentAttempt=null, currentQuestions=[], currentQuestion=0;
+let currentUnit=null, lastResult=null, reviewAttemptId=null, authMode='login';
+
+function message(text,type='error'){
+ $('global-message').textContent=text;
+ $('global-message').className='message '+type;
 }
-
-/* Supabase connection */
-const supabaseUrl = window.NET_SANSKRIT_SUPABASE_URL;
-const supabaseKey = window.NET_SANSKRIT_SUPABASE_PUBLISHABLE_KEY;
-
-let supabaseClient = null;
-
-if (window.supabase && supabaseUrl && supabaseKey) {
-  supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-} else {
-  console.error('Supabase configuration is missing. Check supabase-config.js.');
+function clearMessage(){ $('global-message').className='message hidden'; }
+function showView(name){
+ ['home','dashboard','test','result','review'].forEach(v=>$(`${v}-view`).classList.toggle('hidden',v!==name));
+ clearMessage();
+ window.scrollTo(0,0);
 }
-
-/* Authentication interface */
-const backdrop = document.getElementById('auth-backdrop');
-const authForm = document.getElementById('auth-form');
-const authTitle = document.getElementById('auth-title');
-const authDescription = document.getElementById('auth-description');
-const authSubmit = document.getElementById('auth-submit');
-const authMessage = document.getElementById('auth-message');
-const authSwitch = document.getElementById('auth-switch');
-const nameField = document.getElementById('name-field');
-const fullNameInput = document.getElementById('full-name');
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-const loginOpen = document.getElementById('login-open');
-const registerOpen = document.getElementById('register-open');
-const logoutButton = document.getElementById('logout-button');
-const userLabel = document.getElementById('user-label');
-
-let authMode = 'login';
-
-function showMessage(message, type) {
-  authMessage.textContent = message;
-  authMessage.className = 'auth-message show ' + type;
+function authMessage(text,type='error'){
+ $('auth-message').textContent=text;
+ $('auth-message').className='message '+type;
 }
-
-function clearMessage() {
-  authMessage.textContent = '';
-  authMessage.className = 'auth-message';
+function closeAuth(){ $('auth-backdrop').classList.remove('show'); }
+function openAuth(mode){
+ authMode=mode;
+ $('auth-form').reset();
+ $('auth-message').className='message hidden';
+ $('auth-title').textContent=mode==='register'?'Create Student Account':'Student Login';
+ $('auth-description').textContent=mode==='register'?'Register for UGC NET Sanskrit practice.':'Log in to your NET Sanskrit account.';
+ $('name-field').classList.toggle('hidden',mode!=='register');
+ $('full-name').required=mode==='register';
+ $('auth-submit').textContent=mode==='register'?'Create Account':'Login';
+ $('auth-switch').innerHTML=mode==='register'
+  ? 'Already registered? <button type="button" id="switch-auth">Login</button>'
+  : 'New student? <button type="button" id="switch-auth">Create an account</button>';
+ $('switch-auth').onclick=()=>openAuth(mode==='register'?'login':'register');
+ $('auth-backdrop').classList.add('show');
 }
-
-function openAuth(mode) {
-  authMode = mode;
-  clearMessage();
-  authForm.reset();
-  updateAuthForm();
-  backdrop.classList.add('show');
+function updateUser(user){
+ currentUser=user;
+ $('user-label').textContent=user?(user.user_metadata?.full_name||user.email):'';
+ $('login-open').classList.toggle('hidden',!!user);
+ $('register-open').classList.toggle('hidden',!!user);
+ $('logout-button').classList.toggle('hidden',!user);
+ $('dashboard-open').classList.toggle('hidden',!user);
 }
-
-function closeAuth() {
-  backdrop.classList.remove('show');
+async function loadUnits(target){
+ const {data,error}=await supabaseClient.from('units').select('id,unit_name,description').order('id');
+ if(error) throw error;
+ $(target).innerHTML='';
+ data.forEach(unit=>{
+  const b=document.createElement('button');
+  b.className='unit';
+  b.innerHTML=`<span class="unit-num">${String(unit.id).padStart(2,'0')}</span><span class="unit-info"><strong></strong><small></small></span><span class="unit-arrow">›</span>`;
+  b.querySelector('strong').textContent=unit.unit_name;
+  b.querySelector('small').textContent=unit.description||'Question bank and mock tests';
+  b.onclick=()=>currentUser?startTest(unit):openAuth('login');
+  $(target).appendChild(b);
+ });
 }
-
-function updateAuthForm() {
-  const isRegister = authMode === 'register';
-
-  authTitle.textContent = isRegister ? 'Create Student Account' : 'Student Login';
-  authDescription.textContent = isRegister
-    ? 'Register to begin your UGC NET Sanskrit preparation.'
-    : 'Log in to your NET Sanskrit account.';
-
-  nameField.hidden = !isRegister;
-  fullNameInput.required = isRegister;
-  passwordInput.autocomplete = isRegister ? 'new-password' : 'current-password';
-  authSubmit.textContent = isRegister ? 'Create Account' : 'Login';
-
-  authSwitch.innerHTML = isRegister
-    ? 'Already registered? <button type="button" id="switch-login">Login</button>'
-    : 'New student? <button type="button" id="switch-register">Create an account</button>';
-
-  const switchButton = authSwitch.querySelector('button');
-  switchButton.addEventListener('click', () => {
-    authMode = isRegister ? 'login' : 'register';
-    clearMessage();
-    updateAuthForm();
+async function openDashboard(){
+ if(!currentUser){openAuth('login');return;}
+ showView('dashboard');
+ $('welcome-title').textContent='Welcome, '+(currentUser.user_metadata?.full_name||currentUser.email||'Student')+'!';
+ try{
+  await loadUnits('dashboard-units');
+  const {data:profile}=await supabaseClient.from('profiles').select('role').eq('id',currentUser.id).maybeSingle();
+  $('admin-note').classList.toggle('hidden',profile?.role!=='admin');
+  const {data:attempts,error}=await supabaseClient.from('test_attempts')
+   .select('id,unit_id,status,total_questions,correct_answers,incorrect_answers,unanswered,score,started_at,submitted_at')
+   .eq('student_id',currentUser.id).eq('status','submitted')
+   .order('submitted_at',{ascending:false});
+  if(error) throw error;
+  const list=attempts||[];
+  $('stat-attempts').textContent=list.length;
+  $('stat-average').textContent=list.length?Math.round(list.reduce((s,a)=>s+(a.score||0),0)/list.length):'—';
+  $('stat-best').textContent=list.length?Math.max(...list.map(a=>a.score||0))+'/200':'—';
+  const {data:units}=await supabaseClient.from('units').select('id,unit_name');
+  const names=Object.fromEntries((units||[]).map(u=>[u.id,u.unit_name]));
+  $('history-list').innerHTML='';
+  if(!list.length){$('history-list').textContent='No completed tests yet. Choose a unit to begin.';}
+  list.forEach(a=>{
+   const row=document.createElement('div');row.className='history-row';
+   const name=document.createElement('strong');name.textContent=names[a.unit_id]||('Unit '+a.unit_id);
+   const score=document.createElement('strong');score.textContent=(a.score??0)+'/200';
+   const date=document.createElement('span');date.className='muted history-date';date.textContent=a.submitted_at?new Date(a.submitted_at).toLocaleString():'';
+   const review=document.createElement('button');review.className='btn';review.textContent='Review';
+   review.onclick=()=>showReview(a.id);
+   row.append(name,score,review,date);$('history-list').appendChild(row);
   });
+ }catch(e){message('Could not load dashboard: '+e.message);}
 }
-
-loginOpen.addEventListener('click', () => openAuth('login'));
-registerOpen.addEventListener('click', () => openAuth('register'));
-document.getElementById('modal-close').addEventListener('click', closeAuth);
-
-backdrop.addEventListener('click', event => {
-  if (event.target === backdrop) closeAuth();
-});
-
-document.addEventListener('keydown', event => {
-  if (event.key === 'Escape') closeAuth();
-});
-
-/* Register and login */
-authForm.addEventListener('submit', async event => {
-  event.preventDefault();
-
-  if (!supabaseClient) {
-    showMessage('Connection error. Please check the Supabase configuration.', 'error');
-    return;
-  }
-
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
-  const fullName = fullNameInput.value.trim();
-
-  authSubmit.disabled = true;
-  authSubmit.textContent = 'Please wait...';
-  clearMessage();
-
-  try {
-    if (authMode === 'register') {
-      const { data, error } = await supabaseClient.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName
-          },
-          emailRedirectTo: window.location.origin
-        }
-      });
-
-      if (error) throw error;
-
-      if (data.session) {
-        showMessage('Your account has been created. You are now logged in.', 'success');
-        updateUser(data.user);
-        setTimeout(closeAuth, 1500);
-      } else {
-        showMessage(
-          'Registration successful! Please check your email and click the verification link before logging in.',
-          'success'
-        );
-      }
-    } else {
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) throw error;
-
-      showMessage('Login successful!', 'success');
-      updateUser(data.user);
-      setTimeout(closeAuth, 1000);
-    }
-  } catch (error) {
-    showMessage(error.message || 'Something went wrong. Please try again.', 'error');
-  } finally {
-    authSubmit.disabled = false;
-    authSubmit.textContent = authMode === 'register' ? 'Create Account' : 'Login';
-  }
-});
-
-/* Show logged-in user */
-function updateUser(user) {
-  if (user) {
-    const displayName =
-      user.user_metadata?.full_name ||
-      user.email ||
-      'Student';
-
-    userLabel.textContent = displayName;
-    loginOpen.hidden = true;
-    registerOpen.hidden = true;
-    logoutButton.hidden = false;
-  } else {
-    userLabel.textContent = '';
-    loginOpen.hidden = false;
-    registerOpen.hidden = false;
-    logoutButton.hidden = true;
-  }
+async function startTest(unit){
+ if(!currentUser){openAuth('login');return;}
+ if(!confirm('Start a new 100-question test for '+unit.unit_name+'?'))return;
+ clearMessage();
+ try{
+  const {data,error}=await supabaseClient.rpc('start_unit_test',{p_unit_id:unit.id});
+  if(error)throw error;
+  currentAttempt=data;
+  currentUnit=unit;
+  const {data:questions,error:loadError}=await supabaseClient.rpc('get_test_questions',{p_attempt_id:currentAttempt});
+  if(loadError)throw loadError;
+  currentQuestions=questions||[];
+  if(!currentQuestions.length)throw new Error('No questions were returned.');
+  currentQuestion=0;
+  $('test-heading').textContent=unit.unit_name+' Mock Test';
+  $('test-unit-label').textContent=unit.unit_name;
+  renderQuestion();
+  showView('test');
+ }catch(e){message(e.message);}
 }
-
-/* Logout */
-logoutButton.addEventListener('click', async () => {
-  if (!supabaseClient) return;
-
-  const { error } = await supabaseClient.auth.signOut();
-
-  if (error) {
-    alert(error.message);
-    return;
-  }
-
-  updateUser(null);
-});
-
-/* Restore existing login session */
-async function checkSession() {
-  if (!supabaseClient) return;
-
-  const { data, error } = await supabaseClient.auth.getSession();
-
-  if (error) {
-    console.error(error.message);
-    return;
-  }
-
-  updateUser(data.session?.user || null);
+function renderQuestion(){
+ const q=currentQuestions[currentQuestion];
+ $('question-number').textContent='QUESTION '+q.question_number+' OF '+currentQuestions.length;
+ $('question-text').textContent=q.question_text;
+ $('options-list').innerHTML='';
+ ['A','B','C','D'].forEach(letter=>{
+  const value=q['option_'+letter.toLowerCase()];
+  const label=document.createElement('label');label.className='option';
+  const input=document.createElement('input');input.type='radio';input.name='answer';input.value=letter;
+  input.checked=q.selected_option===letter;
+  input.onchange=()=>saveAnswer(q.question_number,letter);
+  const text=document.createElement('span');text.textContent=letter+'. '+value;
+  label.append(input,text);$('options-list').appendChild(label);
+ });
+ $('test-progress').style.width=((currentQuestion+1)/currentQuestions.length*100)+'%';
+ $('previous-question').disabled=currentQuestion===0;
+ $('next-question').textContent=currentQuestion===currentQuestions.length-1?'Last question':'Next →';
+ $('question-grid').innerHTML='';
+ currentQuestions.forEach((item,index)=>{
+  const b=document.createElement('button');b.className='qjump'+(index===currentQuestion?' current':'')+(item.selected_option?' answered':'');
+  b.textContent=item.question_number;b.onclick=()=>{currentQuestion=index;renderQuestion();};
+  $('question-grid').appendChild(b);
+ });
 }
-
-if (supabaseClient) {
-  checkSession();
-
-  supabaseClient.auth.onAuthStateChange((_event, session) => {
-    updateUser(session?.user || null);
+async function saveAnswer(number,answer){
+ $('save-status').textContent='Saving answer...';
+ try{
+  const {error}=await supabaseClient.rpc('save_test_answer',{
+   p_attempt_id:currentAttempt,p_question_number:number,p_answer:answer
   });
+  if(error)throw error;
+  currentQuestions[currentQuestion].selected_option=answer;
+  $('save-status').textContent='Answer saved';
+  renderQuestion();
+ }catch(e){$('save-status').textContent='Save failed: '+e.message;}
 }
+$('previous-question').onclick=()=>{if(currentQuestion>0){currentQuestion--;renderQuestion();}};
+$('next-question').onclick=()=>{if(currentQuestion<currentQuestions.length-1){currentQuestion++;renderQuestion();}};
+$('exit-test').onclick=()=>{if(confirm('Exit this test? Your saved answers will remain, and the attempt will stay in progress.'))openDashboard();};
+$('submit-test').onclick=async()=>{
+ const answered=currentQuestions.filter(q=>q.selected_option).length;
+ if(!confirm('Submit your test now? You have answered '+answered+' of '+currentQuestions.length+' questions. You cannot change answers after submission.'))return;
+ $('submit-test').disabled=true;
+ try{
+  const {data,error}=await supabaseClient.rpc('submit_unit_test',{p_attempt_id:currentAttempt});
+  if(error)throw error;
+  lastResult=Array.isArray(data)?data[0]:data;
+  reviewAttemptId=currentAttempt;
+  $('result-unit').textContent=currentUnit.unit_name;
+  $('result-marks').textContent=(lastResult.marks??0)+'/200';
+  $('result-correct').textContent=lastResult.correct??0;
+  $('result-incorrect').textContent=lastResult.incorrect??0;
+  $('result-unanswered').textContent='Unanswered: '+(lastResult.unanswered??0)+' · Total questions: '+(lastResult.total??100);
+  showView('result');
+ }catch(e){message('Submission failed: '+e.message);}
+ finally{$('submit-test').disabled=false;}
+};
+async function showReview(attemptId){
+ try{
+  const {data,error}=await supabaseClient.rpc('get_test_review',{p_attempt_id:attemptId});
+  if(error)throw error;
+  $('review-list').innerHTML='';
+  (data||[]).forEach(q=>{
+   const item=document.createElement('div');item.className='review-item';
+   const title=document.createElement('strong');title.textContent='Question '+q.question_number;
+   const question=document.createElement('p');question.textContent=q.question_text;
+   item.append(title,question);
+   ['A','B','C','D'].forEach(letter=>{
+    const p=document.createElement('p');p.textContent=letter+'. '+q['option_'+letter.toLowerCase()];
+    if(letter===q.correct_option)p.className='correct';
+    else if(letter===q.selected_option)p.className='incorrect';
+    item.appendChild(p);
+   });
+   const answer=document.createElement('p');answer.innerHTML='';
+   answer.textContent='Your answer: '+(q.selected_option||'Not answered')+' · Correct answer: '+q.correct_option;
+   answer.className=q.selected_option===q.correct_option?'correct':'incorrect';
+   item.appendChild(answer);
+   if(q.explanation){const exp=document.createElement('p');exp.textContent='Explanation: '+q.explanation;item.appendChild(exp);}
+   $('review-list').appendChild(item);
+  });
+  reviewAttemptId=attemptId;showView('review');
+ }catch(e){message('Could not load review: '+e.message);}
+}
+$('review-button').onclick=()=>showReview(reviewAttemptId);
+$('result-dashboard').onclick=openDashboard;
+$('review-dashboard').onclick=openDashboard;
+$('dashboard-open').onclick=openDashboard;
+$('login-open').onclick=()=>openAuth('login');
+$('register-open').onclick=()=>openAuth('register');
+$('modal-close').onclick=closeAuth;
+$('auth-backdrop').onclick=e=>{if(e.target===$('auth-backdrop'))closeAuth();};
+$('brand-home').onclick=e=>{e.preventDefault();showView(currentUser?'dashboard':'home');if(currentUser)openDashboard();};
+$('logout-button').onclick=async()=>{
+ const {error}=await supabaseClient.auth.signOut();
+ if(error){message(error.message);return;}
+ updateUser(null);showView('home');
+};
+$('auth-form').onsubmit=async e=>{
+ e.preventDefault();
+ if(!supabaseClient){authMessage('Supabase connection is unavailable.');return;}
+ $('auth-submit').disabled=true;
+ try{
+  const email=$('email').value.trim(),password=$('password').value;
+  if(authMode==='register'){
+   const fullName=$('full-name').value.trim();
+   const {data,error}=await supabaseClient.auth.signUp({
+    email,password,options:{data:{full_name:fullName},emailRedirectTo:window.location.origin}
+   });
+   if(error)throw error;
+   if(data.session){updateUser(data.user);authMessage('Account created successfully.','success');setTimeout(()=>{closeAuth();openDashboard();},900);}
+   else authMessage('Registration successful! Please verify your email using the link sent to your inbox.','success');
+  }else{
+   const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+   if(error)throw error;
+   updateUser(data.user);authMessage('Login successful.','success');
+   setTimeout(()=>{closeAuth();openDashboard();},700);
+  }
+ }catch(error){authMessage(error.message);}
+ finally{$('auth-submit').disabled=false;}
+};
+async function initialize(){
+ if(!supabaseClient){message('Supabase configuration missing. Check supabase-config.js.');return;}
+ try{await loadUnits('public-units');}catch(e){message('Unable to load units: '+e.message);}
+ const {data,error}=await supabaseClient.auth.getSession();
+ if(error)console.error(error.message);
+ updateUser(data?.session?.user||null);
+ if(currentUser)openDashboard();
+ supabaseClient.auth.onAuthStateChange((_event,session)=>{
+  updateUser(session?.user||null);
+  if(session?.user){setTimeout(openDashboard,0);}
+  else showView('home');
+ });
+}
+initialize();
 </script>
-
 </body>
 </html>
