@@ -1560,6 +1560,44 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
  #dashboard-view .preparation-action small{font-size:.68rem;line-height:1.35}
  #dashboard-view .preparation-action .action-arrow{font-size:.9rem}
 }
+
+/* Keep the Resume Test close control compact on mobile */
+#dashboard-view #active-tests-list .expand-panel-heading{
+ display:flex!important;
+ flex-direction:row!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ gap:12px!important;
+ width:100%;
+}
+#dashboard-view #active-tests-list .expand-panel-heading>strong{
+ flex:1 1 auto;
+ width:auto!important;
+ min-width:0;
+ margin:0;
+ line-height:1.35;
+}
+#dashboard-view #active-tests-list .expand-panel-heading .expand-close{
+ display:inline-flex!important;
+ flex:0 0 auto!important;
+ width:auto!important;
+ min-width:76px;
+ max-width:max-content;
+ margin:0 0 0 auto!important;
+ padding:7px 12px!important;
+ white-space:nowrap!important;
+ text-align:center!important;
+ justify-content:center!important;
+ align-self:center!important;
+}
+@media(max-width:850px){
+ #dashboard-view #active-tests-list .expand-panel-heading button.expand-close{
+  width:auto!important;
+  min-width:76px;
+  flex:0 0 auto!important;
+  align-self:center!important;
+ }
+}
 </style>
 </head>
 
