@@ -1132,6 +1132,14 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
 }
 #test-view #tab-warning-banner.hidden{display:none!important;}
 
+.admin-control-toggle{display:flex;align-items:center;gap:10px;padding:12px;background:#fffefa;border:1px solid var(--line);border-radius:9px;margin:12px 0;font-weight:600}
+.admin-unit-controls{display:grid;gap:9px;margin-top:14px}
+.admin-unit-control{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px;background:#fffefa;border:1px solid var(--line);border-radius:9px}
+.admin-unit-control strong{display:block;color:var(--navy)}
+.admin-unit-control small{display:block;color:var(--muted)}
+.admin-unit-options{display:flex;gap:12px;flex-wrap:wrap}
+.admin-unit-options label{display:flex;align-items:center;gap:5px;font-size:.9rem}
+.admin-control-toggle input,.admin-unit-options input{accent-color:var(--navy);width:18px;height:18px}
 /* Admin student directory */
 #admin-student-search:focus{outline:3px solid #d9a34f;outline-offset:2px}
 .admin-student-empty{padding:14px;color:var(--muted)}
@@ -1303,6 +1311,12 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
     <div class="stat"><strong id="admin-active-count">—</strong><span>Tests in progress</span></div>
    </div>
    <div class="admin-subpanel"><h3>Questions by unit</h3><div id="admin-unit-counts" class="admin-unit-counts"><p class="muted">Loading...</p></div></div>
+   <div class="admin-subpanel"><h3>Test Controls</h3>
+    <p class="muted">Manage which units students can practise and which test durations are available. Existing unfinished tests remain resumable.</p>
+    <label class="admin-control-toggle"><input type="checkbox" id="admin-tests-enabled" checked> Allow students to start new tests</label>
+    <div id="admin-test-controls-status" class="muted" role="status"></div>
+    <div id="admin-unit-controls" class="admin-unit-controls"><p class="muted">Loading unit controls...</p></div>
+   </div>
    <div class="admin-subpanel"><h3>Student Management</h3><p class="muted">Search registered students and review their test activity. This section does not change student accounts.</p><input id="admin-student-search" type="search" placeholder="Search by student name..." aria-label="Search students" style="width:100%;max-width:420px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font:inherit;margin:4px 0 12px"><div id="admin-student-list" class="admin-table-wrap"><p class="muted">Loading students...</p></div></div>
   </section>
   </div>
@@ -1482,13 +1496,13 @@ function renderUnits(target,units){
  });
 }
 async function loadUnits(target){
- const {data,error}=await supabaseClient.from('units').select('id,unit_name,description').order('id');
+ const {data,error}=await supabaseClient.from('units').select('id,unit_name,description,is_enabled,allow_30_min,allow_60_min').order('id');
  if(error) throw error;
  if(target==='dashboard-units'){
-  dashboardUnitsCache=data||[];
+  dashboardUnitsCache=(data||[]).filter(unit=>unit.is_enabled!==false);
   renderUnits(target,dashboardUnitsCache);
   updateUnitSearchCount(dashboardUnitsCache.length,dashboardUnitsCache.length);
- }else renderUnits(target,data||[]);
+ }else renderUnits(target,(data||[]).filter(unit=>unit.is_enabled!==false));
  return data||[];
 }
 function updateUnitSearchCount(shown,total){
@@ -1650,6 +1664,56 @@ function renderAdminStudents(){
 }
 $('admin-student-search').addEventListener('input',renderAdminStudents);
 
+async function loadAdminTestControls(){
+ const status=$('admin-test-controls-status');
+ status.textContent='Loading settings...';
+ const [settingsResult,unitsResult]=await Promise.all([
+  supabaseClient.from('site_settings').select('tests_enabled').eq('id',1).single(),
+  supabaseClient.from('units').select('id,unit_name,is_enabled,allow_30_min,allow_60_min').order('id')
+ ]);
+ if(settingsResult.error)throw settingsResult.error;
+ if(unitsResult.error)throw unitsResult.error;
+ $('admin-tests-enabled').checked=!!settingsResult.data.tests_enabled;
+ const wrap=$('admin-unit-controls');wrap.replaceChildren();
+ (unitsResult.data||[]).forEach(unit=>{
+  const row=document.createElement('div');row.className='admin-unit-control';
+  const info=document.createElement('div');
+  const name=document.createElement('strong');name.textContent=unit.unit_name||('Unit '+unit.id);
+  const state=document.createElement('small');state.textContent=unit.is_enabled?'Available to students':'Hidden from students';
+  info.append(name,state);
+  const options=document.createElement('div');options.className='admin-unit-options';
+  const makeToggle=(label,key)=>{
+   const l=document.createElement('label'),input=document.createElement('input');
+   input.type='checkbox';input.checked=!!unit[key];input.addEventListener('change',async()=>{
+    input.disabled=true;status.textContent='Saving '+(unit.unit_name||'unit')+'...';
+    try{
+     const {error}=await supabaseClient.from('units').update({[key]:input.checked}).eq('id',unit.id);
+     if(error)throw error;
+     if(key==='is_enabled')state.textContent=input.checked?'Available to students':'Hidden from students';
+     status.textContent='Saved successfully.';
+     await loadUnits('dashboard-units');
+    }catch(e){input.checked=!input.checked;status.textContent='Could not save: '+e.message;}
+    finally{input.disabled=false;}
+   });
+   l.append(input,document.createTextNode(label));options.appendChild(l);
+  };
+  makeToggle('Enabled','is_enabled');
+  makeToggle('30 min','allow_30_min');
+  makeToggle('60 min','allow_60_min');
+  row.append(info,options);wrap.appendChild(row);
+ });
+ status.textContent='Changes are saved immediately.';
+}
+$('admin-tests-enabled').addEventListener('change',async()=>{
+ const input=$('admin-tests-enabled'),status=$('admin-test-controls-status');
+ input.disabled=true;status.textContent='Saving site setting...';
+ try{
+  const {error}=await supabaseClient.from('site_settings').update({tests_enabled:input.checked,updated_at:new Date().toISOString()}).eq('id',1);
+  if(error)throw error;
+  status.textContent=input.checked?'Students can start new tests.':'New tests are paused. Existing tests can still be resumed.';
+ }catch(e){input.checked=!input.checked;status.textContent='Could not save: '+e.message;}
+ finally{input.disabled=false;}
+});
 async function loadAdminOverview(){
  const status=$('admin-message');
  status.className='message hidden';
@@ -1697,6 +1761,7 @@ async function loadAdminOverview(){
    return {...student,total_attempts:stats.total,completed_attempts:stats.completed,average_score:stats.completed?stats.score/stats.completed:0};
   });
   renderAdminStudents();
+  await loadAdminTestControls();
  }catch(error){
   status.textContent='Unable to load admin data: '+(error.message||'Please try again.');
   status.className='message error';
@@ -1849,12 +1914,26 @@ function closeDurationModal(){
  $('duration-backdrop').setAttribute('aria-hidden','true');
  pendingTestUnit=null;
 }
-function startTest(unit){
+async function startTest(unit){
  if(!currentUser){openAuth('login');return;}
- pendingTestUnit=unit;
- $('duration-unit-name').textContent=unit.unit_name+' · 100 questions';
- $('duration-backdrop').classList.add('show');
- $('duration-backdrop').setAttribute('aria-hidden','false');
+ try{
+  const {data:settings,error}=await supabaseClient.from('site_settings').select('tests_enabled').eq('id',1).single();
+  if(error)throw error;
+  if(!settings.tests_enabled){message('New tests are temporarily paused. Please try again later.','error');return;}
+  const {data:latestUnit,error:unitError}=await supabaseClient.from('units').select('is_enabled,allow_30_min,allow_60_min').eq('id',unit.id).single();
+  if(unitError)throw unitError;
+  if(!latestUnit.is_enabled){message('This unit is currently unavailable.','error');return;}
+  document.querySelectorAll('[data-duration]').forEach(button=>{
+   const allowed=Number(button.dataset.duration)===30?latestUnit.allow_30_min:latestUnit.allow_60_min;
+   button.classList.toggle('hidden',!allowed);
+   button.disabled=!allowed;
+  });
+  if(!latestUnit.allow_30_min&&!latestUnit.allow_60_min){message('No test duration is currently available for this unit.','error');return;}
+  pendingTestUnit=unit;
+  $('duration-unit-name').textContent=unit.unit_name+' · 100 questions';
+  $('duration-backdrop').classList.add('show');
+  $('duration-backdrop').setAttribute('aria-hidden','false');
+ }catch(e){message('Could not check test settings: '+e.message);}
 }
 $('duration-close').onclick=closeDurationModal;
 $('duration-backdrop').onclick=e=>{if(e.target===$('duration-backdrop'))closeDurationModal();};
