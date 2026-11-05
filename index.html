@@ -1411,6 +1411,20 @@ header .auth-actions{margin-left:auto;min-width:0}
  header .dashboard-mobile-menu{padding:7px 9px;font-size:.78rem}
  header .user-label{max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 }
+
+/* Header: keep the first row to the brand and menu only */
+header .nav{display:flex;align-items:center;gap:12px}
+header .dashboard-mobile-menu{margin:0 0 0 auto;white-space:nowrap}
+body:has(#dashboard-view:not(.hidden)) header .auth-actions{display:none!important}
+body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:flex!important}
+.sidebar-account{display:grid;gap:4px;padding:12px 11px;margin:10px 0 16px;border:1px solid var(--line);border-radius:10px;background:#fffdf8;min-width:0}
+.sidebar-account-label{font-size:.62rem;letter-spacing:.1em;font-weight:800;color:var(--muted)}
+.sidebar-account .user-label{display:block;max-width:100%;overflow-wrap:anywhere;font-size:.86rem;color:var(--navy);font-weight:650}
+@media(max-width:650px){
+ header .nav{gap:8px;min-height:58px}
+ header .brand{flex:0 0 auto;font-size:1rem}
+ header .dashboard-mobile-menu{margin-left:auto;padding:7px 10px;font-size:.8rem}
+}
 </style>
 </head>
 
@@ -1420,7 +1434,6 @@ header .auth-actions{margin-left:auto;min-width:0}
   <a class="brand" href="#" id="brand-home"><span class="brand-mark">सं</span><span>NET Sanskrit</span></a>
   <button class="dashboard-mobile-menu" id="dashboard-mobile-menu" type="button" aria-expanded="false">☰ Menu</button>
   <div class="auth-actions">
-   <span class="user-label" id="user-label"></span>
    <button class="btn" id="login-open">Login</button>
    <button class="btn primary" id="register-open">Register</button>
    <button class="btn hidden" id="dashboard-open">Dashboard</button>
@@ -1491,6 +1504,10 @@ header .auth-actions{margin-left:auto;min-width:0}
  <section id="dashboard-view" class="hidden">
   <aside class="dashboard-sidebar" aria-label="Student navigation">
    <div class="sidebar-brand">सं NET Sanskrit</div>
+   <div class="sidebar-account" aria-label="Account details">
+    <span class="sidebar-account-label">SIGNED IN AS</span>
+    <strong id="user-label" class="user-label"></strong>
+   </div>
    <div class="sidebar-caption">STUDY</div>
    <button class="sidebar-link active" type="button" data-dashboard-target="dashboard-top"><span class="sidebar-icon">⌂</span><span class="sidebar-label">Dashboard</span></button>
    <button class="sidebar-link" type="button" data-dashboard-target="continue-panel"><span class="sidebar-icon">▶</span><span class="sidebar-label">Resume Test</span></button>
