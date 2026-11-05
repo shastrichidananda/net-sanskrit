@@ -1185,7 +1185,6 @@ async function runUnitTest(unit,durationMinutes){
   const {data:attemptInfo,error:attemptInfoError}=await supabaseClient.from('test_attempts').select('started_at').eq('id',currentAttempt).eq('student_id',currentUser.id).single();
   if(attemptInfoError)throw attemptInfoError;
   const startedAt=attemptInfo?.started_at?new Date(attemptInfo.started_at).getTime():Date.now();
-  startTestTimer(startedAt+durationMinutes*60*1000);
   const {data:questions,error:loadError}=await supabaseClient.rpc('get_test_questions',{p_attempt_id:currentAttempt});
   if(loadError)throw loadError;
   currentQuestions=questions||[];
@@ -1195,6 +1194,7 @@ async function runUnitTest(unit,durationMinutes){
   if(bookmarkError)throw bookmarkError;
   const bookmarkIds=Object.fromEntries((bookmarks||[]).map(b=>[b.question_number,b.id]));
   currentQuestions.forEach(q=>q.bookmark_id=bookmarkIds[q.question_number]||null);
+  startTestTimer(startedAt+durationMinutes*60*1000);
   currentQuestion=0;
   $('test-heading').textContent=unit.unit_name+' Mock Test';
   $('test-unit-label').textContent=unit.unit_name;
