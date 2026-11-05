@@ -1824,25 +1824,30 @@ function startTestTimer(deadline){
  if(Date.now()<testDeadline)testTimerInterval=setInterval(tick,1000);
 }
 
-document.addEventListener('visibilitychange',()=>{
+function registerTestWindowLeave(){
  if(!currentAttempt||$('test-view').classList.contains('hidden')||isSubmittingTest)return;
- if(document.visibilityState==='hidden'){
-  tabWasHiddenDuringTest=true;
-  return;
- }
- if(document.visibilityState!=='visible'||!tabWasHiddenDuringTest)return;
+ tabWasHiddenDuringTest=true;
+}
+function registerTestWindowReturn(){
+ if(!currentAttempt||$('test-view').classList.contains('hidden')||isSubmittingTest||!tabWasHiddenDuringTest)return;
  tabWasHiddenDuringTest=false;
  tabSwitchWarnings++;
  try{if(tabSwitchStorageKey)sessionStorage.setItem(tabSwitchStorageKey,String(tabSwitchWarnings));}catch(e){}
  if(tabSwitchWarnings<3){
-  $('save-status').textContent='Warning '+tabSwitchWarnings+' of 3: You switched away from the test. Please stay on this page.';
+  $('save-status').textContent='Warning '+tabSwitchWarnings+' of 3: You left or minimised the test window. Please stay on the test page.';
   $('save-status').classList.add('tab-warning');
   return;
  }
  $('save-status').textContent='Third warning: submitting your test and saving your answers...';
  $('save-status').classList.add('tab-warning');
  finishTest(true);
+}
+document.addEventListener('visibilitychange',()=>{
+ if(document.visibilityState==='hidden')registerTestWindowLeave();
+ else if(document.visibilityState==='visible')registerTestWindowReturn();
 });
+window.addEventListener('blur',registerTestWindowLeave);
+window.addEventListener('focus',registerTestWindowReturn);
 
 async function toggleCurrentBookmark(){
  const q=currentQuestions[currentQuestion];
