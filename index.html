@@ -1191,6 +1191,9 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
  #admin-student-list .admin-table tbody td:before{content:attr(data-label);display:block;flex:0 0 36%;font-weight:650;color:var(--navy);text-align:left}
  #admin-student-list .admin-table tbody td button{width:auto;max-width:60%;white-space:normal}
  #admin-student-list .admin-table tbody td[data-label="Student"]{font-weight:700;color:var(--navy)}
+ .admin-export-actions{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+ .admin-export-actions .btn,.admin-export-one{min-height:42px}
+ .admin-export-one{margin:4px 0 12px}
  #admin-student-details{min-width:0;overflow:hidden}
  #admin-student-attempts,#admin-attempt-review{width:100%;min-width:0}
  #admin-attempt-review h3{font-size:1rem;line-height:1.4}
@@ -1357,7 +1360,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
     <div id="admin-test-controls-status" class="muted" role="status"></div>
     <div id="admin-unit-controls" class="admin-unit-controls"><p class="muted">Loading unit controls...</p></div>
    </div>
-   <div class="admin-subpanel"><h3>Student Management</h3><p class="muted">Search registered students and review their test activity. This section does not change student accounts.</p><input id="admin-student-search" type="search" placeholder="Search by student name..." aria-label="Search students" style="width:100%;max-width:420px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font:inherit;margin:4px 0 12px"><div id="admin-student-list" class="admin-table-wrap"><p class="muted">Loading students...</p></div><div id="admin-student-details" class="admin-subpanel hidden"><h3 id="admin-student-details-title">Student performance</h3><div id="admin-student-attempts"></div><div id="admin-attempt-review" class="admin-attempt-review"></div></div></div>
+   <div class="admin-subpanel"><h3>Student Management</h3><p class="muted">Search registered students and review their test activity. This section does not change student accounts.</p><div class="admin-export-actions"><button class="btn" type="button" id="admin-export-students">Download student report (CSV)</button></div><input id="admin-student-search" type="search" placeholder="Search by student name..." aria-label="Search students" style="width:100%;max-width:420px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font:inherit;margin:4px 0 12px"><div id="admin-student-list" class="admin-table-wrap"><p class="muted">Loading students...</p></div><div id="admin-student-details" class="admin-subpanel hidden"><h3 id="admin-student-details-title">Student performance</h3><div id="admin-student-attempts"></div><div id="admin-attempt-review" class="admin-attempt-review"></div></div></div>
   </section>
   </div>
  </section>
@@ -1682,7 +1685,24 @@ $('toggle-test-history').onclick=()=>{
 };
 
 let adminStudentCache=[];
-function renderAdminStudents(){
+function downloadAdminCsv(filename,headers,rows){
+ const quote=value=>'"'+String(value??'').replace(/"/g,'""')+'"';
+ const csv='\\uFEFF'+[headers,...rows].map(row=>row.map(quote).join(',')).join('\\r\\n');
+ const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement('a');link.href=url;link.download=filename;document.body.appendChild(link);link.click();link.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function exportAdminStudents(){
+ const rows=adminStudentCache.map(student=>[
+  student.full_name||'Name not provided',
+  student.created_at?new Date(student.created_at).toLocaleDateString():'',
+  student.total_attempts,student.completed_attempts,
+  student.completed_attempts?Math.round(student.average_score):''
+ ]);
+ downloadAdminCsv('net-sanskrit-student-summary.csv',['Student','Registration date','Total tests','Completed tests','Average marks out of 200'],rows);
+}
+
  const list=$('admin-student-list');
  const term=($('admin-student-search')?.value||'').trim().toLocaleLowerCase();
  const filtered=adminStudentCache.filter(student=>(student.full_name||'').toLocaleLowerCase().includes(term));
@@ -1706,6 +1726,7 @@ function renderAdminStudents(){
  });
  table.appendChild(tbody);list.appendChild(table);
 }
+$('admin-export-students').addEventListener('click',exportAdminStudents);
 async function loadAdminStudentDetails(student){
  const panel=$('admin-student-details'),attemptsBox=$('admin-student-attempts'),reviewBox=$('admin-attempt-review');
  panel.classList.remove('hidden');
@@ -1737,6 +1758,11 @@ async function loadAdminStudentDetails(student){
    tr.appendChild(action);body.appendChild(tr);
   });
   table.appendChild(body);attemptsBox.replaceChildren(table);
+  const exportButton=document.createElement('button');exportButton.type='button';exportButton.className='btn admin-export-one';exportButton.textContent='Download this student’s test history (CSV)';
+  exportButton.addEventListener('click',()=>downloadAdminCsv('student-test-history.csv',['Unit','Date','Status','Marks out of 200','Correct','Incorrect','Unanswered','Duration minutes'],attempts.map(a=>[
+   names.get(String(a.unit_id))||('Unit '+a.unit_id),a.started_at?new Date(a.started_at).toLocaleString():'',a.status==='submitted'?'Completed':'In progress',a.status==='submitted'?(a.score??0):'',a.correct_answers??'',a.incorrect_answers??'',a.unanswered??'',a.duration_minutes??''
+  ])));
+  attemptsBox.prepend(exportButton);
  }catch(e){attemptsBox.textContent='Could not load student history: '+e.message;}
 }
 async function loadAdminAttemptReview(attempt){
