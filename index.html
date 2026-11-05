@@ -468,6 +468,18 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
  #dashboard-view .units{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
+
+/* Two-column study tools layout */
+.dashboard-tools-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start;margin:14px 0}
+.dashboard-tools-grid>.panel{margin:0;min-width:0;height:100%}
+.dashboard-tools-grid .section-head{display:block}
+.dashboard-tools-grid .section-head h2{line-height:1.3}
+.dashboard-tools-grid .section-head p{font-size:.82rem;line-height:1.5}
+.dashboard-tools-grid .revision-toggle{max-width:100%;white-space:normal;text-align:center}
+.dashboard-tools-grid #history-list .history-row{grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.dashboard-tools-grid #history-list .history-date{grid-column:1/-1}
+@media(max-width:850px){.dashboard-tools-grid{grid-template-columns:1fr;gap:10px}}
+
 </style>
 </head>
 
@@ -574,6 +586,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
   </div>
   <div class="section-head" id="dashboard-units-heading"><div><h2>Practice tests · Choose a unit</h2><p>Unlimited attempts · 100 questions per test</p></div></div>
   <div class="units" id="dashboard-units"></div>
+  <div class="dashboard-tools-grid">
   <div class="panel question-revision-panel" id="revision-wrong">
    <div class="section-head"><div><h2>Questions to Revisit · Incorrect Answers</h2><p>Questions you answered incorrectly in your previous tests.</p></div></div>
    <button class="btn revision-toggle" type="button" id="toggle-wrong-questions" aria-expanded="false">Show incorrectly answered questions</button>
@@ -588,6 +601,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
    <h2>My bookmarked questions</h2>
    <p class="muted">Questions you save during practice appear here for revision.</p>
    <div id="bookmark-list" class="muted">Loading bookmarks...</div>
+  </div>
   </div>
   <div class="panel performance-panel" id="dashboard-performance">
    <div class="section-head"><div><h2>Performance by unit</h2><p>Your average marks across completed tests.</p></div></div>
