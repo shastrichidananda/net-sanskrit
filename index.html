@@ -1447,6 +1447,30 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
  #dashboard-view .expand-panel-heading{align-items:flex-start}
  #dashboard-view .expand-close{font-size:.78rem;padding:6px 9px}
 }
+
+/* Study path full-width alignment and consistent expandable card behavior */
+#dashboard-view .preparation-panel{
+ display:block!important;width:100%;box-sizing:border-box;
+ padding:20px!important;margin:20px 0 24px!important;
+}
+#dashboard-view .preparation-panel>.section-head{display:block;width:100%;margin:0 0 18px!important}
+#dashboard-view .preparation-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:14px}
+#dashboard-view .preparation-action{width:100%;box-sizing:border-box;min-height:78px;padding:14px;justify-content:flex-start}
+#dashboard-view .preparation-action[aria-expanded="true"]{outline:2px solid var(--saffron);outline-offset:1px}
+#dashboard-view .dashboard-expand-panel{width:100%;box-sizing:border-box}
+#dashboard-view #active-tests-list{width:100%;box-sizing:border-box;display:grid;gap:10px}
+#dashboard-view #active-tests-list .expand-panel-heading{display:flex;align-items:center;justify-content:space-between;width:100%;gap:10px}
+@media(max-width:850px){
+ #dashboard-view .continue-panel{display:block!important;grid-template-columns:none!important;grid-template-areas:none!important}
+ #dashboard-view .preparation-panel{width:100%;padding:18px!important;margin:18px 0 24px!important}
+ #dashboard-view .preparation-actions{gap:12px}
+ #dashboard-view .preparation-action{min-height:74px;padding:12px}
+}
+@media(max-width:480px){
+ #dashboard-view .preparation-panel{padding:16px!important}
+ #dashboard-view .preparation-actions{gap:10px}
+ #dashboard-view .preparation-action{min-height:70px;padding:10px;gap:7px}
+}
 </style>
 </head>
 
@@ -2341,11 +2365,21 @@ async function openDashboard(){
   if(activeError)throw activeError;
   const activeList=$('active-tests-list');
   activeList.innerHTML='';
+  const activePanelHeading=document.createElement('div');
+  activePanelHeading.className='expand-panel-heading';
+  const activeHeading=document.createElement('strong');
+  activeHeading.textContent='Your unfinished tests';
+  const activeClose=document.createElement('button');
+  activeClose.type='button';activeClose.className='btn expand-close';activeClose.id='close-active-tests';activeClose.textContent='Close ×';
+  activeClose.onclick=()=>{
+   activeList.classList.add('hidden');
+   $('resume-tests-button').setAttribute('aria-expanded','false');
+   $('continue-panel').scrollIntoView({behavior:'smooth',block:'start'});
+  };
+  activePanelHeading.append(activeHeading,activeClose);
+  activeList.appendChild(activePanelHeading);
   if(activeAttempts?.length){
    activeList.classList.add('hidden');
-   const activeHeading=document.createElement('strong');
-   activeHeading.textContent='Resume an unfinished test';
-   activeList.appendChild(activeHeading);
    activeAttempts.forEach(attempt=>{
     const unit=(units||[]).find(u=>String(u.id)===String(attempt.unit_id));
     const button=document.createElement('button');
@@ -2356,17 +2390,22 @@ async function openDashboard(){
     activeList.appendChild(button);
    });
   }else{
-   activeList.innerHTML='<p class="muted">No unfinished tests. Start a new test whenever you are ready.</p>';
+   const empty=document.createElement('p');empty.className='muted';
+   empty.textContent='No unfinished tests. Start a new test whenever you are ready.';
+   activeList.appendChild(empty);
    activeList.classList.add('hidden');
   }
   const latest=list[0];
   $('continue-practice').onclick=()=>{
    const section=$('dashboard-units-section');
-   section.classList.remove('hidden');
-   $('continue-practice').setAttribute('aria-expanded','true');
-   $('dashboard-units-heading').scrollIntoView({behavior:'smooth',block:'start'});
-   if(dashboardUnitsCache.length===1)startTest(dashboardUnitsCache[0]);
-   else if($('dashboard-unit-search'))$('dashboard-unit-search').focus({preventScroll:true});
+   const opening=section.classList.contains('hidden');
+   section.classList.toggle('hidden',!opening);
+   $('continue-practice').setAttribute('aria-expanded',String(opening));
+   if(opening){
+    $('dashboard-units-heading').scrollIntoView({behavior:'smooth',block:'start'});
+    if(dashboardUnitsCache.length===1)startTest(dashboardUnitsCache[0]);
+    else if($('dashboard-unit-search'))$('dashboard-unit-search').focus({preventScroll:true});
+   }else $('continue-panel').scrollIntoView({behavior:'smooth',block:'start'});
   };
   $('close-dashboard-units').onclick=()=>{
    $('dashboard-units-section').classList.add('hidden');
@@ -2375,14 +2414,11 @@ async function openDashboard(){
   };
   $('resume-tests-button').onclick=()=>{
    const activeList=$('active-tests-list');
-   activeList.classList.remove('hidden');
-   $('resume-tests-button').setAttribute('aria-expanded','true');
-   activeList.scrollIntoView({behavior:'smooth',block:'nearest'});
-  };
-  $('close-active-tests').onclick=()=>{
-   $('active-tests-list').classList.add('hidden');
-   $('resume-tests-button').setAttribute('aria-expanded','false');
-   $('continue-panel').scrollIntoView({behavior:'smooth',block:'start'});
+   const opening=activeList.classList.contains('hidden');
+   activeList.classList.toggle('hidden',!opening);
+   $('resume-tests-button').setAttribute('aria-expanded',String(opening));
+   if(opening)activeList.scrollIntoView({behavior:'smooth',block:'nearest'});
+   else $('continue-panel').scrollIntoView({behavior:'smooth',block:'start'});
   };
   const performance=$('performance-list');
   performance.innerHTML='';
