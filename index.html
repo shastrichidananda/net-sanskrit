@@ -325,6 +325,57 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
 .revision-toggle{margin:4px 0 10px;min-height:44px}
 .revision-list.hidden{display:none!important}
 
+
+/* Public homepage: structured academic landing page */
+.home-hero{padding:58px 0 34px}
+.home-hero-copy{max-width:690px}
+.home-hero-copy>p{max-width:650px;font-size:1.08rem;line-height:1.75}
+.home-primary-cta{margin-top:12px;min-height:48px;padding:11px 22px}
+.home-exam-chip{min-width:215px;padding:22px}
+.home-exam-chip strong{font-family:Georgia,serif;font-size:1.45rem}
+.home-exam-chip span,.home-exam-chip small{display:block;color:var(--muted);margin-top:5px}
+.home-overview{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:10px 0 34px}
+.home-overview-item{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center}
+.home-overview-item strong{display:block;color:var(--navy);font-family:Georgia,serif;font-size:2rem;line-height:1.2}
+.home-overview-item span{display:block;color:var(--muted);font-size:.88rem;margin-top:5px}
+.home-units-section{scroll-margin-top:24px;margin:25px 0 38px}
+.home-units-section .section-head{align-items:flex-start}
+.home-units-section .section-head .eyebrow,.home-info-panel .section-head .eyebrow,.home-tools-section .section-head .eyebrow{margin-bottom:9px}
+.home-info-panel{background:var(--paper);border:1px solid var(--line);border-radius:17px;padding:25px;margin:34px 0}
+.home-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px;margin-top:18px}
+.home-step{padding:5px 4px}
+.home-step>span,.home-tool>span{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#f1e7d7;color:#8b5c20;font-weight:800;font-size:.8rem;margin-bottom:12px}
+.home-step strong,.home-tool strong{display:block;color:var(--navy)}
+.home-step p,.home-tool p{font-size:.88rem;line-height:1.6;margin:6px 0 0}
+.home-tools-section{margin:35px 0}
+.home-tools-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.home-tool{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px}
+.home-final-cta{background:var(--navy);border-radius:18px;padding:36px;text-align:center;margin:38px 0 12px}
+.home-final-cta h2{color:white;font-size:clamp(1.5rem,3vw,2.15rem);margin:12px auto 8px;max-width:650px}
+.home-final-cta p{color:#d8dfeb;max-width:610px;margin:0 auto 18px}
+.home-final-cta .eyebrow{background:#ffffff18;border-color:#ffffff30;color:#f2d6a8}
+@media(max-width:760px){
+ .home-hero{padding:38px 0 24px}
+ .home-hero .hero-row{align-items:stretch}
+ .home-exam-chip{min-width:0}
+ .home-steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+ .home-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .home-final-cta{padding:28px 20px}
+}
+@media(max-width:520px){
+ .home-overview{gap:7px;margin:8px 0 25px}
+ .home-overview-item{padding:13px 7px}
+ .home-overview-item strong{font-size:1.55rem}
+ .home-overview-item span{font-size:.72rem;line-height:1.3}
+ .home-steps,.home-tools-grid{grid-template-columns:1fr}
+ .home-info-panel{padding:17px}
+ .home-step{display:grid;grid-template-columns:36px 1fr;column-gap:10px}
+ .home-step>span{grid-row:1/3;margin:0}
+ .home-step p{grid-column:2}
+ .home-final-cta{padding:25px 16px}
+ .home-final-cta .btn{width:100%;min-height:48px}
+}
+
 </style>
 </head>
 
@@ -344,19 +395,62 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
 
 <main class="wrap">
  <section id="home-view">
-  <section class="hero">
+  <!-- 01. Hero and welcome -->
+  <section class="hero home-hero">
    <div class="hero-row">
-    <div>
-     <span class="eyebrow">Subject Code 25</span>
+    <div class="home-hero-copy">
+     <span class="eyebrow">UGC NET · Sanskrit · Subject Code 25</span>
      <h1>Prepare with purpose.</h1>
-     <p>Unit-wise mock tests for UGC NET Sanskrit Paper 2. Choose a unit and practise with randomly selected questions.</p>
+     <p>Build confidence for UGC NET Sanskrit Paper 2 with focused unit-wise mock tests, clear performance insights and a structured revision journey.</p>
+     <button class="btn primary home-primary-cta" id="home-start-practising" type="button">Start Practising <span aria-hidden="true">→</span></button>
     </div>
-    <div class="exam-chip"><strong>100 MCQs</strong><span class="muted">per test · 2 marks each</span></div>
+    <div class="exam-chip home-exam-chip"><strong>UGC NET Paper 2</strong><span>100 questions · 200 marks</span><small>Choose a 30- or 60-minute practice test</small></div>
    </div>
   </section>
-  <div class="section-head"><div><h2>Choose a unit</h2><p>Ten separate units · focused practice</p></div></div>
-  <div class="units" id="public-units"></div>
-  <aside class="notice"><strong>How practice works:</strong> Each test selects 100 random questions from the chosen unit. Your score and answer review appear after submission.</aside>
+
+  <!-- 02. Exam overview -->
+  <section class="home-overview" aria-label="Practice overview">
+   <div class="home-overview-item"><strong>10</strong><span>Subject units</span></div>
+   <div class="home-overview-item"><strong>100</strong><span>Questions per test</span></div>
+   <div class="home-overview-item"><strong>200</strong><span>Maximum marks</span></div>
+  </section>
+
+  <!-- 03. Explore units -->
+  <section class="home-units-section" id="home-unit-section">
+   <div class="section-head"><div><span class="eyebrow">Explore the syllabus</span><h2>Choose Your Sanskrit Unit</h2><p>Ten units · focused practice for every area of the syllabus.</p></div></div>
+   <div class="units" id="public-units"></div>
+  </section>
+
+  <!-- 04. How it works -->
+  <section class="home-info-panel">
+   <div class="section-head"><div><span class="eyebrow">Simple and focused</span><h2>How Practice Works</h2><p>Follow these four steps for every mock test.</p></div></div>
+   <div class="home-steps">
+    <div class="home-step"><span>01</span><strong>Select a unit</strong><p>Choose the Sanskrit subject area you want to practise.</p></div>
+    <div class="home-step"><span>02</span><strong>Set your time</strong><p>Choose a 30-minute or 60-minute test.</p></div>
+    <div class="home-step"><span>03</span><strong>Attempt 100 questions</strong><p>Answer multiple-choice questions and track your progress.</p></div>
+    <div class="home-step"><span>04</span><strong>Review your result</strong><p>Check your score and learn from your answers.</p></div>
+   </div>
+  </section>
+
+  <!-- 05. Preparation tools -->
+  <section class="home-tools-section">
+   <div class="section-head"><div><span class="eyebrow">Learn from every attempt</span><h2>Tools for Better Preparation</h2><p>Use your practice history to guide your next revision.</p></div></div>
+   <div class="home-tools-grid">
+    <article class="home-tool"><span>01</span><strong>Performance Analytics</strong><p>Track your scores and unit-wise progress.</p></article>
+    <article class="home-tool"><span>02</span><strong>Question Bookmarks</strong><p>Save important questions and revisit them later.</p></article>
+    <article class="home-tool"><span>03</span><strong>Incorrect Answer Revision</strong><p>Collect questions you answered incorrectly for focused revision.</p></article>
+    <article class="home-tool"><span>04</span><strong>Unanswered Question Revision</strong><p>Return to questions you viewed but left unanswered.</p></article>
+    <article class="home-tool"><span>05</span><strong>Test History</strong><p>Review previous attempts and monitor improvement.</p></article>
+   </div>
+  </section>
+
+  <!-- 06. Final call to action -->
+  <section class="home-final-cta">
+   <span class="eyebrow">Your preparation starts here</span>
+   <h2>Take the next step in your Sanskrit preparation.</h2>
+   <p>Choose a unit, attempt a mock test and keep improving with every practice session.</p>
+   <button class="btn gold" id="home-final-cta" type="button">Create Student Account</button>
+  </section>
  </section>
 
  <section id="dashboard-view" class="hidden">
@@ -948,6 +1042,9 @@ $('result-dashboard').onclick=openDashboard;
 };
 $('review-dashboard').onclick=openDashboard;
 $('dashboard-open').onclick=openDashboard;
+$('home-start-practising').onclick=()=>document.getElementById('home-unit-section').scrollIntoView({behavior:'smooth',block:'start'});
+$('home-final-cta').onclick=()=>openAuth('register');
+
 $('login-open').onclick=()=>openAuth('login');
 $('register-open').onclick=()=>openAuth('register');
 $('modal-close').onclick=closeAuth;
