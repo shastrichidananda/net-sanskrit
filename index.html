@@ -934,11 +934,14 @@ $('continue-practice').onclick=()=>{
 };
 function setupRevisionToggle(buttonId,listId,showLabel,hideLabel){
  const button=$(buttonId),list=$(listId);
- button.onclick=()=>{
+ button.onclick=async()=>{
   const willShow=list.classList.contains('hidden');
   list.classList.toggle('hidden',!willShow);
   button.setAttribute('aria-expanded',String(willShow));
   button.textContent=willShow?hideLabel:showLabel;
+  if(willShow&&revisionLoadedForUser!==currentUser?.id){
+   await loadDashboardQuestionRevisions();
+  }
  };
 }
 setupRevisionToggle('toggle-wrong-questions','wrong-question-list','Show incorrectly answered questions','Hide incorrectly answered questions');
