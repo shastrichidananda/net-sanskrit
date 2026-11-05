@@ -73,6 +73,8 @@ p{color:var(--muted)}
 .auth-form button{margin-top:6px}
 .auth-switch{text-align:center;font-size:.88rem}
 .auth-switch button{border:0;background:none;color:#8a5a1e;font-weight:bold}
+#forgot-password-wrap{margin:4px 0 0;text-align:right}
+#forgot-password{padding:4px 0}
 .test-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:25px 0}
 .progress{height:8px;background:#e7dfd1;border-radius:20px;overflow:hidden;margin:12px 0 22px}
 .progress div{height:100%;background:var(--saffron);width:0}
@@ -819,6 +821,12 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
    <label>Password<input id="password" type="password" required minlength="6" placeholder="Your password"></label>
    <button class="btn primary" id="auth-submit" type="submit">Login</button>
   </form>
+  <p class="auth-switch" id="forgot-password-wrap"><button type="button" id="forgot-password">Forgot password?</button></p>
+  <form class="auth-form hidden" id="recovery-form">
+   <label>New password<input id="new-password" type="password" required minlength="6" autocomplete="new-password" placeholder="Enter new password"></label>
+   <label>Confirm new password<input id="confirm-password" type="password" required minlength="6" autocomplete="new-password" placeholder="Confirm new password"></label>
+   <button class="btn primary" type="submit" id="recovery-submit">Update Password</button>
+  </form>
   <p class="auth-switch" id="auth-switch"></p>
  </section>
 </div>
@@ -857,6 +865,10 @@ function closeAuth(){ $('auth-backdrop').classList.remove('show'); }
 function openAuth(mode){
  authMode=mode;
  $('auth-form').reset();
+ $('recovery-form').reset();
+ $('auth-form').classList.remove('hidden');
+ $('recovery-form').classList.add('hidden');
+ $('forgot-password-wrap').classList.toggle('hidden',mode!=='login');
  $('auth-message').className='message hidden';
  $('auth-title').textContent=mode==='register'?'Create Student Account':'Student Login';
  $('auth-description').textContent=mode==='register'?'Register for UGC NET Sanskrit practice.':'Log in to your NET Sanskrit account.';
@@ -1424,6 +1436,31 @@ $('logout-button').onclick=async()=>{
  if(error){message(error.message);return;}
  updateUser(null);showView('home');
 };
+$('forgot-password').onclick=async()=>{
+ const email=$('email').value.trim();
+ if(!email){authMessage('Enter your email address first.');$('email').focus();return;}
+ if(!supabaseClient)return;
+ const button=$('forgot-password');button.disabled=true;
+ try{
+  const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin});
+  if(error)throw error;
+  authMessage('Password reset link sent. Check your email inbox.','success');
+ }catch(error){authMessage('Could not send reset link: '+error.message);}
+ finally{button.disabled=false;}
+};
+$('recovery-form').onsubmit=async e=>{
+ e.preventDefault();
+ const password=$('new-password').value;
+ if(password!==$('confirm-password').value){authMessage('Passwords do not match.');return;}
+ const button=$('recovery-submit');button.disabled=true;
+ try{
+  const {error}=await supabaseClient.auth.updateUser({password});
+  if(error)throw error;
+  authMessage('Password updated successfully.','success');
+  setTimeout(()=>{closeAuth();openDashboard();},900);
+ }catch(error){authMessage('Could not update password: '+error.message);}
+ finally{button.disabled=false;}
+};
 $('auth-form').onsubmit=async e=>{
  e.preventDefault();
  if(!supabaseClient){authMessage('Supabase connection is unavailable.');return;}
@@ -1454,9 +1491,19 @@ async function initialize(){
  if(error)console.error(error.message);
  updateUser(data?.session?.user||null);
  if(currentUser)openDashboard();
- supabaseClient.auth.onAuthStateChange((_event,session)=>{
+ supabaseClient.auth.onAuthStateChange((event,session)=>{
   updateUser(session?.user||null);
-  if(session?.user){setTimeout(openDashboard,0);}
+  if(event==='PASSWORD_RECOVERY'){
+   authMode='recovery';
+   $('auth-form').classList.add('hidden');
+   $('recovery-form').classList.remove('hidden');
+   $('forgot-password-wrap').classList.add('hidden');
+   $('auth-switch').classList.add('hidden');
+   $('auth-title').textContent='Reset Password';
+   $('auth-description').textContent='Choose a new password for your account.';
+   $('auth-message').className='message hidden';
+   $('auth-backdrop').classList.add('show');
+  }else if(session?.user){setTimeout(openDashboard,0);}
   else showView('home');
  });
 }
