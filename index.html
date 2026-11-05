@@ -1598,6 +1598,16 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
   align-self:center!important;
  }
 }
+
+.dashboard-quick-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px!important;margin:14px 0!important}
+.dashboard-quick-button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fffdf8;color:var(--navy);font:inherit;font-weight:650;text-align:center}
+#dashboard-bookmarks,#dashboard-history{grid-column:1/-1;min-width:0}
+#dashboard-bookmarks .expand-panel-heading,#dashboard-history .expand-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+#dashboard-bookmarks .expand-panel-heading h2,#dashboard-history .expand-panel-heading h2{margin:0;font-size:1.05rem}
+@media(max-width:650px){
+ #dashboard-view .dashboard-quick-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:10px!important}
+ #dashboard-view .dashboard-quick-button{min-height:50px;padding:9px 6px;font-size:.88rem}
+}
 </style>
 </head>
 
@@ -1742,15 +1752,17 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
     <div id="unanswered-question-list" class="revision-list hidden"><p class="muted">Your unanswered-question list is hidden.</p></div>
    </div>
   </div>
-  <div class="panel bookmarks-panel" id="dashboard-bookmarks">
-   <h2>My bookmarked questions</h2>
-   <p class="muted">Questions you save during practice appear here for revision.</p>
+  <div class="panel dashboard-quick-actions">
+   <button class="dashboard-quick-button" type="button" id="bookmarks-open-button">☆ Bookmarks</button>
+   <button class="dashboard-quick-button" type="button" id="history-open-button">◷ Test History</button>
+  </div>
+  <div class="panel bookmarks-panel hidden" id="dashboard-bookmarks">
+   <div class="expand-panel-heading"><h2>Bookmarks</h2><button class="btn expand-close" type="button" id="close-bookmarks">Close ×</button></div>
    <div id="bookmark-list" class="muted">Loading bookmarks...</div>
   </div>
-  <div class="panel" id="dashboard-history">
-   <div class="section-head"><div><h2>My test history</h2><p>Your previous submitted tests and scores.</p></div></div>
-   <button class="btn revision-toggle" type="button" id="toggle-test-history" aria-expanded="false">Show test history</button>
-   <div id="history-list" class="muted hidden">Loading your history...</div>
+  <div class="panel hidden" id="dashboard-history">
+   <div class="expand-panel-heading"><h2>Test History</h2><button class="btn expand-close" type="button" id="close-test-history">Close ×</button></div>
+   <div id="history-list" class="muted">Loading your history...</div>
   </div>
   </div>
   <div class="panel performance-panel" id="dashboard-performance">
@@ -2120,6 +2132,13 @@ function collapseDashboardSections(except=''){
  if(except!=='dashboard-units-section')$('continue-practice')?.setAttribute('aria-expanded','false');
  if(except!=='active-tests-list')$('resume-tests-button')?.setAttribute('aria-expanded','false');
 }
+function closeDashboardSections(){
+ const ids=['dashboard-units-section','active-tests-list','revision-wrong-list','revision-unanswered','wrong-question-list','unanswered-question-list','dashboard-bookmarks','dashboard-history','history-list','performance-list'];
+ ids.forEach(id=>$(id)?.classList.add('hidden'));
+ ['continue-practice','resume-tests-button','toggle-test-history','toggle-performance','toggle-wrong-questions','toggle-unanswered-questions'].forEach(id=>{
+  const b=$(id);if(b)b.setAttribute('aria-expanded','false');
+ });
+}
 function closeDashboardMenu(){
  const dashboard=$('dashboard-view');
  if(!dashboard)return;
@@ -2152,6 +2171,20 @@ $('toggle-performance').onclick=()=>{
  button.textContent=opening?'Hide unit-wise performance':'View unit-wise performance';
  button.setAttribute('aria-expanded',String(opening));
 };
+$('bookmarks-open-button').onclick=()=>{
+ const panel=$('dashboard-bookmarks'),opening=panel.classList.contains('hidden');
+ closeDashboardSections();
+ panel.classList.toggle('hidden',!opening);
+ if(opening)panel.scrollIntoView({behavior:'smooth',block:'start'});
+};
+$('history-open-button').onclick=()=>{
+ const panel=$('dashboard-history'),opening=panel.classList.contains('hidden');
+ closeDashboardSections();
+ panel.classList.toggle('hidden',!opening);
+ if(opening)panel.scrollIntoView({behavior:'smooth',block:'start'});
+};
+$('close-bookmarks').onclick=()=>{$('dashboard-bookmarks').classList.add('hidden');$('continue-panel').scrollIntoView({behavior:'smooth',block:'start'});};
+$('close-test-history').onclick=()=>{$('dashboard-history').classList.add('hidden');$('continue-panel').scrollIntoView({behavior:'smooth',block:'start'});};
 $('toggle-test-history').onclick=()=>{
  const list=$('history-list');
  const isHidden=list.classList.contains('hidden');
