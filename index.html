@@ -1179,6 +1179,18 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
  .admin-table tbody td:before{content:attr(data-label);font-weight:650;color:var(--navy);text-align:left;flex:0 0 38%}
  .admin-table tbody td button{max-width:100%;white-space:normal}
  .admin-student-actions{white-space:normal}
+ #admin-panel>.section-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px}
+ #admin-panel>.section-head>div{min-width:0}
+ #admin-panel #admin-refresh{display:inline-flex;align-items:center;justify-content:center;justify-self:end;width:auto;min-width:0;white-space:nowrap;padding:9px 13px}
+ #admin-student-list .admin-table{display:block;min-width:0;width:100%;border-collapse:separate;border-spacing:0 10px}
+ #admin-student-list .admin-table thead{display:none!important}
+ #admin-student-list .admin-table tbody{display:block;width:100%}
+ #admin-student-list .admin-table tbody tr{display:block;width:100%;margin:0 0 10px;padding:8px 12px;background:#fffefa;border:1px solid var(--line);border-radius:12px}
+ #admin-student-list .admin-table tbody td{display:flex!important;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:9px 0;border:0;border-bottom:1px solid #eee7dc;text-align:right;white-space:normal;overflow-wrap:anywhere}
+ #admin-student-list .admin-table tbody td:last-child{border-bottom:0}
+ #admin-student-list .admin-table tbody td:before{content:attr(data-label);display:block;flex:0 0 36%;font-weight:650;color:var(--navy);text-align:left}
+ #admin-student-list .admin-table tbody td button{width:auto;max-width:60%;white-space:normal}
+ #admin-student-list .admin-table tbody td[data-label="Student"]{font-weight:700;color:var(--navy)}
 }
 </style>
 </head>
