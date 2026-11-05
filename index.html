@@ -321,6 +321,10 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
 .revision-answer{font-weight:700;margin:9px 0 4px;color:var(--navy)}
 @media(max-width:650px){.question-revision-panel{padding:15px}.revision-question{padding:13px 0}}
 
+
+.revision-toggle{margin:4px 0 10px;min-height:44px}
+.revision-list.hidden{display:none!important}
+
 </style>
 </head>
 
@@ -372,11 +376,13 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
   </div>
   <div class="panel question-revision-panel">
    <div class="section-head"><div><h2>Questions to Revisit · Incorrect Answers</h2><p>Questions you answered incorrectly in your previous tests.</p></div></div>
-   <div id="wrong-question-list" class="revision-list"><p class="muted">Loading your incorrect answers...</p></div>
+   <button class="btn revision-toggle" type="button" id="toggle-wrong-questions" aria-expanded="false">Show incorrectly answered questions</button>
+   <div id="wrong-question-list" class="revision-list hidden"><p class="muted">Your incorrect-answer list is hidden.</p></div>
   </div>
   <div class="panel question-revision-panel">
    <div class="section-head"><div><h2>Seen but Not Answered</h2><p>Questions you viewed during tests but left unanswered in every attempt.</p></div></div>
-   <div id="unanswered-question-list" class="revision-list"><p class="muted">Loading your unanswered questions...</p></div>
+   <button class="btn revision-toggle" type="button" id="toggle-unanswered-questions" aria-expanded="false">Show unanswered questions</button>
+   <div id="unanswered-question-list" class="revision-list hidden"><p class="muted">Your unanswered-question list is hidden.</p></div>
   </div>
   <div class="section-head"><div><h2>Choose a unit</h2><p>Unlimited attempts · 100 questions per test</p></div></div>
   <div class="units" id="dashboard-units"></div>
@@ -527,6 +533,18 @@ async function loadUnits(target){
   $(target).appendChild(b);
  });
 }
+function setupRevisionToggle(buttonId,listId,showLabel,hideLabel){
+ const button=$(buttonId),list=$(listId);
+ button.onclick=()=>{
+  const willShow=list.classList.contains('hidden');
+  list.classList.toggle('hidden',!willShow);
+  button.setAttribute('aria-expanded',String(willShow));
+  button.textContent=willShow?hideLabel:showLabel;
+ };
+}
+setupRevisionToggle('toggle-wrong-questions','wrong-question-list','Show incorrectly answered questions','Hide incorrectly answered questions');
+setupRevisionToggle('toggle-unanswered-questions','unanswered-question-list','Show unanswered questions','Hide unanswered questions');
+
 async function loadDashboardQuestionRevisions(){
  const wrongList=$('wrong-question-list');
  const unansweredList=$('unanswered-question-list');
