@@ -2122,7 +2122,11 @@ function collapseDashboardSections(except=''){
 }
 function closeDashboardSections(except=''){
  const ids=['dashboard-units-section','active-tests-list','revision-wrong-list','revision-unanswered','wrong-question-list','unanswered-question-list','dashboard-bookmarks','dashboard-history','history-list','performance-list'];
- ids.forEach(id=>{if(id!==except)$(id)?.classList.add('hidden');});
+ ids.forEach(id=>{
+  if(id===except)return;
+  if(except==='dashboard-history'&&id==='history-list')return;
+  $(id)?.classList.add('hidden');
+ });
  const buttonState=[
   ['dashboard-units-section','continue-practice'],
   ['active-tests-list','resume-tests-button'],
