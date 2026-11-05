@@ -248,6 +248,24 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
  #review-view .review-item{padding:14px 0}
 }
 
+
+/* Unit-wise performance overview */
+.performance-panel{margin:18px 0}
+.performance-panel .section-head{margin:0 0 14px}
+.performance-list{display:grid;gap:15px}
+.performance-row{display:grid;gap:6px}
+.performance-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.performance-top strong{color:var(--navy);font-size:.95rem}
+.performance-top span{color:var(--navy);font-weight:800;font-variant-numeric:tabular-nums}
+.performance-row small{color:var(--muted);font-size:.78rem}
+.performance-track{height:9px;background:#ece5d9;border-radius:20px;overflow:hidden}
+.performance-fill{height:100%;background:var(--saffron);border-radius:20px;transition:width .25s ease}
+@media(max-width:650px){
+ .performance-panel{padding:15px}
+ .performance-panel .section-head{margin-bottom:12px}
+ .performance-top strong{font-size:.88rem}
+}
+
 </style>
 </head>
 
@@ -292,6 +310,10 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
    <div class="stat"><strong id="stat-attempts">0</strong><span>Tests attempted</span></div>
    <div class="stat"><strong id="stat-average">—</strong><span>Average marks</span></div>
    <div class="stat"><strong id="stat-best">—</strong><span>Best marks</span></div>
+  </div>
+  <div class="panel performance-panel">
+   <div class="section-head"><div><h2>Performance by unit</h2><p>Your average marks across completed tests.</p></div></div>
+   <div id="performance-list" class="performance-list"><p class="muted">Your unit-wise performance will appear here after your first test.</p></div>
   </div>
   <div class="section-head"><div><h2>Choose a unit</h2><p>Unlimited attempts · 100 questions per test</p></div></div>
   <div class="units" id="dashboard-units"></div>
@@ -453,6 +475,34 @@ async function openDashboard(){
   $('stat-best').textContent=list.length?Math.max(...list.map(a=>a.score||0))+'/200':'—';
   const {data:units}=await supabaseClient.from('units').select('id,unit_name');
   const names=Object.fromEntries((units||[]).map(u=>[u.id,u.unit_name]));
+  const performance=$('performance-list');
+  performance.innerHTML='';
+  const grouped={};
+  list.forEach(a=>{
+   const id=a.unit_id;
+   if(!grouped[id])grouped[id]={count:0,total:0,best:0};
+   grouped[id].count++;
+   grouped[id].total+=Number(a.score)||0;
+   grouped[id].best=Math.max(grouped[id].best,Number(a.score)||0);
+  });
+  const ranked=Object.entries(grouped).sort((a,b)=>(b[1].total/b[1].count)-(a[1].total/a[1].count));
+  if(!ranked.length){
+   const empty=document.createElement('p');empty.className='muted';
+   empty.textContent='Complete a mock test to see your unit-wise performance here.';
+   performance.appendChild(empty);
+  }else{
+   ranked.forEach(([id,stats])=>{
+    const average=Math.round(stats.total/stats.count);
+    const row=document.createElement('div');row.className='performance-row';
+    const top=document.createElement('div');top.className='performance-top';
+    const name=document.createElement('strong');name.textContent=names[id]||('Unit '+id);
+    const score=document.createElement('span');score.textContent=average+'/200';
+    const meta=document.createElement('small');meta.textContent=stats.count+' test'+(stats.count===1?'':'s')+' · Best '+stats.best+'/200';
+    const track=document.createElement('div');track.className='performance-track';
+    const fill=document.createElement('div');fill.className='performance-fill';fill.style.width=Math.max(0,Math.min(100,average/2))+'%';
+    top.append(name,score);track.appendChild(fill);row.append(top,meta,track);performance.appendChild(row);
+   });
+  }
   $('history-list').innerHTML='';
   if(!list.length){$('history-list').textContent='No completed tests yet. Choose a unit to begin.';}
   list.forEach(a=>{
