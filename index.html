@@ -2198,14 +2198,8 @@ $('history-open-button').onclick=()=>{
  panel.classList.toggle('hidden',!opening);
  if(opening)panel.scrollIntoView({behavior:'smooth',block:'start'});
 };
-$('toggle-test-history').onclick=()=>{
- const list=$('history-list');
- const isHidden=list.classList.contains('hidden');
- if(isHidden)collapseDashboardSections('history-list');
- list.classList.toggle('hidden',!isHidden);
- $('toggle-test-history').textContent=isHidden?'Show test history':'Hide test history';
- $('toggle-test-history').setAttribute('aria-expanded',isHidden?'false':'true');
-};
+// The old inner history toggle was removed when Test History became a single accordion panel.
+
 
 let adminStudentCache=[];
 function downloadAdminCsv(filename,headers,rows){
