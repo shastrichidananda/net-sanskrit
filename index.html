@@ -1376,6 +1376,8 @@ function message(text,type='error'){
 }
 function clearMessage(){ $('global-message').className='message hidden'; }
 function showView(name){
+ // A test timer must never continue on the result, review, dashboard or home screens.
+ if(name!=='test')stopTestTimer();
  ['home','dashboard','test','result','review'].forEach(v=>$(`${v}-view`).classList.toggle('hidden',v!==name));
  closeDashboardMenu();
  const onDashboard=name==='dashboard';
@@ -1868,7 +1870,8 @@ function renderQuestion(){
  });
  $('test-progress').style.width=((currentQuestion+1)/currentQuestions.length*100)+'%';
  $('previous-question').disabled=currentQuestion===0;
- $('next-question').textContent=currentQuestion===currentQuestions.length-1?'Last question':'Next →';
+ $('next-question').textContent='Next →';
+ $('next-question').classList.toggle('hidden',currentQuestion===currentQuestions.length-1);
  $('question-grid').innerHTML='';
  currentQuestions.forEach((item,index)=>{
   const b=document.createElement('button');b.className='qjump'+(index===currentQuestion?' current':'')+(item.selected_option?' answered':'');
