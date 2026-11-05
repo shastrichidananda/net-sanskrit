@@ -1067,6 +1067,57 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
 #test-view .qjump:hover{filter:brightness(.97)}
 #test-view .qjump:focus-visible{outline:2px solid #c38a37;outline-offset:2px}
 
+
+/* Screenshot-based refinement of result and review page spacing */
+#result-view>.hero,
+#review-view>.hero{
+  padding:28px 0 16px;
+}
+#result-view>.hero h1,
+#review-view>.hero h1{
+  font-family:var(--font-ui);
+  font-size:clamp(2rem,3.2vw,2.65rem);
+  line-height:1.18;
+  font-weight:550;
+  letter-spacing:-.02em;
+  margin:9px 0 8px;
+}
+#result-view>.hero p,
+#review-view>.hero p{
+  margin:6px 0 0;
+  font-size:.95rem;
+}
+#result-view>.stats{
+  margin:18px 0 14px;
+  gap:12px;
+}
+#result-view>.stats .stat{
+  min-height:88px;
+  padding:15px 18px;
+}
+#result-view>.panel{
+  padding:17px 19px;
+}
+#result-view>.panel p{
+  margin:0 0 12px;
+}
+#result-view>.panel .btn,
+#review-view>#review-dashboard{
+  margin:0 6px 0 0;
+}
+#review-view>#review-list{
+  margin:12px 0 14px;
+}
+@media(max-width:650px){
+  #result-view>.hero,
+  #review-view>.hero{padding:22px 0 12px}
+  #result-view>.hero h1,
+  #review-view>.hero h1{font-size:2rem}
+  #result-view>.stats{margin:13px 0 12px;gap:8px}
+  #result-view>.stats .stat{padding:12px;min-height:76px}
+  #result-view>.panel{padding:14px}
+}
+
 </style>
 </head>
 
