@@ -1350,6 +1350,39 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
  #dashboard-view .sidebar-link{min-height:37px;padding:7px 9px}
  #dashboard-view .sidebar-brand{padding:5px 9px 9px;margin-bottom:2px}
 }
+
+.preparation-panel{padding:16px!important}
+.preparation-panel>.section-head{margin:0 0 12px!important}
+.preparation-panel h2{margin:0;font-size:1.25rem!important}
+.preparation-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.preparation-action{display:flex;align-items:center;gap:10px;min-width:0;min-height:68px;padding:12px;border:1px solid var(--line);border-radius:11px;background:#fffdf8;color:var(--navy);text-align:left}
+.preparation-action.primary-action{background:var(--navy);border-color:var(--navy);color:#fff}
+.preparation-action>span:nth-child(2){display:grid;gap:3px;min-width:0}
+.preparation-action strong{font-size:.94rem}
+.preparation-action small{font-size:.73rem;opacity:.78;line-height:1.25}
+.preparation-action .action-icon{font-size:1.25rem}
+.preparation-action .action-arrow{margin-left:auto}
+.revision-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.revision-shortcut{display:grid;gap:5px;padding:12px;border:1px solid var(--line);border-radius:9px;background:#fffdf8;color:var(--navy);text-align:left}
+.revision-shortcut strong{font-size:.86rem}
+.revision-shortcut span{font-size:.74rem;color:var(--muted)}
+#revision-wrong-list{margin-top:10px}
+#dashboard-view .dashboard-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+#dashboard-bookmarks,#dashboard-history{min-width:0}
+#dashboard-performance .performance-list{margin-top:10px}
+@media(max-width:650px){
+ #dashboard-view .preparation-panel{padding:12px!important;margin:7px 0 10px!important}
+ #dashboard-view .preparation-actions{gap:7px}
+ #dashboard-view .preparation-action{min-height:62px;padding:9px;gap:7px}
+ #dashboard-view .preparation-action strong{font-size:.82rem}
+ #dashboard-view .preparation-action small{font-size:.67rem}
+ #dashboard-view .dashboard-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ #dashboard-view .dashboard-tools-grid>.panel{padding:10px;margin:7px 0}
+ #dashboard-view .revision-shortcuts{grid-template-columns:1fr;gap:6px}
+ #dashboard-view .revision-shortcut{padding:9px}
+ #dashboard-bookmarks h2,#dashboard-history h2,#dashboard-performance h2{font-size:1rem}
+ #dashboard-view .performance-panel{padding:12px}
+}
 </style>
 </head>
 
@@ -1494,7 +1527,8 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
   </div>
   <div class="panel performance-panel" id="dashboard-performance">
    <div class="section-head"><div><h2>Performance by unit</h2><p>Your average marks across completed tests.</p></div></div>
-   <div id="performance-list" class="performance-list"><p class="muted">Your unit-wise performance will appear here after your first test.</p></div>
+   <button class="btn revision-toggle" type="button" id="toggle-performance" aria-expanded="false">View unit-wise performance</button>
+   <div id="performance-list" class="performance-list hidden"><p class="muted">Your unit-wise performance will appear here after your first test.</p></div>
   </div>
   <section class="panel admin-panel hidden" id="admin-panel">
    <div class="section-head"><div><span class="eyebrow">Administration</span><h2>Admin Overview</h2><p>Read-only overview of student registrations, question banks and test activity.</p></div><button class="btn" type="button" id="admin-refresh">Refresh</button></div>
@@ -1832,6 +1866,13 @@ document.querySelectorAll('[data-dashboard-target]').forEach(button=>{
  };
 });
 $('sidebar-logout').onclick=()=>$('logout-button').click();
+$('toggle-performance').onclick=()=>{
+ const list=$('performance-list'),button=$('toggle-performance');
+ const opening=list.classList.contains('hidden');
+ list.classList.toggle('hidden',!opening);
+ button.textContent=opening?'Hide unit-wise performance':'View unit-wise performance';
+ button.setAttribute('aria-expanded',String(opening));
+};
 $('toggle-test-history').onclick=()=>{
  const list=$('history-list');
  const isHidden=list.classList.toggle('hidden');
@@ -2214,7 +2255,7 @@ async function openDashboard(){
   const activeList=$('active-tests-list');
   activeList.innerHTML='';
   if(activeAttempts?.length){
-   activeList.classList.remove('hidden');
+   activeList.classList.add('hidden');
    const activeHeading=document.createElement('strong');
    activeHeading.textContent='Resume an unfinished test';
    activeList.appendChild(activeHeading);
@@ -2227,24 +2268,21 @@ async function openDashboard(){
     button.onclick=()=>resumeUnitTest(attempt,unit||{id:attempt.unit_id,unit_name:'Unit '+attempt.unit_id});
     activeList.appendChild(button);
    });
-  }else activeList.classList.add('hidden');
-  const latest=list[0];
-  const continueTitle=$('continue-title');
-  const continueDescription=$('continue-description');
-  const continueButton=$('continue-practice');
-  if(latest){
-   const latestUnit=(units||[]).find(u=>String(u.id)===String(latest.unit_id));
-   continueTitle.textContent='Pick up with '+(latestUnit?.unit_name||('Unit '+latest.unit_id));
-   const latestDate=latest.submitted_at?new Date(latest.submitted_at).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}):'recently';
-   continueDescription.textContent='Your latest test: '+(latest.score??0)+'/200 · '+latestDate+'. Start a fresh practice test in this unit whenever you are ready.';
-   continueButton.textContent='Practice this unit →';
-   continueButton.onclick=()=>latestUnit?startTest(latestUnit):$('dashboard-units-heading').scrollIntoView({behavior:'smooth'});
   }else{
-   continueTitle.textContent='Start your preparation';
-   continueDescription.textContent='Choose any Sanskrit unit to begin your first 100-question practice test.';
-   continueButton.textContent='Explore units →';
-   continueButton.onclick=()=>$('dashboard-units-heading').scrollIntoView({behavior:'smooth'});
+   activeList.innerHTML='<p class="muted">No unfinished tests. Start a new test whenever you are ready.</p>';
+   activeList.classList.add('hidden');
   }
+  const latest=list[0];
+  $('continue-practice').onclick=()=>{
+   const section=$('dashboard-units-section');
+   section.classList.toggle('hidden');
+   if(!section.classList.contains('hidden'))$('dashboard-units-heading').scrollIntoView({behavior:'smooth',block:'start'});
+  };
+  $('resume-tests-button').onclick=()=>{
+   const activeList=$('active-tests-list');
+   activeList.classList.toggle('hidden');
+   if(!activeList.classList.contains('hidden'))activeList.scrollIntoView({behavior:'smooth',block:'nearest'});
+  };
   const performance=$('performance-list');
   performance.innerHTML='';
   const grouped={};
