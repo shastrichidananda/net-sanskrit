@@ -283,6 +283,20 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
  .saved-bookmark .btn{min-height:40px}
 }
 
+
+/* Timed mock test countdown */
+.timer-pill{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:112px;padding:7px 12px;border:1px solid var(--line);border-radius:10px;background:#f7f1e7;color:var(--navy)}
+.timer-pill span{font-size:.62rem;letter-spacing:.08em;font-weight:800;color:var(--muted)}
+.timer-pill strong{font-size:1.12rem;font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.timer-pill.timer-warning{border-color:#c85a45;background:#fff0ed;color:#9b2c24}
+.timer-pill.timer-warning span{color:#9b2c24}
+@media(max-width:650px){
+ #test-view .test-top{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center}
+ #test-view .timer-pill{grid-column:1;grid-row:2;justify-self:start;min-width:125px}
+ #test-view #exit-test{grid-column:2;grid-row:1/3;align-self:center}
+ .timer-pill strong{font-size:1.2rem}
+}
+
 </style>
 </head>
 
@@ -350,6 +364,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
  <section id="test-view" class="hidden">
   <div class="test-top">
    <div><span class="eyebrow" id="test-unit-label">Unit test</span><h2 id="test-heading">Mock Test</h2><span class="muted" id="save-status">Loading questions...</span></div>
+   <div class="timer-pill" id="test-timer" role="timer" aria-live="off"><span>TIME LEFT</span><strong id="timer-display">02:00:00</strong></div>
    <button class="btn" id="exit-test">Exit test</button>
   </div>
   <div class="progress"><div id="test-progress"></div></div>
@@ -427,6 +442,8 @@ const supabaseClient = window.supabase && window.NET_SANSKRIT_SUPABASE_URL && wi
 let currentUser=null, currentAttempt=null, currentQuestions=[], currentQuestion=0;
 let currentUnit=null, lastResult=null, reviewAttemptId=null, authMode='login';
 let seenTrackingPromise=Promise.resolve();
+let testTimerInterval=null,testDeadline=null,isSubmittingTest=false;
+const TEST_DURATION_SECONDS=120*60;
 function message(text,type='error'){
  $('global-message').textContent=text;
  $('global-message').className='message '+type;
@@ -583,6 +600,10 @@ async function startTest(unit){
   if(error)throw error;
   currentAttempt=data;
   currentUnit=unit;
+  const {data:attemptInfo,error:attemptInfoError}=await supabaseClient.from('test_attempts').select('started_at').eq('id',currentAttempt).eq('student_id',currentUser.id).single();
+  if(attemptInfoError)throw attemptInfoError;
+  const startedAt=attemptInfo?.started_at?new Date(attemptInfo.started_at).getTime():Date.now();
+  startTestTimer(startedAt+TEST_DURATION_SECONDS*1000);
   const {data:questions,error:loadError}=await supabaseClient.rpc('get_test_questions',{p_attempt_id:currentAttempt});
   if(loadError)throw loadError;
   currentQuestions=questions||[];
@@ -599,6 +620,33 @@ async function startTest(unit){
   showView('test');
  }catch(e){message(e.message);}
 }
+
+function formatTimeRemaining(seconds){
+ const hours=Math.floor(seconds/3600);
+ const minutes=Math.floor((seconds%3600)/60);
+ const secs=seconds%60;
+ return [hours,minutes,secs].map(n=>String(n).padStart(2,'0')).join(':');
+}
+function stopTestTimer(){
+ if(testTimerInterval){clearInterval(testTimerInterval);testTimerInterval=null;}
+}
+function startTestTimer(deadline){
+ stopTestTimer();
+ testDeadline=deadline;
+ const tick=()=>{
+  const remaining=Math.max(0,Math.ceil((testDeadline-Date.now())/1000));
+  $('timer-display').textContent=formatTimeRemaining(remaining);
+  $('test-timer').classList.toggle('timer-warning',remaining<=300);
+  if(remaining===0){
+   stopTestTimer();
+   $('save-status').textContent='Time is up. Submitting your test...';
+   finishTest(true);
+  }
+ };
+ tick();
+ if(Date.now()<testDeadline)testTimerInterval=setInterval(tick,1000);
+}
+
 async function toggleCurrentBookmark(){
  const q=currentQuestions[currentQuestion];
  const button=$('bookmark-current');
@@ -695,13 +743,18 @@ async function markQuestionSeen(number){
 $('previous-question').onclick=()=>{if(currentQuestion>0){currentQuestion--;renderQuestion();}};
 $('next-question').onclick=()=>{if(currentQuestion<currentQuestions.length-1){currentQuestion++;renderQuestion();}};
 $('exit-test').onclick=()=>{if(confirm('Exit this test? Your saved answers will remain, and the attempt will stay in progress.'))openDashboard();};
-$('submit-test').onclick=async()=>{
+
+async function finishTest(autoSubmit=false){
+ if(isSubmittingTest||!currentAttempt)return;
  const answered=currentQuestions.filter(q=>q.selected_option).length;
- if(!confirm('Submit your test now? You have answered '+answered+' of '+currentQuestions.length+' questions. You cannot change answers after submission.'))return;
+ if(!autoSubmit&&!confirm('Submit your test now? You have answered '+answered+' of '+currentQuestions.length+' questions. You cannot change answers after submission.'))return;
+ isSubmittingTest=true;
  $('submit-test').disabled=true;
- try{await seenTrackingPromise;
+ try{
+  await seenTrackingPromise;
   const {data,error}=await supabaseClient.rpc('submit_unit_test',{p_attempt_id:currentAttempt});
   if(error)throw error;
+  stopTestTimer();
   lastResult=Array.isArray(data)?data[0]:data;
   reviewAttemptId=currentAttempt;
   $('result-unit').textContent=currentUnit.unit_name;
@@ -709,22 +762,21 @@ $('submit-test').onclick=async()=>{
   $('result-correct').textContent=lastResult.correct??0;
   $('result-incorrect').textContent=lastResult.incorrect??0;
   $('result-unanswered').textContent='Unanswered: '+(lastResult.unanswered??0)+' · Total questions: '+(lastResult.total??100);
-  const {data:progressData,error:progressError}=await supabaseClient.rpc(
- 'get_question_bank_progress',
- {p_unit_id:currentUnit.id}
-);
-if(progressError)throw progressError;
+  const {data:progressData,error:progressError}=await supabaseClient.rpc('get_question_bank_progress',{p_unit_id:currentUnit.id});
+  if(progressError)throw progressError;
+  const progress=Array.isArray(progressData)?progressData[0]:progressData;
+  $('round-complete-panel').classList.toggle('hidden',!progress?.round_complete);
+  showView('result');
+ }catch(e){
+  message('Submission failed: '+e.message);
+  if(autoSubmit)$('save-status').textContent='Time expired. Please tap Submit test to retry.';
+ }finally{
+  isSubmittingTest=false;
+  $('submit-test').disabled=false;
+ }
+}
+$('submit-test').onclick=()=>finishTest(false);
 
-const progress=Array.isArray(progressData)?progressData[0]:progressData;
-
-$('round-complete-panel').classList.toggle(
- 'hidden',
- !progress?.round_complete
-);
-   showView('result');
- }catch(e){message('Submission failed: '+e.message);}
- finally{$('submit-test').disabled=false;}
-};
 async function showReview(attemptId){
  try{
   const {data,error}=await supabaseClient.rpc('get_test_review',{p_attempt_id:attemptId});
