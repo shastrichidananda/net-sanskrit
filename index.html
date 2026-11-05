@@ -879,7 +879,9 @@ function updateUser(user){
  $('logout-button').classList.toggle('hidden',!user);
  $('dashboard-open').classList.toggle('hidden',!user);
 }
-let dashboardUnitsCache=[];\nlet revisionLoadedForUser=null;\nlet pendingTestUnit=null;
+let dashboardUnitsCache=[];
+let revisionLoadedForUser=null;
+let pendingTestUnit=null;
 function renderUnits(target,units){
  const container=$(target);
  container.innerHTML='';
