@@ -1132,6 +1132,21 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
 }
 #test-view #tab-warning-banner.hidden{display:none!important;}
 
+/* Admin overview */
+.admin-panel{scroll-margin-top:18px}
+.admin-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:15px 0 22px}
+.admin-stats .stat{padding:15px;min-width:0}
+.admin-stats .stat strong{font-size:1.55rem}
+.admin-subpanel{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.admin-subpanel h3{margin:0 0 12px;color:var(--navy);font-size:1.05rem}
+.admin-unit-counts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.admin-unit-row{display:flex;justify-content:space-between;gap:10px;padding:11px 13px;background:#fffefa;border:1px solid var(--line);border-radius:9px}
+.admin-unit-row strong{color:var(--navy)}
+.admin-table{width:100%;border-collapse:collapse;min-width:420px}
+.admin-table th,.admin-table td{text-align:left;padding:11px;border-bottom:1px solid var(--line);font-size:.88rem}
+.admin-table th{color:var(--navy);background:#f8f3ea}
+.admin-table-wrap{overflow-x:auto}
+@media(max-width:650px){.admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-unit-counts{grid-template-columns:1fr}.admin-stats .stat{padding:12px}.admin-stats .stat strong{font-size:1.35rem}}
 </style>
 </head>
 
@@ -1212,6 +1227,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
   <aside class="dashboard-sidebar" aria-label="Student navigation">
    <div class="sidebar-brand">सं NET Sanskrit</div>
    <div class="sidebar-caption">STUDENT MENU</div>
+   <button class="sidebar-link hidden" type="button" id="admin-sidebar-link" data-dashboard-target="admin-panel"><span class="sidebar-icon">⚙</span><span class="sidebar-label">Admin Panel</span></button>
    <button class="sidebar-link active" type="button" data-dashboard-target="dashboard-top"><span class="sidebar-icon">⌂</span><span class="sidebar-label">Dashboard</span></button>
    <button class="sidebar-link" type="button" data-dashboard-target="dashboard-units-heading"><span class="sidebar-icon">▤</span><span class="sidebar-label">Practice Tests</span></button>
    <button class="sidebar-link" type="button" data-dashboard-target="revision-wrong"><span class="sidebar-icon">↻</span><span class="sidebar-label">Revision Centre</span></button>
@@ -1274,7 +1290,18 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
    <div class="section-head"><div><h2>Performance by unit</h2><p>Your average marks across completed tests.</p></div></div>
    <div id="performance-list" class="performance-list"><p class="muted">Your unit-wise performance will appear here after your first test.</p></div>
   </div>
-  <div id="admin-note" class="notice hidden"><strong>Administrator account detected.</strong> Admin question-management tools will be added in the next stage.</div>
+  <section class="panel admin-panel hidden" id="admin-panel">
+   <div class="section-head"><div><span class="eyebrow">Administration</span><h2>Admin Overview</h2><p>Read-only overview of student registrations, question banks and test activity.</p></div><button class="btn" type="button" id="admin-refresh">Refresh</button></div>
+   <div id="admin-message" class="message hidden" role="status"></div>
+   <div class="admin-stats">
+    <div class="stat"><strong id="admin-students-count">—</strong><span>Registered students</span></div>
+    <div class="stat"><strong id="admin-questions-count">—</strong><span>Total questions</span></div>
+    <div class="stat"><strong id="admin-attempts-count">—</strong><span>Total test attempts</span></div>
+    <div class="stat"><strong id="admin-active-count">—</strong><span>Tests in progress</span></div>
+   </div>
+   <div class="admin-subpanel"><h3>Questions by unit</h3><div id="admin-unit-counts" class="admin-unit-counts"><p class="muted">Loading...</p></div></div>
+   <div class="admin-subpanel"><h3>Recently registered students</h3><div id="admin-student-list" class="admin-table-wrap"><p class="muted">Loading...</p></div></div>
+  </section>
   </div>
  </section>
 
@@ -1597,6 +1624,65 @@ $('toggle-test-history').onclick=()=>{
  $('toggle-test-history').setAttribute('aria-expanded',isHidden?'false':'true');
 };
 
+async function loadAdminOverview(){
+ const status=$('admin-message');
+ status.className='message hidden';
+ $('admin-students-count').textContent='…';
+ $('admin-questions-count').textContent='…';
+ $('admin-attempts-count').textContent='…';
+ $('admin-active-count').textContent='…';
+ $('admin-unit-counts').textContent='Loading unit counts...';
+ $('admin-student-list').textContent='Loading students...';
+ try{
+  const [studentsCount,questionsCount,attemptsCount,activeCount,students,units]=await Promise.all([
+   supabaseClient.from('profiles').select('id',{count:'exact',head:true}).eq('role','student'),
+   supabaseClient.from('questions').select('id',{count:'exact',head:true}),
+   supabaseClient.from('test_attempts').select('id',{count:'exact',head:true}),
+   supabaseClient.from('test_attempts').select('id',{count:'exact',head:true}).eq('status','in_progress'),
+   supabaseClient.from('profiles').select('full_name,role,created_at').eq('role','student').order('created_at',{ascending:false}).limit(10),
+   supabaseClient.from('units').select('id,unit_name').order('id')
+  ]);
+  for(const result of [studentsCount,questionsCount,attemptsCount,activeCount,students,units])if(result.error)throw result.error;
+  $('admin-students-count').textContent=studentsCount.count??0;
+  $('admin-questions-count').textContent=questionsCount.count??0;
+  $('admin-attempts-count').textContent=attemptsCount.count??0;
+  $('admin-active-count').textContent=activeCount.count??0;
+  const unitRows=await Promise.all((units.data||[]).map(async unit=>{
+   const result=await supabaseClient.from('questions').select('id',{count:'exact',head:true}).eq('unit_id',unit.id);
+   if(result.error)throw result.error;
+   return {name:unit.unit_name||('Unit '+unit.id),count:result.count??0};
+  }));
+  const unitContainer=$('admin-unit-counts');unitContainer.replaceChildren();
+  unitRows.forEach(unit=>{
+   const row=document.createElement('div');row.className='admin-unit-row';
+   const name=document.createElement('span');name.textContent=unit.name;
+   const count=document.createElement('strong');count.textContent=unit.count;
+   row.append(name,count);unitContainer.appendChild(row);
+  });
+  const list=$('admin-student-list');
+  if(!students.data?.length){list.textContent='No student registrations yet.';}
+  else{
+   const table=document.createElement('table');table.className='admin-table';
+   const thead=document.createElement('thead');thead.innerHTML='<tr><th>Student</th><th>Registered</th></tr>';table.appendChild(thead);
+   const tbody=document.createElement('tbody');
+   students.data.forEach(student=>{
+    const tr=document.createElement('tr');const name=document.createElement('td');
+    name.textContent=student.full_name||'Name not provided';
+    const date=document.createElement('td');
+    date.textContent=student.created_at?new Date(student.created_at).toLocaleDateString():'—';
+    tr.append(name,date);tbody.appendChild(tr);
+   });
+   table.appendChild(tbody);list.replaceChildren(table);
+  }
+ }catch(error){
+  status.textContent='Unable to load admin data: '+(error.message||'Please try again.');
+  status.className='message error';
+  $('admin-unit-counts').textContent='Could not load unit counts.';
+  $('admin-student-list').textContent='Could not load student list.';
+ }
+}
+$('admin-refresh').onclick=()=>loadAdminOverview();
+
 async function openDashboard(){
  if(!currentUser){openAuth('login');return;}
  showView('dashboard');
@@ -1604,7 +1690,11 @@ async function openDashboard(){
  try{
   await loadUnits('dashboard-units');
   const {data:profile}=await supabaseClient.from('profiles').select('role').eq('id',currentUser.id).maybeSingle();
-  $('admin-note').classList.toggle('hidden',profile?.role!=='admin');
+  const isAdmin=profile?.role==='admin';
+  $('admin-note').classList.toggle('hidden',!isAdmin);
+  $('admin-sidebar-link').classList.toggle('hidden',!isAdmin);
+  $('admin-panel').classList.toggle('hidden',!isAdmin);
+  if(isAdmin)await loadAdminOverview();
   const {data:attempts,error}=await supabaseClient.from('test_attempts')
    .select('id,unit_id,status,total_questions,correct_answers,incorrect_answers,unanswered,score,started_at,submitted_at')
    .eq('student_id',currentUser.id).eq('status','submitted')
