@@ -1842,6 +1842,7 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
      <label class="profile-field">New Password<input id="profile-new-password" type="password" minlength="6" autocomplete="new-password" placeholder="At least 6 characters"></label>
      <label class="profile-field">Confirm New Password<input id="profile-confirm-password" type="password" minlength="6" autocomplete="new-password" placeholder="Re-enter password"></label>
      <div class="profile-actions"><button class="btn" type="submit" id="profile-password-save">Change Password</button><span class="muted" id="profile-password-status" role="status"></span></div>
+     <div class="profile-actions"><button class="btn" type="button" id="profile-logout">Logout</button></div>
     </form>
    </div>
   </section>
@@ -2223,6 +2224,7 @@ document.querySelectorAll('[data-dashboard-target]').forEach(button=>{
  };
 });
 $('sidebar-logout').onclick=()=>$('logout-button').click();
+$('profile-logout').onclick=()=>$('logout-button').click();
 async function loadStudentProfile(){
  if(!currentUser||!supabaseClient)return;
  const status=$('profile-status');status.textContent='Loading...';
