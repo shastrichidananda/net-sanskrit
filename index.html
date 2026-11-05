@@ -1748,6 +1748,7 @@ async function exportAdminAllAttempts(){
  finally{button.disabled=false;button.textContent=original;}
 }
 
+function renderAdminStudents(){
  const list=$('admin-student-list');
  const term=($('admin-student-search')?.value||'').trim().toLocaleLowerCase();
  const filtered=adminStudentCache.filter(student=>(student.full_name||'').toLocaleLowerCase().includes(term));
