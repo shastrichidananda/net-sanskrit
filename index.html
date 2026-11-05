@@ -1019,6 +1019,54 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
   .home-final-cta{border-radius:10px}
 }
 
+
+/* Clear question status colours in the navigator */
+#test-view .navigator-legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 14px;
+  margin:10px 0 12px;
+  color:var(--muted);
+  font-size:.76rem;
+  font-weight:400;
+}
+#test-view .navigator-legend>span{display:inline-flex;align-items:center;gap:6px}
+#test-view .legend-dot{
+  display:inline-block;
+  width:9px;height:9px;
+  border-radius:50%;
+  border:1px solid transparent;
+}
+#test-view .answered-dot{background:#dcefe2;border-color:#83b695}
+#test-view .unanswered-dot{background:#f0eee9;border-color:#d5d0c7}
+#test-view .current-dot{background:#263b59;border-color:#263b59}
+#test-view .qjump{
+  background:#f0eee9;
+  border:1px solid #d5d0c7;
+  color:#505967;
+  box-shadow:none!important;
+}
+#test-view .qjump.answered{
+  background:#dcefe2;
+  border-color:#83b695;
+  color:#245b37;
+  font-weight:500;
+}
+#test-view .qjump.current{
+  background:#263b59;
+  border:2px solid #263b59;
+  color:#fff;
+  font-weight:500;
+  box-shadow:0 0 0 2px #dce4ef!important;
+}
+#test-view .qjump.current.answered{
+  background:#263b59;
+  border-color:#263b59;
+  color:#fff;
+}
+#test-view .qjump:hover{filter:brightness(.97)}
+#test-view .qjump:focus-visible{outline:2px solid #c38a37;outline-offset:2px}
+
 </style>
 </head>
 
@@ -1184,6 +1232,11 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
   </div>
   <div class="panel">
    <strong>Question navigator</strong>
+   <div class="navigator-legend" aria-label="Question status legend">
+    <span><i class="legend-dot answered-dot"></i>Attempted</span>
+    <span><i class="legend-dot unanswered-dot"></i>Unattempted</span>
+    <span><i class="legend-dot current-dot"></i>Current</span>
+   </div>
    <div class="question-grid" id="question-grid"></div>
    <button class="btn gold" id="submit-test">Submit test</button>
   </div>
