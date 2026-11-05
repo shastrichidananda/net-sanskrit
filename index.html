@@ -201,6 +201,53 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
  #history-list .history-row .btn{min-height:38px}
 }
 
+
+/* Mock test and result screen refinements */
+#test-view .test-top{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+#test-view .test-top h2{margin:5px 0 2px;font-size:1.45rem}
+#test-view .progress{height:10px;background:#e9e1d4}
+#test-view .progress div{border-radius:20px;transition:width .2s ease}
+#test-view .question-card{box-shadow:0 5px 20px #172b4908}
+#test-view .option{transition:border-color .15s ease,background .15s ease}
+#test-view .option:hover{border-color:#d5b27d}
+#test-view .option:has(input:checked){box-shadow:inset 3px 0 0 var(--saffron)}
+#test-view .test-controls .btn{min-width:125px}
+#test-view .panel{padding:20px}
+#test-view .panel>strong{color:var(--navy)}
+#test-view #submit-test{min-height:46px;padding-left:22px;padding-right:22px}
+#test-view .qjump{font-weight:700;transition:transform .12s ease,border-color .12s ease}
+#test-view .qjump:active{transform:scale(.96)}
+#test-view .qjump.answered{background:#f2e5d0;border-color:var(--saffron);color:#684719}
+#test-view .qjump.current{background:var(--navy);border-color:var(--navy);color:#fff;box-shadow:0 2px 7px #172b4930}
+#result-view .hero{padding-bottom:18px}
+#result-view .stats .stat{min-height:112px;display:flex;flex-direction:column;justify-content:center;gap:5px}
+#result-view .stats .stat strong{font-size:clamp(1.45rem,4vw,2rem);line-height:1.2}
+#result-view .panel{padding:22px}
+#result-view #result-unanswered{font-weight:650;color:var(--navy)}
+#result-view #round-complete-panel{padding:20px}
+#result-view #round-complete-panel h2{margin-bottom:8px}
+#review-view .panel{padding:22px}
+#review-view .review-item{padding:18px 0}
+#review-view .review-item>strong{color:var(--navy)}
+#review-view .review-item p{line-height:1.6}
+#review-view .review-item p.correct{color:#27613a}
+#review-view .review-item p.incorrect{color:#a3322a}
+@media(max-width:650px){
+ #test-view .test-top{padding:13px;align-items:center}
+ #test-view .test-top h2{font-size:1.2rem}
+ #test-view .question-card{border-radius:13px}
+ #test-view .test-controls .btn{min-width:0}
+ #test-view .panel{padding:14px}
+ #test-view #submit-test{margin-top:12px}
+ #result-view .hero{padding-top:26px}
+ #result-view .stats .stat{min-height:86px}
+ #result-view .panel{padding:15px}
+ #result-view .panel .btn{display:block;width:100%;margin:8px 0;min-height:46px}
+ #result-view #round-complete-panel{padding:15px}
+ #review-view .panel{padding:15px}
+ #review-view .review-item{padding:14px 0}
+}
+
 </style>
 </head>
 
