@@ -920,6 +920,105 @@ strong,b{font-weight:600}
   #result-view .panel,#review-view .panel{padding:14px}
 }
 
+
+/* Final visual consistency pass: public landing page and shared navigation */
+header{
+  background:rgba(255,253,248,.96);
+  border-bottom:1px solid var(--line);
+  box-shadow:none;
+}
+header .nav{min-height:62px}
+.brand{font-size:1.08rem;font-weight:550;gap:10px}
+.brand-mark{box-shadow:none;border-radius:9px}
+.auth-actions{gap:8px}
+.auth-actions .btn{
+  min-height:36px;
+  padding:7px 13px;
+  font-size:.86rem;
+  font-weight:400;
+  box-shadow:none;
+}
+.user-label{font-size:.86rem;font-weight:400}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
+.home-hero{padding:46px 0 28px}
+.home-hero-copy h1{
+  font-size:clamp(2.1rem,4vw,3.1rem);
+  line-height:1.15;
+  font-weight:550;
+  letter-spacing:-.025em;
+}
+.home-hero-copy>p{font-size:1rem;line-height:1.7;color:var(--muted)}
+.home-primary-cta{min-height:42px;padding:9px 16px;font-weight:400}
+.home-exam-chip{
+  border:1px solid var(--line);
+  border-radius:12px;
+  box-shadow:none;
+  background:var(--paper);
+}
+.home-exam-chip strong{font-family:var(--font-ui);font-size:1.15rem;font-weight:500}
+.home-overview{gap:10px;margin:8px 0 28px}
+.home-overview-item{border-radius:11px;padding:15px;box-shadow:none}
+.home-overview-item strong{font-family:var(--font-ui);font-size:1.65rem;font-weight:550}
+.home-overview-item span{font-size:.82rem}
+.home-units-section{margin:22px 0 30px}
+.home-units-section .section-head h2,
+.home-info-panel .section-head h2,
+.home-tools-section .section-head h2{
+  font-size:1.45rem;
+  font-weight:500;
+  letter-spacing:0;
+}
+.home-units-section .section-head p,
+.home-info-panel .section-head p,
+.home-tools-section .section-head p{font-size:.9rem}
+#public-units{gap:10px}
+#public-units .unit{
+  border-radius:10px;
+  box-shadow:none;
+  min-height:68px;
+  padding:12px 14px;
+}
+#public-units .unit:hover{transform:none;box-shadow:none}
+#public-units .unit-info strong{font-weight:500;font-size:.95rem}
+#public-units .unit-info small{font-size:.8rem}
+.home-info-panel{
+  border-radius:12px;
+  padding:22px;
+  box-shadow:none;
+  margin:28px 0;
+}
+.home-step>span,.home-tool>span{font-weight:500;box-shadow:none}
+.home-step strong,.home-tool strong{font-weight:500}
+.home-tools-grid{gap:10px}
+.home-tool{border-radius:11px;padding:16px;box-shadow:none}
+.home-final-cta{
+  border-radius:12px;
+  padding:28px;
+  box-shadow:none;
+}
+.home-final-cta h2{font-weight:500}
+.home-final-cta .btn{font-weight:400;min-height:40px}
+@media(max-width:760px){
+  header .nav{min-height:58px}
+  .brand{font-size:1rem}
+  .auth-actions{gap:6px}
+  .auth-actions .btn{padding:7px 10px;font-size:.8rem}
+  .home-hero{padding:32px 0 22px}
+  .home-hero-copy h1{font-size:2.15rem}
+  .home-overview{margin-bottom:22px}
+  .home-info-panel{padding:17px}
+}
+@media(max-width:520px){
+  header .nav{gap:8px}
+  .brand-mark{width:34px;height:34px}
+  .user-label{max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .home-overview-item{border-radius:9px}
+  .home-units-section .section-head h2,
+  .home-info-panel .section-head h2,
+  .home-tools-section .section-head h2{font-size:1.25rem}
+  .home-final-cta{border-radius:10px}
+}
+
 </style>
 </head>
 
