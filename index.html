@@ -443,7 +443,7 @@ let currentUser=null, currentAttempt=null, currentQuestions=[], currentQuestion=
 let currentUnit=null, lastResult=null, reviewAttemptId=null, authMode='login';
 let seenTrackingPromise=Promise.resolve();
 let testTimerInterval=null,testDeadline=null,isSubmittingTest=false;
-const TEST_DURATION_SECONDS=120*60;
+const TEST_DURATION_SECONDS=30*60;
 function message(text,type='error'){
  $('global-message').textContent=text;
  $('global-message').className='message '+type;
