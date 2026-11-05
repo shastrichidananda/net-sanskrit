@@ -1323,6 +1323,33 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
  header .auth-actions .user-label{max-width:68px;flex-basis:68px}
  header .auth-actions .btn{padding:5px 6px;font-size:.68rem}
 }
+
+/* Minimal mobile-first spacing and typography */
+@media(max-width:650px){
+ main.wrap{padding-bottom:18px}
+ #dashboard-view .hero{padding:10px 0 6px}
+ #dashboard-view .hero p{margin:4px 0 7px;line-height:1.35}
+ #dashboard-view .stats{margin:8px 0 10px;gap:6px}
+ #dashboard-view .stats .stat{min-height:64px;padding:8px 7px}
+ #dashboard-view .continue-panel{margin:6px 0 9px!important;padding:11px!important}
+ #dashboard-view .section-head{margin:10px 0 7px}
+ #dashboard-view .section-head p{margin:2px 0 0;line-height:1.35}
+ #dashboard-view .unit-search-wrap{min-height:42px;margin-bottom:8px}
+ #dashboard-view .units{gap:7px}
+ #dashboard-view .unit{min-height:54px;padding:8px 10px}
+ #dashboard-view .quick-revision-links{gap:6px;margin:8px 0 10px}
+ #dashboard-view .quick-revision-link{min-height:34px;padding:6px 9px}
+ #dashboard-view .dashboard-tools-grid{gap:8px;margin:8px 0}
+ #dashboard-view .panel{margin:8px 0;padding:11px}
+ #dashboard-view .panel p{margin:4px 0 8px;line-height:1.4}
+ #dashboard-view .revision-question{padding:9px 0}
+ #dashboard-view .history-row{padding:8px 7px}
+ #dashboard-view .dashboard-mobile-menu{margin:0 0 5px;min-height:36px;padding:6px 10px}
+ #dashboard-view .dashboard-sidebar{gap:3px;padding:13px 10px}
+ #dashboard-view .sidebar-caption{padding:7px 9px 2px;margin-top:3px}
+ #dashboard-view .sidebar-link{min-height:37px;padding:7px 9px}
+ #dashboard-view .sidebar-brand{padding:5px 9px 9px;margin-bottom:2px}
+}
 </style>
 </head>
 
@@ -1402,14 +1429,17 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
  <section id="dashboard-view" class="hidden">
   <aside class="dashboard-sidebar" aria-label="Student navigation">
    <div class="sidebar-brand">सं NET Sanskrit</div>
-   <div class="sidebar-caption">STUDENT MENU</div>
-   <button class="sidebar-link hidden" type="button" id="admin-sidebar-link" data-dashboard-target="admin-panel"><span class="sidebar-icon">⚙</span><span class="sidebar-label">Admin Panel</span></button>
+   <div class="sidebar-caption">STUDY</div>
    <button class="sidebar-link active" type="button" data-dashboard-target="dashboard-top"><span class="sidebar-icon">⌂</span><span class="sidebar-label">Dashboard</span></button>
+   <button class="sidebar-link" type="button" data-dashboard-target="continue-panel"><span class="sidebar-icon">▶</span><span class="sidebar-label">Resume Test</span></button>
    <button class="sidebar-link" type="button" data-dashboard-target="dashboard-units-heading"><span class="sidebar-icon">▤</span><span class="sidebar-label">Practice Tests</span></button>
-   <button class="sidebar-link" type="button" data-dashboard-target="revision-wrong"><span class="sidebar-icon">↻</span><span class="sidebar-label">Revision Centre</span></button>
+   <button class="sidebar-link" type="button" data-dashboard-target="revision-wrong"><span class="sidebar-icon">↻</span><span class="sidebar-label">Incorrect Answers</span></button>
+   <button class="sidebar-link" type="button" data-dashboard-target="revision-unanswered"><span class="sidebar-icon">○</span><span class="sidebar-label">Unanswered Questions</span></button>
    <button class="sidebar-link" type="button" data-dashboard-target="dashboard-bookmarks"><span class="sidebar-icon">☆</span><span class="sidebar-label">Bookmarks</span></button>
+   <div class="sidebar-caption">MY PROGRESS</div>
    <button class="sidebar-link" type="button" data-dashboard-target="dashboard-performance"><span class="sidebar-icon">▥</span><span class="sidebar-label">Performance</span></button>
    <button class="sidebar-link" type="button" data-dashboard-target="dashboard-history"><span class="sidebar-icon">◷</span><span class="sidebar-label">Test History</span></button>
+   <button class="sidebar-link hidden" type="button" id="admin-sidebar-link" data-dashboard-target="admin-panel"><span class="sidebar-icon">⚙</span><span class="sidebar-label">Admin Panel</span></button>
    <div class="sidebar-spacer"></div>
    <button class="sidebar-link" type="button" id="sidebar-logout"><span class="sidebar-icon">↪</span><span class="sidebar-label">Logout</span></button>
    <button class="sidebar-collapse" type="button" id="sidebar-collapse"><span class="sidebar-icon">⇤</span><span class="sidebar-label">Collapse menu</span></button>
@@ -1446,7 +1476,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
    <button class="btn revision-toggle" type="button" id="toggle-wrong-questions" aria-expanded="false">Show incorrectly answered questions</button>
    <div id="wrong-question-list" class="revision-list hidden"><p class="muted">Your incorrect-answer list is hidden.</p></div>
   </div>
-  <div class="panel question-revision-panel">
+  <div class="panel question-revision-panel" id="revision-unanswered">
    <div class="section-head"><div><h2>Seen but Not Answered</h2><p>Questions you viewed during tests but left unanswered in every attempt.</p></div></div>
    <button class="btn revision-toggle" type="button" id="toggle-unanswered-questions" aria-expanded="false">Show unanswered questions</button>
    <div id="unanswered-question-list" class="revision-list hidden"><p class="muted">Your unanswered-question list is hidden.</p></div>
