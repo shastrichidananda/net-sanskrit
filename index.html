@@ -1370,6 +1370,7 @@ let currentUnit=null, lastResult=null, reviewAttemptId=null, authMode='login';
 let seenTrackingPromise=Promise.resolve();
 let answerSaveQueue=Promise.resolve();
 let testTimerInterval=null,testDeadline=null,isSubmittingTest=false;
+let tabSwitchWarnings=0,tabWasHiddenDuringTest=false;
 function message(text,type='error'){
  $('global-message').textContent=text;
  $('global-message').className='message '+type;
@@ -1741,6 +1742,8 @@ document.querySelectorAll('[data-duration]').forEach(button=>{
  };
 });
 async function loadAttemptIntoTest(attempt,unit){
+ tabSwitchWarnings=0;
+ tabWasHiddenDuringTest=false;
  currentAttempt=attempt.id;
  currentUnit=unit;
  const {data:questions,error:loadError}=await supabaseClient.rpc('get_test_questions',{p_attempt_id:currentAttempt});
@@ -1808,6 +1811,23 @@ function startTestTimer(deadline){
  tick();
  if(Date.now()<testDeadline)testTimerInterval=setInterval(tick,1000);
 }
+
+document.addEventListener('visibilitychange',()=>{
+ if(!currentAttempt||$('test-view').classList.contains('hidden')||isSubmittingTest)return;
+ if(document.visibilityState==='hidden'){
+  tabWasHiddenDuringTest=true;
+  return;
+ }
+ if(document.visibilityState!=='visible'||!tabWasHiddenDuringTest)return;
+ tabWasHiddenDuringTest=false;
+ tabSwitchWarnings++;
+ if(tabSwitchWarnings<3){
+  alert('Warning '+tabSwitchWarnings+' of 3: You have switched away from the mock test. Please remain on the test page. After the third warning, your test will be submitted automatically.');
+  return;
+ }
+ alert('Third warning: Your test will now be submitted automatically. All answers saved so far will be included.');
+ finishTest(true);
+});
 
 async function toggleCurrentBookmark(){
  const q=currentQuestions[currentQuestion];
