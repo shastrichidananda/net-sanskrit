@@ -820,6 +820,106 @@ strong,b{font-weight:600}
   #dashboard-view .dashboard-tools-grid>.panel{border-radius:12px}
 }
 
+
+/* Minimal mock-test, result and answer-review presentation */
+#test-view .test-top{
+  border-radius:10px;
+  background:var(--paper);
+  box-shadow:none;
+  padding:12px 16px;
+}
+#test-view .test-top h2{font-size:1.2rem;font-weight:500}
+#test-view .progress{height:6px;border-radius:8px}
+#test-view .question-card{
+  border-radius:10px;
+  box-shadow:none;
+  padding:20px;
+}
+#test-view .question-number{
+  color:#78664e;
+  font-size:.78rem;
+  font-weight:500;
+}
+#test-view .question-text{
+  font-size:1.08rem;
+  font-weight:450;
+  line-height:1.65;
+  margin:12px 0 16px;
+}
+#test-view .bookmark-button{
+  min-height:36px;
+  padding:6px 10px;
+  margin:0 0 12px;
+  background:transparent;
+  border-color:var(--line);
+  color:#66583f;
+}
+#test-view .option{
+  border-radius:7px;
+  padding:11px 13px;
+  margin:7px 0;
+  box-shadow:none!important;
+  background:#fff;
+}
+#test-view .option:has(input:checked){background:#f8f2e8;border-color:#c9a46e}
+#test-view .test-controls{margin-top:12px}
+#test-view .test-controls .btn{
+  min-height:40px;
+  min-width:110px;
+  font-weight:400;
+}
+#test-view .panel{border-radius:10px;box-shadow:none;padding:15px}
+#test-view .panel>strong{font-size:.95rem;font-weight:500}
+#test-view .qjump{font-size:.76rem;font-weight:400}
+#test-view .qjump.current{background:#e9dfcf;color:var(--navy);border-color:#c9a46e}
+#test-view #submit-test{
+  min-height:39px;
+  font-weight:400;
+  background:#263b59;
+}
+#result-view .hero h1,#review-view .hero h1{font-weight:550}
+#result-view .stats .stat{
+  min-height:90px;
+  border-radius:10px;
+  box-shadow:none;
+}
+#result-view .stats .stat strong{
+  font-size:clamp(1.35rem,3vw,1.75rem);
+  font-weight:550;
+}
+#result-view .stats .stat span{font-size:.86rem}
+#result-view .panel,#review-view .panel{
+  border-radius:10px;
+  box-shadow:none;
+  padding:18px;
+}
+#result-view #result-unanswered{font-weight:400;color:var(--ink)}
+#result-view .panel .btn,#review-dashboard{
+  min-height:40px;
+  font-weight:400;
+}
+#result-view #round-complete-panel{border-radius:10px}
+#result-view #round-complete-panel h2{font-weight:500}
+#review-view .review-item{padding:15px 0}
+#review-view .review-item>strong{font-weight:500}
+#review-view .review-item p{line-height:1.65}
+#review-view .review-item p.correct,
+#review-view .review-item p.incorrect{font-weight:400}
+@media(min-width:900px) and (min-height:650px){
+  #test-view .test-top{margin:6px 0 8px;padding:10px 14px}
+  #test-view .question-card{padding:18px}
+  #test-view .question-text{font-size:1.05rem;margin:9px 0 12px}
+  #test-view .option{padding:9px 12px;margin:6px 0}
+  #test-view .panel{padding:12px}
+}
+@media(max-width:650px){
+  #test-view .question-card{padding:15px}
+  #test-view .option{padding:12px;min-height:48px}
+  #test-view .test-controls .btn{min-height:42px}
+  #result-view .stats .stat{min-height:78px}
+  #result-view .panel,#review-view .panel{padding:14px}
+}
+
 </style>
 </head>
 
