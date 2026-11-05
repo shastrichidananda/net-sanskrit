@@ -1725,13 +1725,12 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
     <button class="preparation-action" id="resume-tests-button" type="button"><span class="action-icon">↻</span><span><strong>Resume Test</strong><small>Continue an unfinished test</small></span><span class="action-arrow">→</span></button>
    </div>
    <div id="active-tests-list" class="active-tests-list hidden">
-    <div class="expand-panel-heading"><strong>Your unfinished tests</strong><button class="btn expand-close" id="close-active-tests" type="button">Close ×</button></div>
+    <div class="expand-panel-heading"><strong>Your unfinished tests</strong></div>
    </div>
   </section>
   <div id="dashboard-units-section" class="dashboard-expand-panel hidden">
    <div class="expand-panel-heading">
     <div class="section-head" id="dashboard-units-heading"><div><h2>Choose a unit</h2><p>10 Sanskrit units · 100 questions per test</p></div></div>
-    <button class="btn expand-close" id="close-dashboard-units" type="button">Close ×</button>
    </div>
    <label class="unit-search-wrap" for="dashboard-unit-search"><span aria-hidden="true">⌕</span><input id="dashboard-unit-search" type="search" placeholder="Search Sanskrit units…" autocomplete="off"><span class="unit-search-count" id="unit-search-count">10 units</span></label>
    <div class="units" id="dashboard-units"></div>
@@ -1757,11 +1756,11 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
    <button class="dashboard-quick-button" type="button" id="history-open-button">◷ Test History</button>
   </div>
   <div class="panel bookmarks-panel hidden" id="dashboard-bookmarks">
-   <div class="expand-panel-heading"><h2>Bookmarks</h2><button class="btn expand-close" type="button" id="close-bookmarks">Close ×</button></div>
+   <div class="expand-panel-heading"><h2>Bookmarks</h2></div>
    <div id="bookmark-list" class="muted">Loading bookmarks...</div>
   </div>
   <div class="panel hidden" id="dashboard-history">
-   <div class="expand-panel-heading"><h2>Test History</h2><button class="btn expand-close" type="button" id="close-test-history">Close ×</button></div>
+   <div class="expand-panel-heading"><h2>Test History</h2></div>
    <div id="history-list" class="muted">Loading your history...</div>
   </div>
   </div>
@@ -2002,7 +2001,7 @@ if(dashboardUnitSearch){
 $('continue-practice').onclick=()=>{
  const section=$('dashboard-units-section');
  const opening=section.classList.contains('hidden');
- collapseDashboardSections(opening?'dashboard-units-section':'');
+ closeDashboardSections(opening?'dashboard-units-section':'');
  section.classList.toggle('hidden',!opening);
  $('continue-practice').setAttribute('aria-expanded',String(opening));
  if(opening){
@@ -2173,18 +2172,16 @@ $('toggle-performance').onclick=()=>{
 };
 $('bookmarks-open-button').onclick=()=>{
  const panel=$('dashboard-bookmarks'),opening=panel.classList.contains('hidden');
- closeDashboardSections();
+ closeDashboardSections(opening?'dashboard-bookmarks':'');
  panel.classList.toggle('hidden',!opening);
  if(opening)panel.scrollIntoView({behavior:'smooth',block:'start'});
 };
 $('history-open-button').onclick=()=>{
  const panel=$('dashboard-history'),opening=panel.classList.contains('hidden');
- closeDashboardSections();
+ closeDashboardSections(opening?'dashboard-history':'');
  panel.classList.toggle('hidden',!opening);
  if(opening)panel.scrollIntoView({behavior:'smooth',block:'start'});
 };
-$('close-bookmarks').onclick=()=>{$('dashboard-bookmarks').classList.add('hidden');$('continue-panel').scrollIntoView({behavior:'smooth',block:'start'});};
-$('close-test-history').onclick=()=>{$('dashboard-history').classList.add('hidden');$('continue-panel').scrollIntoView({behavior:'smooth',block:'start'});};
 $('toggle-test-history').onclick=()=>{
  const list=$('history-list');
  const isHidden=list.classList.contains('hidden');
@@ -2572,14 +2569,7 @@ async function openDashboard(){
   activePanelHeading.className='expand-panel-heading';
   const activeHeading=document.createElement('strong');
   activeHeading.textContent='Your unfinished tests';
-  const activeClose=document.createElement('button');
-  activeClose.type='button';activeClose.className='btn expand-close';activeClose.id='close-active-tests';activeClose.textContent='Close ×';
-  activeClose.onclick=()=>{
-   activeList.classList.add('hidden');
-   $('resume-tests-button').setAttribute('aria-expanded','false');
-   $('continue-panel').scrollIntoView({behavior:'smooth',block:'start'});
-  };
-  activePanelHeading.append(activeHeading,activeClose);
+  activePanelHeading.appendChild(activeHeading);
   activeList.appendChild(activePanelHeading);
   if(activeAttempts?.length){
    activeList.classList.add('hidden');
@@ -2610,15 +2600,10 @@ async function openDashboard(){
     else if($('dashboard-unit-search'))$('dashboard-unit-search').focus({preventScroll:true});
    }else $('continue-panel').scrollIntoView({behavior:'smooth',block:'start'});
   };
-  $('close-dashboard-units').onclick=()=>{
-   $('dashboard-units-section').classList.add('hidden');
-   $('continue-practice').setAttribute('aria-expanded','false');
-   $('continue-panel').scrollIntoView({behavior:'smooth',block:'start'});
-  };
   $('resume-tests-button').onclick=()=>{
    const activeList=$('active-tests-list');
    const opening=activeList.classList.contains('hidden');
-   if(opening)collapseDashboardSections('active-tests-list');
+   closeDashboardSections(opening?'active-tests-list':'');
    activeList.classList.toggle('hidden',!opening);
    $('resume-tests-button').setAttribute('aria-expanded',String(opening));
    if(opening)activeList.scrollIntoView({behavior:'smooth',block:'nearest'});
