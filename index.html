@@ -2131,11 +2131,27 @@ function collapseDashboardSections(except=''){
  if(except!=='dashboard-units-section')$('continue-practice')?.setAttribute('aria-expanded','false');
  if(except!=='active-tests-list')$('resume-tests-button')?.setAttribute('aria-expanded','false');
 }
-function closeDashboardSections(){
+function closeDashboardSections(except=''){
  const ids=['dashboard-units-section','active-tests-list','revision-wrong-list','revision-unanswered','wrong-question-list','unanswered-question-list','dashboard-bookmarks','dashboard-history','history-list','performance-list'];
- ids.forEach(id=>$(id)?.classList.add('hidden'));
- ['continue-practice','resume-tests-button','toggle-test-history','toggle-performance','toggle-wrong-questions','toggle-unanswered-questions'].forEach(id=>{
-  const b=$(id);if(b)b.setAttribute('aria-expanded','false');
+ ids.forEach(id=>{if(id!==except)$(id)?.classList.add('hidden');});
+ const buttonState=[
+  ['dashboard-units-section','continue-practice'],
+  ['active-tests-list','resume-tests-button'],
+  ['history-list','toggle-test-history'],
+  ['performance-list','toggle-performance'],
+  ['wrong-question-list','toggle-wrong-questions'],
+  ['unanswered-question-list','toggle-unanswered-questions']
+ ];
+ buttonState.forEach(([panelId,buttonId])=>{
+  if(panelId===except)return;
+  const b=$(buttonId);
+  if(b){
+   b.setAttribute('aria-expanded','false');
+   if(buttonId==='toggle-test-history')b.textContent='Show test history';
+   if(buttonId==='toggle-performance')b.textContent='View unit-wise performance';
+   if(buttonId==='toggle-wrong-questions')b.textContent='Show incorrectly answered questions';
+   if(buttonId==='toggle-unanswered-questions')b.textContent='Show unanswered questions';
+  }
  });
 }
 function closeDashboardMenu(){
