@@ -1119,15 +1119,18 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
 }
 
 
-#test-view #save-status.tab-warning{
- display:inline-block;
- margin-top:5px;
- padding:5px 9px;
- border-radius:6px;
+#test-view #tab-warning-banner{
+ display:block;
+ margin-top:9px;
+ padding:10px 12px;
+ border:1px solid #e7c98f;
+ border-radius:8px;
  background:#fff1d9;
- color:#85520b;
- font-weight:500;
+ color:#75480a;
+ font-weight:650;
+ line-height:1.45;
 }
+#test-view #tab-warning-banner.hidden{display:none!important;}
 
 </style>
 </head>
@@ -1277,7 +1280,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
 
  <section id="test-view" class="hidden">
   <div class="test-top">
-   <div><span class="eyebrow" id="test-unit-label">Unit test</span><h2 id="test-heading">Mock Test</h2><span class="muted" id="save-status">Loading questions...</span></div>
+   <div><span class="eyebrow" id="test-unit-label">Unit test</span><h2 id="test-heading">Mock Test</h2><span class="muted" id="save-status">Loading questions...</span><div id="tab-warning-banner" class="hidden" role="alert" aria-live="assertive"></div></div>
    <div class="timer-pill" id="test-timer" role="timer" aria-live="off"><span>TIME LEFT</span><strong id="timer-display">02:00:00</strong></div>
    <button class="btn" id="exit-test">Exit test</button>
   </div>
@@ -1833,13 +1836,13 @@ function registerTestWindowReturn(){
  tabWasHiddenDuringTest=false;
  tabSwitchWarnings++;
  try{if(tabSwitchStorageKey)sessionStorage.setItem(tabSwitchStorageKey,String(tabSwitchWarnings));}catch(e){}
+ const warningBanner=$('tab-warning-banner');
+ warningBanner.classList.remove('hidden');
  if(tabSwitchWarnings<3){
-  $('save-status').textContent='Warning '+tabSwitchWarnings+' of 3: You left or minimised the test window. Please stay on the test page.';
-  $('save-status').classList.add('tab-warning');
+  warningBanner.textContent='Warning '+tabSwitchWarnings+' of 3: You left or minimised the test window. Please stay on the test page.';
   return;
  }
- $('save-status').textContent='Third warning: submitting your test and saving your answers...';
- $('save-status').classList.add('tab-warning');
+ warningBanner.textContent='Third warning: your test is being submitted automatically.';
  finishTest(true);
 }
 document.addEventListener('visibilitychange',()=>{
