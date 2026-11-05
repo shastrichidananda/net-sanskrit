@@ -306,6 +306,21 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
 #review-view .review-item:last-child{border-bottom:0}
 @media(max-width:600px){.review-filters{display:grid;grid-template-columns:1fr 1fr}.review-filters .btn{width:100%;padding:10px 8px}}
 
+
+/* Dashboard revision lists */
+.question-revision-panel{margin:18px 0}
+.revision-list{display:grid;gap:14px}
+.revision-count{font-size:.82rem;color:var(--muted);font-weight:700;margin:0}
+.revision-question{padding:15px 0;border-bottom:1px solid var(--line)}
+.revision-question:last-child{border-bottom:0}
+.revision-question>strong{display:block;color:var(--navy);font-size:.9rem;margin-bottom:7px}
+.revision-question-text{white-space:pre-wrap;line-height:1.65;margin:7px 0 10px}
+.revision-option{padding:5px 9px;margin:3px 0;border-radius:7px;line-height:1.5}
+.revision-option.correct{color:#27613a;background:#edf7ef;font-weight:700}
+.revision-option.incorrect{color:#a3322a;background:#fff0ed;font-weight:700}
+.revision-answer{font-weight:700;margin:9px 0 4px;color:var(--navy)}
+@media(max-width:650px){.question-revision-panel{padding:15px}.revision-question{padding:13px 0}}
+
 </style>
 </head>
 
@@ -354,6 +369,14 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
   <div class="panel performance-panel">
    <div class="section-head"><div><h2>Performance by unit</h2><p>Your average marks across completed tests.</p></div></div>
    <div id="performance-list" class="performance-list"><p class="muted">Your unit-wise performance will appear here after your first test.</p></div>
+  </div>
+  <div class="panel question-revision-panel">
+   <div class="section-head"><div><h2>Questions to Revisit · Incorrect Answers</h2><p>Questions you answered incorrectly in your previous tests.</p></div></div>
+   <div id="wrong-question-list" class="revision-list"><p class="muted">Loading your incorrect answers...</p></div>
+  </div>
+  <div class="panel question-revision-panel">
+   <div class="section-head"><div><h2>Seen but Not Answered</h2><p>Questions you viewed during tests but left unanswered in every attempt.</p></div></div>
+   <div id="unanswered-question-list" class="revision-list"><p class="muted">Loading your unanswered questions...</p></div>
   </div>
   <div class="section-head"><div><h2>Choose a unit</h2><p>Unlimited attempts · 100 questions per test</p></div></div>
   <div class="units" id="dashboard-units"></div>
@@ -416,12 +439,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
 
  <section id="review-view" class="hidden">
   <div class="hero"><span class="eyebrow">Answer review</span><h1>Review your answers</h1><p>Compare your answers with the correct options and explanations.</p></div>
-  <div class="review-filters" id="review-filters">
-   <button class="btn primary" type="button" data-review-filter="all">All questions</button>
-   <button class="btn" type="button" data-review-filter="unanswered">Unanswered</button>
-   <button class="btn" type="button" data-review-filter="wrong">Wrong answers</button>
-  </div>
-  <p class="muted" id="review-count" aria-live="polite"></p>
   <div class="panel" id="review-list">Loading review...</div>
   <button class="btn primary" id="review-dashboard">Back to dashboard</button>
  </section>
@@ -510,12 +527,93 @@ async function loadUnits(target){
   $(target).appendChild(b);
  });
 }
+async function loadDashboardQuestionRevisions(){
+ const wrongList=$('wrong-question-list');
+ const unansweredList=$('unanswered-question-list');
+ wrongList.textContent='Loading your incorrect answers...';
+ unansweredList.textContent='Loading your unanswered questions...';
+ try{
+  const [wrongResult,seenResult,answeredResult]=await Promise.all([
+   supabaseClient.from('attempt_questions')
+    .select('question_id,selected_option,test_attempts!inner(student_id,status,unit_id),questions!inner(id,question_text,option_a,option_b,option_c,option_d,correct_option,explanation)')
+    .eq('test_attempts.student_id',currentUser.id)
+    .eq('test_attempts.status','submitted')
+    .not('selected_option','is',null),
+   supabaseClient.from('student_seen_questions')
+    .select('unit_id,question_id,questions!inner(id,question_text,option_a,option_b,option_c,option_d,correct_option,explanation)')
+    .eq('student_id',currentUser.id),
+   supabaseClient.from('attempt_questions')
+    .select('question_id,test_attempts!inner(student_id)')
+    .eq('test_attempts.student_id',currentUser.id)
+    .not('selected_option','is',null)
+  ]);
+  if(wrongResult.error)throw wrongResult.error;
+  if(seenResult.error)throw seenResult.error;
+  if(answeredResult.error)throw answeredResult.error;
+  const unitsResult=await supabaseClient.from('units').select('id,unit_name');
+  if(unitsResult.error)throw unitsResult.error;
+  const unitNames=Object.fromEntries((unitsResult.data||[]).map(u=>[String(u.id),u.unit_name]));
+  const wrongByQuestion=new Map();
+  (wrongResult.data||[]).forEach(row=>{
+   const q=row.questions;
+   if(!q||row.selected_option===q.correct_option)return;
+   const key=String(row.question_id);
+   if(!wrongByQuestion.has(key))wrongByQuestion.set(key,{
+    ...q,selected_option:row.selected_option,unit_id:row.test_attempts?.unit_id
+   });
+  });
+  const answeredIds=new Set((answeredResult.data||[]).map(row=>String(row.question_id)));
+  const seenByQuestion=new Map();
+  (seenResult.data||[]).forEach(row=>{
+   const key=String(row.question_id);
+   if(answeredIds.has(key)||seenByQuestion.has(key)||!row.questions)return;
+   seenByQuestion.set(key,{...row.questions,unit_id:row.unit_id});
+  });
+  const renderList=(target,items,kind)=>{
+   target.innerHTML='';
+   if(!items.length){
+    const empty=document.createElement('p');empty.className='muted';
+    empty.textContent=kind==='wrong'?'No incorrectly answered questions found.':'No seen-but-unanswered questions found.';
+    target.appendChild(empty);return;
+   }
+   const count=document.createElement('p');count.className='revision-count';
+   count.textContent=items.length+' unique question'+(items.length===1?'':'s');
+   target.appendChild(count);
+   items.forEach(q=>{
+    const card=document.createElement('article');card.className='revision-question';
+    const heading=document.createElement('strong');
+    heading.textContent=(unitNames[String(q.unit_id)]||('Unit '+q.unit_id))+' · Question ID '+q.id;
+    const question=document.createElement('p');question.className='revision-question-text';question.textContent=q.question_text||'';
+    card.append(heading,question);
+    ['A','B','C','D'].forEach(letter=>{
+     const option=document.createElement('p');option.className='revision-option';
+     option.textContent=letter+'. '+(q['option_'+letter.toLowerCase()]||'');
+     if(letter===q.correct_option)option.classList.add('correct');
+     else if(kind==='wrong'&&letter===q.selected_option)option.classList.add('incorrect');
+     card.appendChild(option);
+    });
+    const answer=document.createElement('p');answer.className='revision-answer';
+    answer.textContent=kind==='wrong'?'Your answer: '+q.selected_option+' · Correct answer: '+q.correct_option:'Correct answer: '+q.correct_option;
+    card.appendChild(answer);
+    if(q.explanation){const explanation=document.createElement('p');explanation.className='muted';explanation.textContent='Explanation: '+q.explanation;card.appendChild(explanation);}
+    target.appendChild(card);
+   });
+  };
+  renderList(wrongList,[...wrongByQuestion.values()],'wrong');
+  renderList(unansweredList,[...seenByQuestion.values()],'unanswered');
+ }catch(e){
+  wrongList.textContent='Could not load revision questions: '+e.message;
+  unansweredList.textContent='Could not load revision questions: '+e.message;
+ }
+}
+
 async function openDashboard(){
  if(!currentUser){openAuth('login');return;}
  showView('dashboard');
  $('welcome-title').textContent='Welcome, '+(currentUser.user_metadata?.full_name||currentUser.email||'Student')+'!';
  try{
   await loadUnits('dashboard-units');
+  await loadDashboardQuestionRevisions();
   const {data:profile}=await supabaseClient.from('profiles').select('role').eq('id',currentUser.id).maybeSingle();
   $('admin-note').classList.toggle('hidden',profile?.role!=='admin');
   const {data:attempts,error}=await supabaseClient.from('test_attempts')
@@ -798,67 +896,33 @@ async function finishTest(autoSubmit=false){
 }
 $('submit-test').onclick=()=>finishTest(false);
 
-let reviewQuestions=[],activeReviewFilter='all';
-function renderReviewList(){
- const filtered=reviewQuestions.filter(q=>{
-  if(activeReviewFilter==='unanswered')return !q.selected_option;
-  if(activeReviewFilter==='wrong')return !!q.selected_option&&q.selected_option!==q.correct_option;
-  return true;
- });
- $('review-count').textContent=filtered.length+' question'+(filtered.length===1?'':'s')+
-  (activeReviewFilter==='unanswered'?' not answered':
-   activeReviewFilter==='wrong'?' answered incorrectly':' in this review');
- $('review-list').innerHTML='';
- if(!filtered.length){
-  const empty=document.createElement('p');
-  empty.className='muted';
-  empty.textContent=activeReviewFilter==='unanswered'?'Excellent! You did not leave any questions unanswered.':
-   activeReviewFilter==='wrong'?'Excellent! There are no incorrect answers in this test.':'No questions are available for review.';
-  $('review-list').appendChild(empty);
-  return;
- }
- filtered.forEach(q=>{
-  const item=document.createElement('article');item.className='review-item';
-  const title=document.createElement('strong');title.textContent='Question '+q.question_number+
-   (!q.selected_option?' · Unanswered':q.selected_option!==q.correct_option?' · Incorrect':' · Correct');
-  const question=document.createElement('p');question.textContent=q.question_text||'';
-  item.append(title,question);
-  ['A','B','C','D'].forEach(letter=>{
-   const p=document.createElement('p');
-   p.textContent=letter+'. '+(q['option_'+letter.toLowerCase()]||'');
-   if(letter===q.correct_option)p.className='correct';
-   else if(letter===q.selected_option&&q.selected_option!==q.correct_option)p.className='incorrect';
-   item.appendChild(p);
-  });
-  const answer=document.createElement('p');
-  answer.textContent='Your answer: '+(q.selected_option||'Not answered')+' · Correct answer: '+(q.correct_option||'Not available');
-  answer.className=q.selected_option===q.correct_option?'correct':'incorrect';
-  item.appendChild(answer);
-  if(q.explanation){const exp=document.createElement('p');exp.textContent='Explanation: '+q.explanation;item.appendChild(exp);}
-  $('review-list').appendChild(item);
- });
-}
 async function showReview(attemptId){
  try{
-  $('review-list').textContent='Loading review...';
   const {data,error}=await supabaseClient.rpc('get_test_review',{p_attempt_id:attemptId});
   if(error)throw error;
-  reviewQuestions=data||[];
-  activeReviewFilter='all';
-  document.querySelectorAll('[data-review-filter]').forEach(button=>{
-   button.classList.toggle('primary',button.dataset.reviewFilter==='all');
+  $('review-list').innerHTML='';
+  (data||[]).filter(q=>q.selected_option).forEach(q=>{
+   const item=document.createElement('div');item.className='review-item';
+   const title=document.createElement('strong');title.textContent='Question '+q.question_number;
+   const question=document.createElement('p');question.textContent=q.question_text;
+   item.append(title,question);
+   ['A','B','C','D'].forEach(letter=>{
+    const p=document.createElement('p');p.textContent=letter+'. '+q['option_'+letter.toLowerCase()];
+    if(letter===q.correct_option)p.className='correct';
+    else if(letter===q.selected_option)p.className='incorrect';
+    item.appendChild(p);
+   });
+   const answer=document.createElement('p');
+   answer.textContent='Your answer: '+q.selected_option+' · Correct answer: '+q.correct_option;
+   answer.className=q.selected_option===q.correct_option?'correct':'incorrect';
+   item.appendChild(answer);
+   if(q.explanation){const exp=document.createElement('p');exp.textContent='Explanation: '+q.explanation;item.appendChild(exp);}
+   $('review-list').appendChild(item);
   });
-  renderReviewList();
   reviewAttemptId=attemptId;showView('review');
  }catch(e){message('Could not load review: '+e.message);}
 }
-document.querySelectorAll('[data-review-filter]').forEach(button=>{
- button.addEventListener('click',()=>{
-  activeReviewFilter=button.dataset.reviewFilter;
-  document.querySelectorAll('[data-review-filter]').forEach(b=>b.classList.toggle('primary',b===button));
-  renderReviewList();
- });
-});
+
 $('review-button').onclick=()=>showReview(reviewAttemptId);
 $('result-dashboard').onclick=openDashboard;
   $('restart-question-bank').onclick=async()=>{
