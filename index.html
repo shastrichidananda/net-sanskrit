@@ -1390,6 +1390,16 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
  #dashboard-view .revision-shortcut strong{font-size:.75rem;line-height:1.25}
  #dashboard-view .revision-shortcut span{font-size:.66rem;line-height:1.25}
 }
+
+#revision-wrong{grid-column:1/-1}
+#revision-wrong .revision-shortcuts{margin-bottom:10px}
+#revision-wrong .revision-shortcut[aria-pressed="true"]{border-color:var(--saffron);background:#f7efdf}
+#revision-wrong .revision-toggle{margin-top:3px}
+@media(max-width:650px){
+ #dashboard-view .dashboard-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #revision-wrong{grid-column:1/-1}
+ #revision-wrong .revision-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 </style>
 </head>
 
@@ -1517,15 +1527,14 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
     <button type="button" class="revision-shortcut" data-revision-open="wrong"><strong>Incorrect Answers</strong><span>Review mistakes →</span></button>
     <button type="button" class="revision-shortcut" data-revision-open="unanswered"><strong>Seen, Not Answered</strong><span>Review missed questions →</span></button>
    </div>
-   <div id="revision-wrong-list" class="hidden">
+   <div id="revision-wrong-list" class="revision-tab-content hidden">
     <button class="btn revision-toggle" type="button" id="toggle-wrong-questions" aria-expanded="false">Show incorrectly answered questions</button>
     <div id="wrong-question-list" class="revision-list hidden"><p class="muted">Your incorrect-answer list is hidden.</p></div>
    </div>
-  </div>
-  <div class="panel question-revision-panel" id="revision-unanswered">
-   <div class="section-head"><div><h2>Seen but Not Answered</h2><p>Questions you viewed during tests but left unanswered in every attempt.</p></div></div>
-   <button class="btn revision-toggle" type="button" id="toggle-unanswered-questions" aria-expanded="false">Show unanswered questions</button>
-   <div id="unanswered-question-list" class="revision-list hidden"><p class="muted">Your unanswered-question list is hidden.</p></div>
+   <div id="revision-unanswered" class="revision-tab-content hidden">
+    <button class="btn revision-toggle" type="button" id="toggle-unanswered-questions" aria-expanded="false">Show unanswered questions</button>
+    <div id="unanswered-question-list" class="revision-list hidden"><p class="muted">Your unanswered-question list is hidden.</p></div>
+   </div>
   </div>
   <div class="panel bookmarks-panel" id="dashboard-bookmarks">
    <h2>My bookmarked questions</h2>
@@ -1780,15 +1789,12 @@ $('continue-practice').onclick=()=>{
 };
 document.querySelectorAll('[data-revision-open]').forEach(button=>{
  button.onclick=()=>{
-  if(button.dataset.revisionOpen==='wrong'){
-   $('revision-wrong-list').classList.remove('hidden');
-   const toggle=$('toggle-wrong-questions');
-   if($('wrong-question-list').classList.contains('hidden'))toggle.click();
-  }else{
-   const toggle=$('toggle-unanswered-questions');
-   if($('unanswered-question-list').classList.contains('hidden'))toggle.click();
-   $('revision-unanswered').scrollIntoView({behavior:'smooth',block:'start'});
-  }
+  const wrong=button.dataset.revisionOpen==='wrong';
+  $('revision-wrong-list').classList.toggle('hidden',!wrong);
+  $('revision-unanswered').classList.toggle('hidden',wrong);
+  const target=wrong?'wrong-question-list':'unanswered-question-list';
+  const toggle=$(wrong?'toggle-wrong-questions':'toggle-unanswered-questions');
+  if($(target).classList.contains('hidden'))toggle.click();
  };
 });
 function setupRevisionToggle(buttonId,listId,showLabel,hideLabel){
