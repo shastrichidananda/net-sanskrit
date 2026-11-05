@@ -1728,7 +1728,7 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
   </div>
   <div class="dashboard-tools-grid">
   <div class="panel question-revision-panel" id="revision-wrong">
-   <div class="section-head"><div><h2>Questions to Revisit</h2><p>Incorrect answers and questions left unanswered.</p></div></div>
+   <div class="section-head"><div><h2>Questions to Revisit</h2></div></div>
    <div class="revision-shortcuts">
     <button type="button" class="revision-shortcut" data-revision-open="wrong"><strong>Incorrect Answers</strong><span>Review mistakes →</span></button>
     <button type="button" class="revision-shortcut" data-revision-open="unanswered"><strong>Seen, Not Answered</strong><span>Review missed questions →</span></button>
@@ -2002,10 +2002,15 @@ $('continue-practice').onclick=()=>{
 document.querySelectorAll('[data-revision-open]').forEach(button=>{
  button.onclick=()=>{
   const wrong=button.dataset.revisionOpen==='wrong';
-  collapseDashboardSections(wrong?'revision-wrong-list':'revision-unanswered');
+  collapseDashboardSections('revision-wrong');
   $('revision-wrong-list').classList.toggle('hidden',!wrong);
   $('revision-unanswered').classList.toggle('hidden',wrong);
   const target=wrong?'wrong-question-list':'unanswered-question-list';
+  const sibling=wrong?'unanswered-question-list':'wrong-question-list';
+  const siblingButton=$(wrong?'toggle-unanswered-questions':'toggle-wrong-questions');
+  $(sibling).classList.add('hidden');
+  siblingButton.setAttribute('aria-expanded','false');
+  siblingButton.textContent=wrong?'Show unanswered questions':'Show incorrectly answered questions';
   const toggle=$(wrong?'toggle-wrong-questions':'toggle-unanswered-questions');
   if($(target).classList.contains('hidden'))toggle.click();
  };
@@ -2014,7 +2019,13 @@ function setupRevisionToggle(buttonId,listId,showLabel,hideLabel){
  const button=$(buttonId),list=$(listId);
  button.onclick=async()=>{
   const willShow=list.classList.contains('hidden');
-  if(willShow)collapseDashboardSections(listId);
+  if(willShow){
+   const otherList=listId==='wrong-question-list'?'unanswered-question-list':'wrong-question-list';
+   const otherButton=listId==='wrong-question-list'?'toggle-unanswered-questions':'toggle-wrong-questions';
+   $(otherList).classList.add('hidden');
+   $(otherButton).setAttribute('aria-expanded','false');
+   $(otherButton).textContent=listId==='wrong-question-list'?'Show unanswered questions':'Show incorrectly answered questions';
+  }
   list.classList.toggle('hidden',!willShow);
   button.setAttribute('aria-expanded',String(willShow));
   button.textContent=willShow?hideLabel:showLabel;
@@ -2092,10 +2103,6 @@ function collapseDashboardSections(except=''){
  const sections=[
   {id:'dashboard-units-section',button:'continue-practice'},
   {id:'active-tests-list',button:'resume-tests-button'},
-  {id:'revision-wrong-list',button:null},
-  {id:'revision-unanswered',button:null},
-  {id:'wrong-question-list',button:'toggle-wrong-questions'},
-  {id:'unanswered-question-list',button:'toggle-unanswered-questions'},
   {id:'history-list',button:'toggle-test-history'},
   {id:'performance-list',button:'toggle-performance'}
  ];
@@ -2103,19 +2110,15 @@ function collapseDashboardSections(except=''){
   if(section.id===except)return;
   const panel=$(section.id);
   if(panel)panel.classList.add('hidden');
-  if(section.button){
-   const button=$(section.button);
-   if(button){
-    button.setAttribute('aria-expanded','false');
-    if(section.button==='toggle-test-history')button.textContent='Show test history';
-    if(section.button==='toggle-performance')button.textContent='View unit-wise performance';
-    if(section.button==='toggle-wrong-questions')button.textContent='Show incorrectly answered questions';
-    if(section.button==='toggle-unanswered-questions')button.textContent='Show unanswered questions';
-   }
+  const button=section.button?$(section.button):null;
+  if(button){
+   button.setAttribute('aria-expanded','false');
+   if(section.button==='toggle-test-history')button.textContent='Show test history';
+   if(section.button==='toggle-performance')button.textContent='View unit-wise performance';
   }
  });
- $('continue-practice')?.setAttribute('aria-expanded','false');
- $('resume-tests-button')?.setAttribute('aria-expanded','false');
+ if(except!=='dashboard-units-section')$('continue-practice')?.setAttribute('aria-expanded','false');
+ if(except!=='active-tests-list')$('resume-tests-button')?.setAttribute('aria-expanded','false');
 }
 function closeDashboardMenu(){
  const dashboard=$('dashboard-view');
