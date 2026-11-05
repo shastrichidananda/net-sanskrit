@@ -769,6 +769,57 @@ strong,b{font-weight:600}
   #dashboard-view .active-tests-list button{width:100%;text-align:left;white-space:normal}
 }
 
+
+/* Consistent dashboard sections, unit cards and study tools */
+@media(min-width:851px){
+  #dashboard-view .units{gap:12px}
+  #dashboard-view .units .unit{
+    min-height:74px;
+    padding:13px 15px;
+    border-radius:11px;
+    box-shadow:none;
+    transform:none;
+  }
+  #dashboard-view .unit:hover{transform:none;box-shadow:none}
+  #dashboard-view .unit-info strong{font-size:.96rem;font-weight:500}
+  #dashboard-view .unit-info small{font-size:.8rem}
+  #dashboard-view .quick-revision-links{gap:8px;margin:13px 0 18px}
+  #dashboard-view .quick-revision-link{
+    border-radius:7px;
+    background:transparent;
+    font-weight:400;
+    min-height:35px;
+    padding:7px 11px;
+  }
+  #dashboard-view .dashboard-tools-grid{gap:14px;margin:16px 0}
+  #dashboard-view .dashboard-tools-grid>.panel{
+    padding:18px;
+    border-radius:12px;
+    min-height:170px;
+  }
+  #dashboard-view .dashboard-tools-grid .section-head{margin:0 0 12px}
+  #dashboard-view .dashboard-tools-grid .section-head h2{font-size:1.08rem;font-weight:500}
+  #dashboard-view .dashboard-tools-grid .section-head p{margin:5px 0 0;line-height:1.5}
+  #dashboard-view .revision-toggle{
+    border-color:#d8d0c3;
+    background:#fffdf8;
+    color:#39485a;
+    font-weight:400;
+    min-height:38px;
+  }
+  #dashboard-view .performance-panel{
+    padding:18px;
+    border-radius:12px;
+    margin:16px 0;
+  }
+  #dashboard-view .performance-panel .section-head h2{font-size:1.15rem;font-weight:500}
+}
+@media(max-width:850px){
+  #dashboard-view .units .unit{box-shadow:none}
+  #dashboard-view .quick-revision-link{font-weight:400}
+  #dashboard-view .dashboard-tools-grid>.panel{border-radius:12px}
+}
+
 </style>
 </head>
 
