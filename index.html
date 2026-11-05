@@ -376,6 +376,61 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
  .home-final-cta .btn{width:100%;min-height:48px}
 }
 
+
+/* Minimalist student workspace and responsive navigation */
+#dashboard-view{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:start;width:min(1320px,calc(100% - 40px))}
+#dashboard-view.hidden{display:none!important}
+.dashboard-sidebar{position:sticky;top:18px;align-self:start;background:var(--paper);border:1px solid var(--line);border-radius:15px;padding:13px 10px;min-height:calc(100vh - 110px);display:flex;flex-direction:column;gap:8px;transition:width .2s ease}
+.sidebar-brand{font-family:Georgia,serif;color:var(--navy);font-weight:700;font-size:1rem;padding:8px 10px 13px;border-bottom:1px solid var(--line);margin-bottom:5px}
+.sidebar-caption{font-size:.66rem;letter-spacing:.09em;color:var(--muted);font-weight:800;padding:7px 10px 2px}
+.sidebar-link,.sidebar-collapse{display:flex;align-items:center;gap:11px;width:100%;border:0;background:transparent;color:#536074;border-radius:9px;padding:10px 11px;text-align:left;font-size:.86rem;font-weight:650;min-height:40px}
+.sidebar-link:hover,.sidebar-link.active{background:#f2eadc;color:var(--navy)}
+.sidebar-icon{width:19px;flex:0 0 19px;text-align:center;font-size:1rem;color:#8a642f}
+.sidebar-spacer{flex:1}
+.sidebar-collapse{border-top:1px solid var(--line);border-radius:0;padding-top:13px}
+.dashboard-content{min-width:0;padding-bottom:25px}
+#dashboard-view .hero{padding:22px 0 12px}
+#dashboard-view .hero h1{font-size:clamp(1.9rem,3vw,2.65rem);margin:10px 0 6px}
+#dashboard-view .stats{gap:10px;margin:12px 0 17px}
+#dashboard-view .stats .stat{min-height:82px;padding:13px 15px}
+#dashboard-view .stats .stat strong{font-size:1.55rem}
+#dashboard-view .panel{padding:17px;margin:13px 0}
+#dashboard-view .panel>h2,#dashboard-view .panel h2{font-size:1.2rem}
+#dashboard-view .section-head{margin:15px 0 10px}
+#dashboard-view .units{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#dashboard-view .unit{min-height:68px;padding:12px}
+#dashboard-view .unit-num{width:36px;height:36px;flex-basis:36px}
+#dashboard-view .revision-toggle{min-height:38px;padding:7px 12px;font-size:.84rem}
+#dashboard-view .saved-bookmark{padding:10px 0}
+#dashboard-view .performance-list{gap:11px}
+#dashboard-view .history-row{padding:11px 10px}
+.dashboard-mobile-menu{display:none;align-items:center;gap:8px;border:1px solid var(--line);background:var(--paper);color:var(--navy);border-radius:9px;padding:8px 12px;font-size:.85rem;font-weight:700;margin:4px 0 7px}
+@media(max-width:850px){
+ #dashboard-view{grid-template-columns:1fr;gap:0;width:min(100% - 28px,680px)}
+ #dashboard-view .dashboard-sidebar{position:fixed;z-index:50;left:0;top:0;bottom:0;width:min(285px,82vw);min-height:100dvh;border-radius:0 16px 16px 0;padding:17px 12px;transform:translateX(-105%);transition:transform .22s ease;box-shadow:12px 0 35px #172b4920}
+ #dashboard-view.sidebar-open .dashboard-sidebar{transform:translateX(0)}
+ #dashboard-view .sidebar-overlay{display:block;position:fixed;inset:0;background:#172b4966;z-index:49;opacity:0;pointer-events:none;transition:opacity .2s ease}
+ #dashboard-view.sidebar-open .sidebar-overlay{opacity:1;pointer-events:auto}
+ #dashboard-view .sidebar-collapse{display:none}
+ #dashboard-view .dashboard-content{padding-bottom:20px}
+ .dashboard-mobile-menu{display:inline-flex}
+}
+@media(max-width:650px){
+ #dashboard-view .hero{padding:13px 0 8px}
+ #dashboard-view .hero h1{font-size:1.85rem}
+ #dashboard-view .stats{gap:7px;margin:9px 0 13px}
+ #dashboard-view .stats .stat{min-height:70px;padding:10px 8px}
+ #dashboard-view .stats .stat strong{font-size:1.2rem}
+ #dashboard-view .stats .stat span{font-size:.68rem}
+ #dashboard-view .units{grid-template-columns:1fr;gap:8px}
+ #dashboard-view .unit{min-height:61px;padding:10px 12px}
+ #dashboard-view .panel{padding:13px;margin:10px 0}
+ #dashboard-view .panel>h2,#dashboard-view .panel h2{font-size:1.08rem}
+ #dashboard-view .section-head{margin:10px 0 8px}
+ #dashboard-view .revision-toggle{width:auto;min-height:38px}
+}
+@media(prefers-reduced-motion:reduce){.dashboard-sidebar,.sidebar-overlay{transition:none!important}}
+
 </style>
 </head>
 
@@ -454,7 +509,23 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
  </section>
 
  <section id="dashboard-view" class="hidden">
-  <div class="hero">
+  <aside class="dashboard-sidebar" aria-label="Student navigation">
+   <div class="sidebar-brand">सं NET Sanskrit</div>
+   <div class="sidebar-caption">STUDENT MENU</div>
+   <button class="sidebar-link active" type="button" data-dashboard-target="dashboard-top"><span class="sidebar-icon">⌂</span><span class="sidebar-label">Dashboard</span></button>
+   <button class="sidebar-link" type="button" data-dashboard-target="dashboard-units-heading"><span class="sidebar-icon">▤</span><span class="sidebar-label">Practice Tests</span></button>
+   <button class="sidebar-link" type="button" data-dashboard-target="revision-wrong"><span class="sidebar-icon">↻</span><span class="sidebar-label">Revision Centre</span></button>
+   <button class="sidebar-link" type="button" data-dashboard-target="dashboard-bookmarks"><span class="sidebar-icon">☆</span><span class="sidebar-label">Bookmarks</span></button>
+   <button class="sidebar-link" type="button" data-dashboard-target="dashboard-performance"><span class="sidebar-icon">▥</span><span class="sidebar-label">Performance</span></button>
+   <button class="sidebar-link" type="button" data-dashboard-target="dashboard-history"><span class="sidebar-icon">◷</span><span class="sidebar-label">Test History</span></button>
+   <div class="sidebar-spacer"></div>
+   <button class="sidebar-link" type="button" id="sidebar-logout"><span class="sidebar-icon">↪</span><span class="sidebar-label">Logout</span></button>
+   <button class="sidebar-collapse" type="button" id="sidebar-collapse"><span class="sidebar-icon">⇤</span><span class="sidebar-label">Collapse menu</span></button>
+  </aside>
+  <button class="sidebar-overlay" id="sidebar-overlay" type="button" aria-label="Close navigation menu"></button>
+  <div class="dashboard-content">
+   <button class="dashboard-mobile-menu" id="dashboard-mobile-menu" type="button" aria-expanded="false">☰ Menu</button>
+   <div class="hero" id="dashboard-top">
    <span class="eyebrow">Student dashboard</span>
    <h1 id="welcome-title">Welcome!</h1>
    <p>Your UGC NET Sanskrit preparation at a glance.</p>
@@ -464,9 +535,9 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
    <div class="stat"><strong id="stat-average">—</strong><span>Average marks</span></div>
    <div class="stat"><strong id="stat-best">—</strong><span>Best marks</span></div>
   </div>
-  <div class="section-head"><div><h2>Choose a unit</h2><p>Unlimited attempts · 100 questions per test</p></div></div>
+  <div class="section-head" id="dashboard-units-heading"><div><h2>Practice tests · Choose a unit</h2><p>Unlimited attempts · 100 questions per test</p></div></div>
   <div class="units" id="dashboard-units"></div>
-  <div class="panel question-revision-panel">
+  <div class="panel question-revision-panel" id="revision-wrong">
    <div class="section-head"><div><h2>Questions to Revisit · Incorrect Answers</h2><p>Questions you answered incorrectly in your previous tests.</p></div></div>
    <button class="btn revision-toggle" type="button" id="toggle-wrong-questions" aria-expanded="false">Show incorrectly answered questions</button>
    <div id="wrong-question-list" class="revision-list hidden"><p class="muted">Your incorrect-answer list is hidden.</p></div>
@@ -476,21 +547,22 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
    <button class="btn revision-toggle" type="button" id="toggle-unanswered-questions" aria-expanded="false">Show unanswered questions</button>
    <div id="unanswered-question-list" class="revision-list hidden"><p class="muted">Your unanswered-question list is hidden.</p></div>
   </div>
-  <div class="panel bookmarks-panel">
+  <div class="panel bookmarks-panel" id="dashboard-bookmarks">
    <h2>My bookmarked questions</h2>
    <p class="muted">Questions you save during practice appear here for revision.</p>
    <div id="bookmark-list" class="muted">Loading bookmarks...</div>
   </div>
-  <div class="panel performance-panel">
+  <div class="panel performance-panel" id="dashboard-performance">
    <div class="section-head"><div><h2>Performance by unit</h2><p>Your average marks across completed tests.</p></div></div>
    <div id="performance-list" class="performance-list"><p class="muted">Your unit-wise performance will appear here after your first test.</p></div>
   </div>
-  <div class="panel">
+  <div class="panel" id="dashboard-history">
    <h2>My test history</h2>
    <p class="muted">Your previous submitted tests and scores.</p>
    <div id="history-list" class="muted">Loading your history...</div>
   </div>
   <div id="admin-note" class="notice hidden"><strong>Administrator account detected.</strong> Admin question-management tools will be added in the next stage.</div>
+  </div>
  </section>
 
  <section id="test-view" class="hidden">
@@ -582,6 +654,7 @@ function message(text,type='error'){
 function clearMessage(){ $('global-message').className='message hidden'; }
 function showView(name){
  ['home','dashboard','test','result','review'].forEach(v=>$(`${v}-view`).classList.toggle('hidden',v!==name));
+ closeDashboardMenu();
  clearMessage();
  window.scrollTo(0,0);
 }
@@ -701,6 +774,31 @@ async function loadDashboardQuestionRevisions(){
   unansweredList.textContent='Could not load revision questions: '+e.message;
  }
 }
+function closeDashboardMenu(){
+ const dashboard=$('dashboard-view');
+ if(!dashboard)return;
+ dashboard.classList.remove('sidebar-open');
+ const menu=$('dashboard-mobile-menu');
+ if(menu)menu.setAttribute('aria-expanded','false');
+}
+function toggleDashboardMenu(){
+ const dashboard=$('dashboard-view');
+ dashboard.classList.toggle('sidebar-open');
+ $('dashboard-mobile-menu').setAttribute('aria-expanded',dashboard.classList.contains('sidebar-open')?'true':'false');
+}
+$('dashboard-mobile-menu').onclick=toggleDashboardMenu;
+$('sidebar-overlay').onclick=closeDashboardMenu;
+$('sidebar-collapse').onclick=()=>{$('dashboard-view').classList.toggle('sidebar-collapsed');};
+document.querySelectorAll('[data-dashboard-target]').forEach(button=>{
+ button.onclick=()=>{
+  const target=$(button.dataset.dashboardTarget);
+  if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
+  document.querySelectorAll('[data-dashboard-target]').forEach(item=>item.classList.toggle('active',item===button));
+  closeDashboardMenu();
+ };
+});
+$('sidebar-logout').onclick=()=>$('logout-button').click();
+
 async function openDashboard(){
  if(!currentUser){openAuth('login');return;}
  showView('dashboard');
