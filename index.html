@@ -1691,7 +1691,6 @@ async function openDashboard(){
   await loadUnits('dashboard-units');
   const {data:profile}=await supabaseClient.from('profiles').select('role').eq('id',currentUser.id).maybeSingle();
   const isAdmin=profile?.role==='admin';
-  $('admin-note').classList.toggle('hidden',!isAdmin);
   $('admin-sidebar-link').classList.toggle('hidden',!isAdmin);
   $('admin-panel').classList.toggle('hidden',!isAdmin);
   if(isAdmin)await loadAdminOverview();
