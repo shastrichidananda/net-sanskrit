@@ -443,7 +443,6 @@ let currentUser=null, currentAttempt=null, currentQuestions=[], currentQuestion=
 let currentUnit=null, lastResult=null, reviewAttemptId=null, authMode='login';
 let seenTrackingPromise=Promise.resolve();
 let testTimerInterval=null,testDeadline=null,isSubmittingTest=false;
-const TEST_DURATION_SECONDS=30*60;
 function message(text,type='error'){
  $('global-message').textContent=text;
  $('global-message').className='message '+type;
@@ -593,7 +592,14 @@ async function openDashboard(){
 }
 async function startTest(unit){
  if(!currentUser){openAuth('login');return;}
- if(!confirm('Start a new 100-question test for '+unit.unit_name+'?'))return;
+ const durationInput=prompt('Choose mock test duration:\nEnter 30 for 30 minutes or 60 for 60 minutes.','30');
+ if(durationInput===null)return;
+ const durationMinutes=Number(durationInput.trim());
+ if(![30,60].includes(durationMinutes)){
+  alert('Please enter either 30 or 60.');
+  return;
+ }
+ if(!confirm('Start a '+durationMinutes+'-minute, 100-question test for '+unit.unit_name+'?'))return;
  clearMessage();
  try{
   const {data,error}=await supabaseClient.rpc('start_unit_test',{p_unit_id:unit.id});
@@ -603,7 +609,7 @@ async function startTest(unit){
   const {data:attemptInfo,error:attemptInfoError}=await supabaseClient.from('test_attempts').select('started_at').eq('id',currentAttempt).eq('student_id',currentUser.id).single();
   if(attemptInfoError)throw attemptInfoError;
   const startedAt=attemptInfo?.started_at?new Date(attemptInfo.started_at).getTime():Date.now();
-  startTestTimer(startedAt+TEST_DURATION_SECONDS*1000);
+  startTestTimer(startedAt+durationMinutes*60*1000);
   const {data:questions,error:loadError}=await supabaseClient.rpc('get_test_questions',{p_attempt_id:currentAttempt});
   if(loadError)throw loadError;
   currentQuestions=questions||[];
