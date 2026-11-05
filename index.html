@@ -177,6 +177,30 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
  .test-top #exit-test{font-size:.85rem}
 }
 
+
+/* Dashboard visual polish */
+#dashboard-view .hero{padding-top:38px;padding-bottom:22px}
+#dashboard-view .stats .stat{position:relative;overflow:hidden;min-height:104px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+#dashboard-view .stats .stat:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--saffron);border-radius:4px 0 0 4px}
+#dashboard-view .stats .stat strong{font-size:1.85rem;line-height:1.2}
+#dashboard-view .units .unit{transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+#dashboard-view .units .unit:hover{box-shadow:0 8px 22px #172b4910}
+#dashboard-view .panel{padding:22px}
+#dashboard-view .panel>h2{font-size:1.45rem}
+#history-list:not(:empty){margin-top:12px}
+#history-list .history-row{padding:15px 12px;border:1px solid var(--line);border-radius:11px;margin:9px 0;background:#fffefa}
+#history-list .history-row strong{color:var(--navy)}
+#history-list .history-row .muted{font-size:.78rem}
+#history-list .history-row .btn{padding:7px 12px;font-size:.84rem}
+@media(max-width:650px){
+ #dashboard-view .hero{padding-top:27px;padding-bottom:16px}
+ #dashboard-view .stats .stat{min-height:84px}
+ #dashboard-view .stats .stat strong{font-size:1.35rem}
+ #dashboard-view .panel{padding:15px}
+ #history-list .history-row{padding:12px 10px;margin:8px 0}
+ #history-list .history-row .btn{min-height:38px}
+}
+
 </style>
 </head>
 
