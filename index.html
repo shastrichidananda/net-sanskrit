@@ -448,7 +448,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
 }
 @media(prefers-reduced-motion:reduce){.dashboard-sidebar,.sidebar-overlay{transition:none!important}}
 
-
 /* Let the signed-in dashboard use the full desktop viewport */
 @media(min-width:851px){
  main.wrap:has(#dashboard-view:not(.hidden)){
@@ -559,6 +558,32 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
   #dashboard-view .stats .stat span{font-size:.63rem}
 }
 
+ 
+/* Smart study dashboard: search, continue card and quick revision */
+.continue-panel{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:10px 0 18px!important;padding:18px 20px!important}
+.continue-copy{min-width:0}
+.continue-panel .eyebrow{font-size:.66rem;padding:4px 9px}
+.continue-panel h2{font-size:1.25rem!important;margin:8px 0 4px}
+.continue-panel p{margin:0;font-size:.88rem;line-height:1.5}
+.continue-panel .btn{flex:0 0 auto;min-height:42px}
+.unit-search-wrap{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:0 13px;margin:0 0 12px;background:var(--paper);border:1px solid var(--line);border-radius:12px;color:var(--muted)}
+.unit-search-wrap>span:first-child{font-size:1.3rem;color:#8a642f}
+.unit-search-wrap input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--ink);font:inherit;font-size:.92rem}
+.unit-search-wrap input:focus-visible{outline:0}
+.unit-search-count{font-size:.74rem;white-space:nowrap;color:var(--muted)}
+.unit-search-empty{grid-column:1/-1;padding:8px 2px}
+.quick-revision-links{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px}
+.quick-revision-link{border:1px solid var(--line);background:#fffaf1;color:#68512f;border-radius:999px;padding:8px 12px;font:inherit;font-size:.8rem;font-weight:700;min-height:38px}
+.quick-revision-link:hover{border-color:#d5b27d;background:#f7eddd}
+@media(max-width:650px){
+ .continue-panel{display:block;padding:15px!important;margin:8px 0 15px!important}
+ .continue-panel h2{font-size:1.12rem!important}
+ .continue-panel .btn{width:100%;margin-top:12px;min-height:44px}
+ .unit-search-wrap{min-height:46px;margin-bottom:10px}
+ .quick-revision-links{gap:7px;margin:10px 0 15px}
+ .quick-revision-link{font-size:.76rem;padding:7px 10px}
+}
+
 </style>
 </head>
 
@@ -662,8 +687,18 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
    <div class="stat"><strong id="stat-average">—</strong><span>Average marks</span></div>
    <div class="stat"><strong id="stat-best">—</strong><span>Best marks</span></div>
   </div>
+  <section class="panel continue-panel" id="continue-panel" aria-live="polite">
+   <div class="continue-copy"><span class="eyebrow">Your study path</span><h2 id="continue-title">Continue your preparation</h2><p id="continue-description">Your latest practice activity will appear here.</p></div>
+   <button class="btn primary" id="continue-practice" type="button">Choose a unit →</button>
+  </section>
   <div class="section-head" id="dashboard-units-heading"><div><h2>Practice tests · Choose a unit</h2><p>Unlimited attempts · 100 questions per test</p></div></div>
+  <label class="unit-search-wrap" for="dashboard-unit-search"><span aria-hidden="true">⌕</span><input id="dashboard-unit-search" type="search" placeholder="Search Sanskrit units…" autocomplete="off"><span class="unit-search-count" id="unit-search-count">10 units</span></label>
   <div class="units" id="dashboard-units"></div>
+  <div class="quick-revision-links" aria-label="Quick revision links">
+   <button type="button" class="quick-revision-link" data-dashboard-target="dashboard-bookmarks">☆ Bookmarks</button>
+   <button type="button" class="quick-revision-link" data-dashboard-target="revision-wrong">↻ Incorrect answers</button>
+   <button type="button" class="quick-revision-link" data-dashboard-target="dashboard-history">◷ Test history</button>
+  </div>
   <div class="dashboard-tools-grid">
   <div class="panel question-revision-panel" id="revision-wrong">
    <div class="section-head"><div><h2>Questions to Revisit · Incorrect Answers</h2><p>Questions you answered incorrectly in your previous tests.</p></div></div>
@@ -818,19 +853,59 @@ function updateUser(user){
  $('logout-button').classList.toggle('hidden',!user);
  $('dashboard-open').classList.toggle('hidden',!user);
 }
+let dashboardUnitsCache=[];
+function renderUnits(target,units){
+ const container=$(target);
+ container.innerHTML='';
+ units.forEach(unit=>{
+  const b=document.createElement('button');
+  b.className='unit';
+  b.type='button';
+  b.innerHTML=`<span class="unit-num">${String(unit.id).padStart(2,'0')}</span><span class="unit-info"><strong></strong><small></small></span><span class="unit-arrow" aria-hidden="true">›</span>`;
+  b.querySelector('strong').textContent=unit.unit_name;
+  b.querySelector('small').textContent=unit.description||'Question bank and mock tests';
+  b.onclick=()=>currentUser?startTest(unit):openAuth('login');
+  container.appendChild(b);
+ });
+}
 async function loadUnits(target){
  const {data,error}=await supabaseClient.from('units').select('id,unit_name,description').order('id');
  if(error) throw error;
- $(target).innerHTML='';
- data.forEach(unit=>{
-  const b=document.createElement('button');
-  b.className='unit';
-  b.innerHTML=`<span class="unit-num">${String(unit.id).padStart(2,'0')}</span><span class="unit-info"><strong></strong><small></small></span><span class="unit-arrow">›</span>`;  b.querySelector('strong').textContent=unit.unit_name;
-  b.querySelector('small').textContent=unit.description||'Question bank and mock tests';
-  b.onclick=()=>currentUser?startTest(unit):openAuth('login');
-  $(target).appendChild(b);
+ if(target==='dashboard-units'){
+  dashboardUnitsCache=data||[];
+  renderUnits(target,dashboardUnitsCache);
+  updateUnitSearchCount(dashboardUnitsCache.length,dashboardUnitsCache.length);
+ }else renderUnits(target,data||[]);
+ return data||[];
+}
+function updateUnitSearchCount(shown,total){
+ const count=$('unit-search-count');
+ if(count)count.textContent=shown===total?total+' units':shown+' of '+total;
+}
+const dashboardUnitSearch=$('dashboard-unit-search');
+if(dashboardUnitSearch){
+ dashboardUnitSearch.addEventListener('input',()=>{
+  const term=dashboardUnitSearch.value.trim().toLocaleLowerCase();
+  const filtered=dashboardUnitsCache.filter(unit=>
+   String(unit.unit_name||'').toLocaleLowerCase().includes(term)||
+   String(unit.description||'').toLocaleLowerCase().includes(term)||
+   ('unit '+unit.id).includes(term)
+  );
+  renderUnits('dashboard-units',filtered);
+  updateUnitSearchCount(filtered.length,dashboardUnitsCache.length);
+  if(!filtered.length){
+   const empty=document.createElement('p');empty.className='muted unit-search-empty';
+   empty.textContent='No units match your search. Try another keyword.';
+   $('dashboard-units').appendChild(empty);
+  }
  });
 }
+$('continue-practice').onclick=()=>{
+ const target=$('dashboard-units-heading');
+ target.scrollIntoView({behavior:'smooth',block:'start'});
+ if(dashboardUnitsCache.length===1)startTest(dashboardUnitsCache[0]);
+ else if($('dashboard-unit-search'))$('dashboard-unit-search').focus({preventScroll:true});
+};
 function setupRevisionToggle(buttonId,listId,showLabel,hideLabel){
  const button=$(buttonId),list=$(listId);
  button.onclick=()=>{
@@ -897,8 +972,7 @@ async function loadDashboardQuestionRevisions(){
     if(q.explanation){const explanation=document.createElement('p');explanation.className='muted';explanation.textContent='Explanation: '+q.explanation;card.appendChild(explanation);}
     target.appendChild(card);
    });
-  };
-  renderList(wrongList,[...wrongByQuestion.values()],'wrong');
+  };  renderList(wrongList,[...wrongByQuestion.values()],'wrong');
   renderList(unansweredList,unansweredData||[],'unanswered');
  }catch(e){
   wrongList.textContent='Could not load revision questions: '+e.message;
@@ -956,6 +1030,23 @@ async function openDashboard(){
   $('stat-best').textContent=list.length?Math.max(...list.map(a=>a.score||0))+'/200':'—';
   const {data:units}=await supabaseClient.from('units').select('id,unit_name');
   const names=Object.fromEntries((units||[]).map(u=>[u.id,u.unit_name]));
+  const latest=list[0];
+  const continueTitle=$('continue-title');
+  const continueDescription=$('continue-description');
+  const continueButton=$('continue-practice');
+  if(latest){
+   const latestUnit=(units||[]).find(u=>String(u.id)===String(latest.unit_id));
+   continueTitle.textContent='Pick up with '+(latestUnit?.unit_name||('Unit '+latest.unit_id));
+   const latestDate=latest.submitted_at?new Date(latest.submitted_at).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}):'recently';
+   continueDescription.textContent='Your latest test: '+(latest.score??0)+'/200 · '+latestDate+'. Start a fresh practice test in this unit whenever you are ready.';
+   continueButton.textContent='Practice this unit →';
+   continueButton.onclick=()=>latestUnit?startTest(latestUnit):$('dashboard-units-heading').scrollIntoView({behavior:'smooth'});
+  }else{
+   continueTitle.textContent='Start your preparation';
+   continueDescription.textContent='Choose any Sanskrit unit to begin your first 100-question practice test.';
+   continueButton.textContent='Explore units →';
+   continueButton.onclick=()=>$('dashboard-units-heading').scrollIntoView({behavior:'smooth'});
+  }
   const performance=$('performance-list');
   performance.innerHTML='';
   const grouped={};
