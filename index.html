@@ -584,6 +584,18 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
  .quick-revision-link{font-size:.76rem;padding:7px 10px}
 }
 
+
+/* Accessible mock-test duration picker */
+.duration-backdrop{display:none;position:fixed;inset:0;z-index:30;background:#172b4970;align-items:center;justify-content:center;padding:16px}
+.duration-backdrop.show{display:flex}
+.duration-modal{position:relative;width:min(430px,100%);background:var(--paper);border:1px solid var(--line);border-radius:17px;padding:26px;box-shadow:0 18px 60px #172b4930}
+.duration-modal h2{margin:12px 0 4px}
+.duration-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}
+.duration-choice{display:flex;flex-direction:column;gap:5px;align-items:center;justify-content:center;min-height:92px;background:#fffaf1}
+.duration-choice strong{color:var(--navy);font-size:1.05rem}
+.duration-choice span{font-size:.8rem;color:var(--muted)}
+.duration-choice:hover{border-color:var(--saffron);background:#fbf4e9}
+@media(max-width:480px){.duration-backdrop{align-items:flex-end;padding:12px}.duration-modal{padding:23px 18px;border-radius:17px 17px 12px 12px}.duration-options{grid-template-columns:1fr}}
 </style>
 </head>
 
@@ -783,6 +795,19 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
 
 <footer><div class="wrap">NET Sanskrit · UGC NET Paper 2 · Independent practice portal</div></footer>
 
+<div class="duration-backdrop" id="duration-backdrop" aria-hidden="true">
+ <section class="duration-modal" role="dialog" aria-modal="true" aria-labelledby="duration-title">
+  <button class="close" id="duration-close" type="button" aria-label="Close">&times;</button>
+  <span class="eyebrow">Mock test setup</span>
+  <h2 id="duration-title">Choose test duration</h2>
+  <p class="muted" id="duration-unit-name">100-question practice test</p>
+  <div class="duration-options">
+   <button class="btn duration-choice" type="button" data-duration="30"><strong>30 minutes</strong><span>Quick practice</span></button>
+   <button class="btn duration-choice" type="button" data-duration="60"><strong>60 minutes</strong><span>Extended practice</span></button>
+  </div>
+  <p class="muted">Your answers are saved as you progress.</p>
+ </section>
+</div>
 <div class="auth-backdrop" id="auth-backdrop">
  <section class="auth-modal" role="dialog" aria-modal="true">
   <button class="close" id="modal-close">&times;</button>
@@ -846,6 +871,7 @@ function openAuth(mode){
  $('auth-backdrop').classList.add('show');
 }
 function updateUser(user){
+ if(currentUser?.id!==user?.id)revisionLoadedForUser=null;
  currentUser=user;
  $('user-label').textContent=user?(user.user_metadata?.full_name||user.email):'';
  $('login-open').classList.toggle('hidden',!!user);
@@ -853,7 +879,7 @@ function updateUser(user){
  $('logout-button').classList.toggle('hidden',!user);
  $('dashboard-open').classList.toggle('hidden',!user);
 }
-let dashboardUnitsCache=[];
+let dashboardUnitsCache=[];\nlet revisionLoadedForUser=null;\nlet pendingTestUnit=null;
 function renderUnits(target,units){
  const container=$(target);
  container.innerHTML='';
@@ -974,6 +1000,7 @@ async function loadDashboardQuestionRevisions(){
    });
   };  renderList(wrongList,[...wrongByQuestion.values()],'wrong');
   renderList(unansweredList,unansweredData||[],'unanswered');
+  revisionLoadedForUser=currentUser.id;
  }catch(e){
   wrongList.textContent='Could not load revision questions: '+e.message;
   unansweredList.textContent='Could not load revision questions: '+e.message;
@@ -1016,7 +1043,6 @@ async function openDashboard(){
  $('welcome-title').textContent='Welcome, '+(currentUser.user_metadata?.full_name||currentUser.email||'Student')+'!';
  try{
   await loadUnits('dashboard-units');
-  await loadDashboardQuestionRevisions();
   const {data:profile}=await supabaseClient.from('profiles').select('role').eq('id',currentUser.id).maybeSingle();
   $('admin-note').classList.toggle('hidden',profile?.role!=='admin');
   const {data:attempts,error}=await supabaseClient.from('test_attempts')
@@ -1026,7 +1052,7 @@ async function openDashboard(){
   if(error) throw error;
   const list=attempts||[];
   $('stat-attempts').textContent=list.length;
-  $('stat-average').textContent=list.length?Math.round(list.reduce((s,a)=>s+(a.score||0),0)/list.length):'—';
+  $('stat-average').textContent=list.length?Math.round(list.reduce((s,a)=>s+(Number(a.score)||0),0)/list.length)+'/200':'—';
   $('stat-best').textContent=list.length?Math.max(...list.map(a=>a.score||0))+'/200':'—';
   const {data:units}=await supabaseClient.from('units').select('id,unit_name');
   const names=Object.fromEntries((units||[]).map(u=>[u.id,u.unit_name]));
@@ -1123,16 +1149,30 @@ async function openDashboard(){
   });
  }catch(e){message('Could not load dashboard: '+e.message);}
 }
-async function startTest(unit){
+function closeDurationModal(){
+ $('duration-backdrop').classList.remove('show');
+ $('duration-backdrop').setAttribute('aria-hidden','true');
+ pendingTestUnit=null;
+}
+function startTest(unit){
  if(!currentUser){openAuth('login');return;}
- const durationInput=prompt('Choose mock test duration:\nEnter 30 for 30 minutes or 60 for 60 minutes.','30');
- if(durationInput===null)return;
- const durationMinutes=Number(durationInput.trim());
- if(![30,60].includes(durationMinutes)){
-  alert('Please enter either 30 or 60.');
-  return;
- }
- if(!confirm('Start a '+durationMinutes+'-minute, 100-question test for '+unit.unit_name+'?'))return;
+ pendingTestUnit=unit;
+ $('duration-unit-name').textContent=unit.unit_name+' · 100 questions';
+ $('duration-backdrop').classList.add('show');
+ $('duration-backdrop').setAttribute('aria-hidden','false');
+}
+$('duration-close').onclick=closeDurationModal;
+$('duration-backdrop').onclick=e=>{if(e.target===$('duration-backdrop'))closeDurationModal();};
+document.querySelectorAll('[data-duration]').forEach(button=>{
+ button.onclick=()=>{
+  if(!pendingTestUnit)return;
+  const unit=pendingTestUnit;
+  const durationMinutes=Number(button.dataset.duration);
+  closeDurationModal();
+  runUnitTest(unit,durationMinutes);
+ };
+});
+async function runUnitTest(unit,durationMinutes){
  clearMessage();
  try{
   const {data,error}=await supabaseClient.rpc('start_unit_test',{p_unit_id:unit.id});
@@ -1157,7 +1197,7 @@ async function startTest(unit){
   $('test-unit-label').textContent=unit.unit_name;
   renderQuestion();
   showView('test');
- }catch(e){message(e.message);}
+ }catch(e){message('Could not start the test: '+e.message);}
 }
 
 function formatTimeRemaining(seconds){
