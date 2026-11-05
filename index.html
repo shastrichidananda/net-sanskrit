@@ -1140,6 +1140,14 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
 .admin-unit-options{display:flex;gap:12px;flex-wrap:wrap}
 .admin-unit-options label{display:flex;align-items:center;gap:5px;font-size:.9rem}
 .admin-control-toggle input,.admin-unit-options input{accent-color:var(--navy);width:18px;height:18px}
+.admin-student-actions{white-space:nowrap}
+.admin-student-details-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.admin-attempt-review{margin-top:16px}
+.admin-review-question{padding:13px;margin:10px 0;border:1px solid var(--line);border-radius:9px;background:#fffefa}
+.admin-review-question p{margin:6px 0}
+.admin-review-correct{color:#167044;font-weight:600}
+.admin-review-wrong{color:#a33a32;font-weight:600}
+.admin-review-neutral{color:var(--muted)}
 /* Admin student directory */
 #admin-student-search:focus{outline:3px solid #d9a34f;outline-offset:2px}
 .admin-student-empty{padding:14px;color:var(--muted)}
@@ -1317,7 +1325,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
     <div id="admin-test-controls-status" class="muted" role="status"></div>
     <div id="admin-unit-controls" class="admin-unit-controls"><p class="muted">Loading unit controls...</p></div>
    </div>
-   <div class="admin-subpanel"><h3>Student Management</h3><p class="muted">Search registered students and review their test activity. This section does not change student accounts.</p><input id="admin-student-search" type="search" placeholder="Search by student name..." aria-label="Search students" style="width:100%;max-width:420px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font:inherit;margin:4px 0 12px"><div id="admin-student-list" class="admin-table-wrap"><p class="muted">Loading students...</p></div></div>
+   <div class="admin-subpanel"><h3>Student Management</h3><p class="muted">Search registered students and review their test activity. This section does not change student accounts.</p><input id="admin-student-search" type="search" placeholder="Search by student name..." aria-label="Search students" style="width:100%;max-width:420px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font:inherit;margin:4px 0 12px"><div id="admin-student-list" class="admin-table-wrap"><p class="muted">Loading students...</p></div><div id="admin-student-details" class="admin-subpanel hidden"><h3 id="admin-student-details-title">Student performance</h3><div id="admin-student-attempts"></div><div id="admin-attempt-review" class="admin-attempt-review"></div></div></div>
   </section>
   </div>
  </section>
@@ -1649,7 +1657,7 @@ function renderAdminStudents(){
  list.replaceChildren();
  if(!filtered.length){const empty=document.createElement('p');empty.className='admin-student-empty';empty.textContent=term?'No students match this name.':'No student registrations yet.';list.appendChild(empty);return;}
  const table=document.createElement('table');table.className='admin-table';
- const thead=document.createElement('thead');thead.innerHTML='<tr><th>Student</th><th>Registered</th><th>Tests</th><th>Completed</th><th>Average</th></tr>';table.appendChild(thead);
+ const thead=document.createElement('thead');thead.innerHTML='<tr><th>Student</th><th>Registered</th><th>Tests</th><th>Completed</th><th>Average</th><th>Details</th></tr>';table.appendChild(thead);
  const tbody=document.createElement('tbody');
  filtered.forEach(student=>{
   const tr=document.createElement('tr');
@@ -1658,9 +1666,71 @@ function renderAdminStudents(){
   const total=document.createElement('td');total.textContent=student.total_attempts;
   const completed=document.createElement('td');completed.textContent=student.completed_attempts;
   const average=document.createElement('td');average.textContent=student.completed_attempts?Math.round(student.average_score)+'/200':'—';
-  tr.append(name,date,total,completed,average);tbody.appendChild(tr);
+  const action=document.createElement('td');
+  const view=document.createElement('button');view.type='button';view.className='btn admin-student-actions';view.textContent='View details';
+  view.addEventListener('click',()=>loadAdminStudentDetails(student));
+  action.appendChild(view);
+  tr.append(name,date,total,completed,average,action);tbody.appendChild(tr);
  });
  table.appendChild(tbody);list.appendChild(table);
+}
+async function loadAdminStudentDetails(student){
+ const panel=$('admin-student-details'),attemptsBox=$('admin-student-attempts'),reviewBox=$('admin-attempt-review');
+ panel.classList.remove('hidden');
+ $('admin-student-details-title').textContent='Performance: '+(student.full_name||'Student');
+ attemptsBox.textContent='Loading test history...';reviewBox.replaceChildren();
+ panel.scrollIntoView({behavior:'smooth',block:'start'});
+ try{
+  const [attemptResult,unitResult]=await Promise.all([
+   supabaseClient.from('test_attempts').select('id,unit_id,status,total_questions,correct_answers,incorrect_answers,unanswered,score,started_at,submitted_at,duration_minutes').eq('student_id',student.id).order('started_at',{ascending:false}),
+   supabaseClient.from('units').select('id,unit_name').order('id')
+  ]);
+  if(attemptResult.error)throw attemptResult.error;if(unitResult.error)throw unitResult.error;
+  const names=new Map((unitResult.data||[]).map(u=>[String(u.id),u.unit_name]));
+  const attempts=attemptResult.data||[];
+  if(!attempts.length){attemptsBox.textContent='No test attempts found for this student.';return;}
+  const table=document.createElement('table');table.className='admin-table';
+  const head=document.createElement('thead');head.innerHTML='<tr><th>Unit</th><th>Date</th><th>Status</th><th>Marks</th><th>Correct</th><th>Incorrect</th><th>Unanswered</th><th>Duration</th><th>Review</th></tr>';table.appendChild(head);
+  const body=document.createElement('tbody');
+  attempts.forEach(a=>{
+   const tr=document.createElement('tr');
+   const vals=[names.get(String(a.unit_id))||('Unit '+a.unit_id),a.started_at?new Date(a.started_at).toLocaleString():'—',a.status==='submitted'?'Completed':'In progress',a.status==='submitted'?(a.score??0)+'/200':'—',a.correct_answers??'—',a.incorrect_answers??'—',a.unanswered??'—',a.duration_minutes?a.duration_minutes+' min':'—'];
+   vals.forEach(v=>{const td=document.createElement('td');td.textContent=String(v);tr.appendChild(td);});
+   const action=document.createElement('td');
+   if(a.status==='submitted'){
+    const b=document.createElement('button');b.type='button';b.className='btn';b.textContent='View answers';
+    b.addEventListener('click',()=>loadAdminAttemptReview(a));action.appendChild(b);
+   }else action.textContent='Not submitted';
+   tr.appendChild(action);body.appendChild(tr);
+  });
+  table.appendChild(body);attemptsBox.replaceChildren(table);
+ }catch(e){attemptsBox.textContent='Could not load student history: '+e.message;}
+}
+async function loadAdminAttemptReview(attempt){
+ const box=$('admin-attempt-review');box.textContent='Loading answer review...';
+ try{
+  const {data,error}=await supabaseClient.rpc('admin_get_attempt_review',{p_attempt_id:attempt.id});
+  if(error)throw error;
+  box.replaceChildren();
+  const heading=document.createElement('h3');heading.textContent='Answer review · '+(data||[]).length+' questions';box.appendChild(heading);
+  (data||[]).forEach(q=>{
+   const card=document.createElement('article');card.className='admin-review-question';
+   const title=document.createElement('strong');title.textContent='Question '+q.question_number+'. '+q.question_text;card.appendChild(title);
+   [['A',q.option_a],['B',q.option_b],['C',q.option_c],['D',q.option_d]].forEach(([letter,value])=>{
+    const p=document.createElement('p');p.textContent=letter+'. '+(value||'');
+    if(letter===q.correct_option)p.className='admin-review-correct';
+    else if(letter===q.selected_option&&q.selected_option!==q.correct_option)p.className='admin-review-wrong';
+    card.appendChild(p);
+   });
+   const status=document.createElement('p');
+   status.className=!q.selected_option?'admin-review-neutral':q.selected_option===q.correct_option?'admin-review-correct':'admin-review-wrong';
+   status.textContent=!q.selected_option?'Not answered':q.selected_option===q.correct_option?'Student answer: '+q.selected_option+' · Correct':'Student answer: '+q.selected_option+' · Correct answer: '+q.correct_option;
+   card.appendChild(status);
+   if(q.explanation){const explanation=document.createElement('p');explanation.textContent='Explanation: '+q.explanation;card.appendChild(explanation);}
+   box.appendChild(card);
+  });
+  box.scrollIntoView({behavior:'smooth',block:'start'});
+ }catch(e){box.textContent='Could not load answer review: '+e.message;}
 }
 $('admin-student-search').addEventListener('input',renderAdminStudents);
 
