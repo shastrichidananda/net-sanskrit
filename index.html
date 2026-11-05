@@ -1471,6 +1471,95 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
  #dashboard-view .preparation-actions{gap:10px}
  #dashboard-view .preparation-action{min-height:70px;padding:10px;gap:7px}
 }
+
+/* Study path typography and vertical rhythm refinement */
+#dashboard-view .preparation-panel{
+ padding:20px!important;
+}
+#dashboard-view .preparation-panel>.section-head{
+ margin:0 0 16px!important;
+}
+#dashboard-view .preparation-panel .eyebrow{
+ display:inline-block;
+ margin:0 0 7px;
+ line-height:1.35;
+ letter-spacing:.07em;
+}
+#dashboard-view .preparation-panel h2{
+ margin:0!important;
+ font-size:1.35rem!important;
+ line-height:1.28!important;
+ letter-spacing:-.015em;
+}
+#dashboard-view .preparation-actions{
+ align-items:stretch;
+ gap:13px;
+}
+#dashboard-view .preparation-action{
+ display:grid!important;
+ grid-template-columns:24px minmax(0,1fr) 16px;
+ align-items:center;
+ column-gap:10px;
+ min-height:78px;
+ padding:13px 14px!important;
+ line-height:1.35;
+}
+#dashboard-view .preparation-action .action-icon{
+ display:block;
+ width:24px;
+ font-size:1.25rem;
+ line-height:1;
+ text-align:center;
+}
+#dashboard-view .preparation-action>span:nth-child(2){
+ display:flex!important;
+ flex-direction:column;
+ align-items:flex-start;
+ justify-content:center;
+ gap:5px!important;
+ min-width:0;
+}
+#dashboard-view .preparation-action strong{
+ display:block;
+ font-size:.96rem;
+ line-height:1.3;
+ font-weight:650;
+}
+#dashboard-view .preparation-action small{
+ display:block;
+ font-size:.76rem;
+ line-height:1.4;
+ opacity:.82;
+ white-space:normal;
+}
+#dashboard-view .preparation-action .action-arrow{
+ display:block;
+ margin:0!important;
+ font-size:1.05rem;
+ line-height:1;
+ text-align:right;
+}
+@media(max-width:850px){
+ #dashboard-view .preparation-panel{padding:18px!important}
+ #dashboard-view .preparation-panel>.section-head{margin-bottom:15px!important}
+ #dashboard-view .preparation-actions{gap:11px}
+ #dashboard-view .preparation-action{min-height:76px;padding:12px!important;column-gap:7px}
+ #dashboard-view .preparation-action strong{font-size:.9rem}
+ #dashboard-view .preparation-action small{font-size:.72rem;line-height:1.38}
+}
+@media(max-width:420px){
+ #dashboard-view .preparation-actions{gap:9px}
+ #dashboard-view .preparation-action{
+  grid-template-columns:19px minmax(0,1fr) 12px;
+  min-height:74px;
+  padding:10px 9px!important;
+  column-gap:6px;
+ }
+ #dashboard-view .preparation-action .action-icon{width:19px;font-size:1.08rem}
+ #dashboard-view .preparation-action strong{font-size:.84rem}
+ #dashboard-view .preparation-action small{font-size:.68rem;line-height:1.35}
+ #dashboard-view .preparation-action .action-arrow{font-size:.9rem}
+}
 </style>
 </head>
 
