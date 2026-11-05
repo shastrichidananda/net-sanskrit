@@ -1223,6 +1223,21 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
  #test-view .question-card{scroll-margin-top:14px}
  #test-view #submit-test{width:100%;min-height:48px;margin-top:8px}
 }
+
+/* Align the test heading, warning, timer and exit control on phones */
+@media(max-width:650px){
+ #test-view .test-top{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  column-gap:10px;
+  row-gap:9px;
+ }
+ #test-view .test-top>div:first-child{grid-column:1/-1;min-width:0;width:100%}
+ #test-view #tab-warning-banner{width:100%;box-sizing:border-box}
+ #test-view .timer-pill{grid-column:1;grid-row:auto;justify-self:start;min-width:125px}
+ #test-view #exit-test{grid-column:2;grid-row:auto;align-self:center;justify-self:end;min-height:44px}
+}
 </style>
 </head>
 
