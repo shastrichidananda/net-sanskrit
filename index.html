@@ -533,42 +533,25 @@ async function loadDashboardQuestionRevisions(){
  wrongList.textContent='Loading your incorrect answers...';
  unansweredList.textContent='Loading your unanswered questions...';
  try{
-  const [wrongResult,seenResult,answeredResult]=await Promise.all([
-   supabaseClient.from('attempt_questions')
-    .select('question_id,selected_option,test_attempts!inner(student_id,status,unit_id),questions!inner(id,question_text,option_a,option_b,option_c,option_d,correct_option,explanation)')
-    .eq('test_attempts.student_id',currentUser.id)
-    .eq('test_attempts.status','submitted')
-    .not('selected_option','is',null),
-   supabaseClient.from('student_seen_questions')
-    .select('unit_id,question_id,questions!inner(id,question_text,option_a,option_b,option_c,option_d,correct_option,explanation)')
-    .eq('student_id',currentUser.id),
-   supabaseClient.from('attempt_questions')
-    .select('question_id,test_attempts!inner(student_id)')
-    .eq('test_attempts.student_id',currentUser.id)
-    .not('selected_option','is',null)
-  ]);
-  if(wrongResult.error)throw wrongResult.error;
-  if(seenResult.error)throw seenResult.error;
-  if(answeredResult.error)throw answeredResult.error;
+  const {data:attempts,error:attemptError}=await supabaseClient.from('test_attempts')
+   .select('id,unit_id').eq('student_id',currentUser.id).eq('status','submitted');
+  if(attemptError)throw attemptError;
+  const reviews=await Promise.all((attempts||[]).map(async attempt=>{
+   const {data,error}=await supabaseClient.rpc('get_test_review',{p_attempt_id:attempt.id});
+   if(error)throw error;
+   return (data||[]).map(q=>({...q,unit_id:attempt.unit_id}));
+  }));
+  const wrongByQuestion=new Map();
+  reviews.flat().forEach(q=>{
+   if(!q.selected_option||q.selected_option===q.correct_option)return;
+   const key=String(q.question_number)+'-'+String(q.unit_id)+'-'+String(q.question_text);
+   if(!wrongByQuestion.has(key))wrongByQuestion.set(key,q);
+  });
+  const {data:unansweredData,error:unansweredError}=await supabaseClient.rpc('get_student_seen_unanswered');
+  if(unansweredError)throw unansweredError;
   const unitsResult=await supabaseClient.from('units').select('id,unit_name');
   if(unitsResult.error)throw unitsResult.error;
   const unitNames=Object.fromEntries((unitsResult.data||[]).map(u=>[String(u.id),u.unit_name]));
-  const wrongByQuestion=new Map();
-  (wrongResult.data||[]).forEach(row=>{
-   const q=row.questions;
-   if(!q||row.selected_option===q.correct_option)return;
-   const key=String(row.question_id);
-   if(!wrongByQuestion.has(key))wrongByQuestion.set(key,{
-    ...q,selected_option:row.selected_option,unit_id:row.test_attempts?.unit_id
-   });
-  });
-  const answeredIds=new Set((answeredResult.data||[]).map(row=>String(row.question_id)));
-  const seenByQuestion=new Map();
-  (seenResult.data||[]).forEach(row=>{
-   const key=String(row.question_id);
-   if(answeredIds.has(key)||seenByQuestion.has(key)||!row.questions)return;
-   seenByQuestion.set(key,{...row.questions,unit_id:row.unit_id});
-  });
   const renderList=(target,items,kind)=>{
    target.innerHTML='';
    if(!items.length){
@@ -582,7 +565,7 @@ async function loadDashboardQuestionRevisions(){
    items.forEach(q=>{
     const card=document.createElement('article');card.className='revision-question';
     const heading=document.createElement('strong');
-    heading.textContent=(unitNames[String(q.unit_id)]||('Unit '+q.unit_id))+' · Question ID '+q.id;
+    heading.textContent=(unitNames[String(q.unit_id)]||('Unit '+q.unit_id))+' · Question '+(q.question_number??q.id);
     const question=document.createElement('p');question.className='revision-question-text';question.textContent=q.question_text||'';
     card.append(heading,question);
     ['A','B','C','D'].forEach(letter=>{
@@ -600,13 +583,12 @@ async function loadDashboardQuestionRevisions(){
    });
   };
   renderList(wrongList,[...wrongByQuestion.values()],'wrong');
-  renderList(unansweredList,[...seenByQuestion.values()],'unanswered');
+  renderList(unansweredList,unansweredData||[],'unanswered');
  }catch(e){
   wrongList.textContent='Could not load revision questions: '+e.message;
   unansweredList.textContent='Could not load revision questions: '+e.message;
  }
 }
-
 async function openDashboard(){
  if(!currentUser){openAuth('login');return;}
  showView('dashboard');
