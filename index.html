@@ -1164,8 +1164,22 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
 .admin-table{width:100%;border-collapse:collapse;min-width:420px}
 .admin-table th,.admin-table td{text-align:left;padding:11px;border-bottom:1px solid var(--line);font-size:.88rem}
 .admin-table th{color:var(--navy);background:#f8f3ea}
-.admin-table-wrap{overflow-x:auto}
-@media(max-width:650px){.admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-unit-counts{grid-template-columns:1fr}.admin-stats .stat{padding:12px}.admin-stats .stat strong{font-size:1.35rem}}
+.admin-table-wrap{width:100%;overflow:visible}
+@media(max-width:650px){
+ .admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .admin-unit-counts{grid-template-columns:1fr}
+ .admin-stats .stat{padding:12px}
+ .admin-stats .stat strong{font-size:1.35rem}
+ .admin-table{min-width:0;width:100%;border-collapse:separate;border-spacing:0 10px}
+ .admin-table thead{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+ .admin-table tbody{display:block;width:100%}
+ .admin-table tbody tr{display:block;width:100%;padding:8px 12px;background:#fffefa;border:1px solid var(--line);border-radius:12px;box-shadow:0 2px 8px #172b4908}
+ .admin-table tbody td{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;width:100%;padding:9px 0;border-bottom:1px solid #eee7dc;font-size:.9rem;text-align:right;overflow-wrap:anywhere}
+ .admin-table tbody td:last-child{border-bottom:0}
+ .admin-table tbody td:before{content:attr(data-label);font-weight:650;color:var(--navy);text-align:left;flex:0 0 38%}
+ .admin-table tbody td button{max-width:100%;white-space:normal}
+ .admin-student-actions{white-space:normal}
+}
 </style>
 </head>
 
@@ -1661,12 +1675,12 @@ function renderAdminStudents(){
  const tbody=document.createElement('tbody');
  filtered.forEach(student=>{
   const tr=document.createElement('tr');
-  const name=document.createElement('td');name.textContent=student.full_name||'Name not provided';
-  const date=document.createElement('td');date.textContent=student.created_at?new Date(student.created_at).toLocaleDateString():'—';
-  const total=document.createElement('td');total.textContent=student.total_attempts;
-  const completed=document.createElement('td');completed.textContent=student.completed_attempts;
-  const average=document.createElement('td');average.textContent=student.completed_attempts?Math.round(student.average_score)+'/200':'—';
-  const action=document.createElement('td');
+  const name=document.createElement('td');name.dataset.label='Student';name.textContent=student.full_name||'Name not provided';
+  const date=document.createElement('td');date.dataset.label='Registered';date.textContent=student.created_at?new Date(student.created_at).toLocaleDateString():'—';
+  const total=document.createElement('td');total.dataset.label='Tests';total.textContent=student.total_attempts;
+  const completed=document.createElement('td');completed.dataset.label='Completed';completed.textContent=student.completed_attempts;
+  const average=document.createElement('td');average.dataset.label='Average';average.textContent=student.completed_attempts?Math.round(student.average_score)+'/200':'—';
+  const action=document.createElement('td');action.dataset.label='Details';
   const view=document.createElement('button');view.type='button';view.className='btn admin-student-actions';view.textContent='View details';
   view.addEventListener('click',()=>loadAdminStudentDetails(student));
   action.appendChild(view);
@@ -1695,8 +1709,9 @@ async function loadAdminStudentDetails(student){
   attempts.forEach(a=>{
    const tr=document.createElement('tr');
    const vals=[names.get(String(a.unit_id))||('Unit '+a.unit_id),a.started_at?new Date(a.started_at).toLocaleString():'—',a.status==='submitted'?'Completed':'In progress',a.status==='submitted'?(a.score??0)+'/200':'—',a.correct_answers??'—',a.incorrect_answers??'—',a.unanswered??'—',a.duration_minutes?a.duration_minutes+' min':'—'];
-   vals.forEach(v=>{const td=document.createElement('td');td.textContent=String(v);tr.appendChild(td);});
-   const action=document.createElement('td');
+   const labels=['Unit','Date','Status','Marks','Correct','Incorrect','Unanswered','Duration'];
+   vals.forEach((v,i)=>{const td=document.createElement('td');td.dataset.label=labels[i];td.textContent=String(v);tr.appendChild(td);});
+   const action=document.createElement('td');action.dataset.label='Review';
    if(a.status==='submitted'){
     const b=document.createElement('button');b.type='button';b.className='btn';b.textContent='View answers';
     b.addEventListener('click',()=>loadAdminAttemptReview(a));action.appendChild(b);
