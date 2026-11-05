@@ -55,6 +55,10 @@ p{color:var(--muted)}
 .stat strong{display:block;color:var(--navy);font-size:1.6rem}
 .stat span{font-size:.82rem;color:var(--muted)}
 .panel{margin:18px 0}
+.active-tests-list{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:15px}
+.active-tests-list>strong{width:100%;color:var(--navy)}
+.active-test-button{background:#fffdf8}
+@media(max-width:650px){.active-tests-list{display:grid}.active-test-button{width:100%;text-align:left}}
 .history-row{display:grid;grid-template-columns:1fr auto auto;gap:15px;align-items:center;border-bottom:1px solid var(--line);padding:13px 0}
 .history-row:last-child{border:0}
 .muted{color:var(--muted);font-size:.85rem}
@@ -704,6 +708,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
   <section class="panel continue-panel" id="continue-panel" aria-live="polite">
    <div class="continue-copy"><span class="eyebrow">Your study path</span><h2 id="continue-title">Continue your preparation</h2><p id="continue-description">Your latest practice activity will appear here.</p></div>
    <button class="btn primary" id="continue-practice" type="button">Choose a unit →</button>
+   <div id="active-tests-list" class="active-tests-list hidden"></div>
   </section>
   <div class="section-head" id="dashboard-units-heading"><div><h2>Practice tests · Choose a unit</h2><p>Unlimited attempts · 100 questions per test</p></div></div>
   <label class="unit-search-wrap" for="dashboard-unit-search"><span aria-hidden="true">⌕</span><input id="dashboard-unit-search" type="search" placeholder="Search Sanskrit units…" autocomplete="off"><span class="unit-search-count" id="unit-search-count">10 units</span></label>
@@ -1072,6 +1077,29 @@ async function openDashboard(){
   $('stat-best').textContent=list.length?Math.max(...list.map(a=>a.score||0))+'/200':'—';
   const {data:units}=await supabaseClient.from('units').select('id,unit_name');
   const names=Object.fromEntries((units||[]).map(u=>[u.id,u.unit_name]));
+  const {data:activeAttempts,error:activeError}=await supabaseClient.from('test_attempts')
+   .select('id,unit_id,started_at,duration_minutes,deadline_at')
+   .eq('student_id',currentUser.id).eq('status','in_progress')
+   .not('duration_minutes','is',null).not('deadline_at','is',null)
+   .order('started_at',{ascending:false});
+  if(activeError)throw activeError;
+  const activeList=$('active-tests-list');
+  activeList.innerHTML='';
+  if(activeAttempts?.length){
+   activeList.classList.remove('hidden');
+   const activeHeading=document.createElement('strong');
+   activeHeading.textContent='Resume an unfinished test';
+   activeList.appendChild(activeHeading);
+   activeAttempts.forEach(attempt=>{
+    const unit=(units||[]).find(u=>String(u.id)===String(attempt.unit_id));
+    const button=document.createElement('button');
+    button.type='button';button.className='btn active-test-button';
+    const remaining=Math.max(0,Math.ceil((new Date(attempt.deadline_at).getTime()-Date.now())/60000));
+    button.textContent=(unit?.unit_name||('Unit '+attempt.unit_id))+' · '+attempt.duration_minutes+' min · '+(remaining>0?remaining+' min remaining':'Time expired — submit');
+    button.onclick=()=>resumeUnitTest(attempt,unit||{id:attempt.unit_id,unit_name:'Unit '+attempt.unit_id});
+    activeList.appendChild(button);
+   });
+  }else activeList.classList.add('hidden');
   const latest=list[0];
   const continueTitle=$('continue-title');
   const continueDescription=$('continue-description');
@@ -1188,32 +1216,48 @@ document.querySelectorAll('[data-duration]').forEach(button=>{
   runUnitTest(unit,durationMinutes);
  };
 });
+async function loadAttemptIntoTest(attempt,unit){
+ currentAttempt=attempt.id;
+ currentUnit=unit;
+ const {data:questions,error:loadError}=await supabaseClient.rpc('get_test_questions',{p_attempt_id:currentAttempt});
+ if(loadError)throw loadError;
+ currentQuestions=questions||[];
+ if(!currentQuestions.length)throw new Error('No questions were returned for this attempt.');
+ const {data:bookmarks,error:bookmarkError}=await supabaseClient.from('bookmarked_questions')
+  .select('id,question_number').eq('student_id',currentUser.id).eq('unit_id',String(unit.id));
+ if(bookmarkError)throw bookmarkError;
+ const bookmarkIds=Object.fromEntries((bookmarks||[]).map(b=>[b.question_number,b.id]));
+ currentQuestions.forEach(q=>q.bookmark_id=bookmarkIds[q.question_number]||null);
+ const firstUnanswered=currentQuestions.findIndex(q=>!q.selected_option);
+ currentQuestion=firstUnanswered>=0?firstUnanswered:0;
+ $('test-heading').textContent=unit.unit_name+' Mock Test';
+ $('test-unit-label').textContent=unit.unit_name;
+ seenTrackingPromise=Promise.resolve();
+ renderQuestion();
+ showView('test');
+ startTestTimer(new Date(attempt.deadline_at).getTime());
+}
 async function runUnitTest(unit,durationMinutes){
  clearMessage();
  try{
-  const {data,error}=await supabaseClient.rpc('start_unit_test',{p_unit_id:unit.id});
+  const {data,error}=await supabaseClient.rpc('start_or_resume_unit_test',{
+   p_unit_id:unit.id,p_duration_minutes:durationMinutes
+  });
   if(error)throw error;
-  currentAttempt=data;
-  currentUnit=unit;
-  const {data:attemptInfo,error:attemptInfoError}=await supabaseClient.from('test_attempts').select('started_at').eq('id',currentAttempt).eq('student_id',currentUser.id).single();
-  if(attemptInfoError)throw attemptInfoError;
-  const startedAt=attemptInfo?.started_at?new Date(attemptInfo.started_at).getTime():Date.now();
-  const {data:questions,error:loadError}=await supabaseClient.rpc('get_test_questions',{p_attempt_id:currentAttempt});
-  if(loadError)throw loadError;
-  currentQuestions=questions||[];
-  if(!currentQuestions.length)throw new Error('No questions were returned.');
-  const {data:bookmarks,error:bookmarkError}=await supabaseClient.from('bookmarked_questions')
-   .select('id,question_number').eq('student_id',currentUser.id).eq('unit_id',String(unit.id));
-  if(bookmarkError)throw bookmarkError;
-  const bookmarkIds=Object.fromEntries((bookmarks||[]).map(b=>[b.question_number,b.id]));
-  currentQuestions.forEach(q=>q.bookmark_id=bookmarkIds[q.question_number]||null);
-  startTestTimer(startedAt+durationMinutes*60*1000);
-  currentQuestion=0;
-  $('test-heading').textContent=unit.unit_name+' Mock Test';
-  $('test-unit-label').textContent=unit.unit_name;
-  renderQuestion();
-  showView('test');
+  const attempt=Array.isArray(data)?data[0]:data;
+  if(!attempt?.attempt_id)throw new Error('The test attempt could not be created.');
+  if(attempt.resumed)message('An unfinished test in this unit was found. Resuming your saved test.','success');
+  await loadAttemptIntoTest({
+   id:attempt.attempt_id,started_at:attempt.started_at,
+   duration_minutes:attempt.duration_minutes,deadline_at:attempt.deadline_at
+  },unit);
  }catch(e){message('Could not start the test: '+e.message);}
+}
+async function resumeUnitTest(attempt,unit){
+ clearMessage();
+ try{
+  await loadAttemptIntoTest(attempt,unit);
+ }catch(e){message('Could not resume the test: '+e.message);}
 }
 
 function formatTimeRemaining(seconds){
