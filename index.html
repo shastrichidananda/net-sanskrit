@@ -1383,6 +1383,13 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
  #dashboard-bookmarks h2,#dashboard-history h2,#dashboard-performance h2{font-size:1rem}
  #dashboard-view .performance-panel{padding:12px}
 }
+
+@media(max-width:650px){
+ #dashboard-view .revision-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #dashboard-view .revision-shortcut{min-width:0;padding:9px 7px}
+ #dashboard-view .revision-shortcut strong{font-size:.75rem;line-height:1.25}
+ #dashboard-view .revision-shortcut span{font-size:.66rem;line-height:1.25}
+}
 </style>
 </head>
 
@@ -1765,6 +1772,19 @@ $('continue-practice').onclick=()=>{
  if(dashboardUnitsCache.length===1)startTest(dashboardUnitsCache[0]);
  else if($('dashboard-unit-search'))$('dashboard-unit-search').focus({preventScroll:true});
 };
+document.querySelectorAll('[data-revision-open]').forEach(button=>{
+ button.onclick=()=>{
+  if(button.dataset.revisionOpen==='wrong'){
+   $('revision-wrong-list').classList.remove('hidden');
+   const toggle=$('toggle-wrong-questions');
+   if($('wrong-question-list').classList.contains('hidden'))toggle.click();
+  }else{
+   const toggle=$('toggle-unanswered-questions');
+   if($('unanswered-question-list').classList.contains('hidden'))toggle.click();
+   $('revision-unanswered').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+ };
+});
 function setupRevisionToggle(buttonId,listId,showLabel,hideLabel){
  const button=$(buttonId),list=$(listId);
  button.onclick=async()=>{
