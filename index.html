@@ -597,14 +597,24 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
 /* Accessible mock-test duration picker */
 .duration-backdrop{display:none;position:fixed;inset:0;z-index:30;background:#172b4970;align-items:center;justify-content:center;padding:16px}
 .duration-backdrop.show{display:flex}
-.duration-modal{position:relative;width:min(430px,100%);background:var(--paper);border:1px solid var(--line);border-radius:17px;padding:26px;box-shadow:0 18px 60px #172b4930}
-.duration-modal h2{margin:12px 0 4px}
-.duration-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}
-.duration-choice{display:flex;flex-direction:column;gap:5px;align-items:center;justify-content:center;min-height:92px;background:#fffaf1}
+.duration-modal{position:relative;width:min(410px,100%);background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px 22px 16px;box-shadow:0 18px 60px #172b4930}
+.duration-modal>.eyebrow{font-size:.72rem;padding:6px 10px}
+.duration-modal h2{margin:9px 0 3px;font-size:1.35rem;line-height:1.25}
+.duration-modal #duration-unit-name{margin:5px 0 12px;font-size:.86rem;line-height:1.4}
+.duration-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0 2px}
+.duration-choice{display:flex;align-items:center;justify-content:center;min-width:0;min-height:62px;padding:10px 8px;background:#fffaf1;font-size:.95rem;font-weight:650;white-space:nowrap}
 .duration-choice strong{color:var(--navy);font-size:1.05rem}
 .duration-choice span{font-size:.8rem;color:var(--muted)}
 .duration-choice:hover{border-color:var(--saffron);background:#fbf4e9}
-@media(max-width:480px){.duration-backdrop{align-items:flex-end;padding:12px}.duration-modal{padding:23px 18px;border-radius:17px 17px 12px 12px}.duration-options{grid-template-columns:1fr}}
+@media(max-width:480px){
+ .duration-backdrop{align-items:flex-end;padding:10px}
+ .duration-modal{width:100%;padding:17px 16px 13px;border-radius:16px 16px 12px 12px}
+ .duration-modal h2{font-size:1.22rem;margin:8px 0 2px}
+ .duration-modal #duration-unit-name{font-size:.82rem;margin:4px 0 10px;padding-right:22px}
+ .duration-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 0}
+ .duration-choice{min-height:58px;padding:9px 5px;font-size:.88rem}
+ .duration-modal .close{top:12px;right:12px}
+}
 
 
 /* Desktop mock-test viewport layout */
