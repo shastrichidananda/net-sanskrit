@@ -1875,7 +1875,7 @@ async function loadAdminTestControls(){
      if(error)throw error;
      if(key==='is_enabled')state.textContent=input.checked?'Available to students':'Hidden from students';
      status.textContent='Saved successfully.';
-     await loadUnits('dashboard-units');
+     const units=await loadUnits('dashboard-units');
     }catch(e){input.checked=!input.checked;status.textContent='Could not save: '+e.message;}
     finally{input.disabled=false;}
    });
@@ -2050,7 +2050,7 @@ async function openDashboard(){
   $('stat-attempts').textContent=list.length;
   $('stat-average').textContent=list.length?Math.round(list.reduce((s,a)=>s+(Number(a.score)||0),0)/list.length)+'/200':'—';
   $('stat-best').textContent=list.length?Math.max(...list.map(a=>a.score||0))+'/200':'—';
-  const {data:units}=await supabaseClient.from('units').select('id,unit_name');
+
   const names=Object.fromEntries((units||[]).map(u=>[u.id,u.unit_name]));
   const {data:activeAttempts,error:activeError}=await supabaseClient.from('test_attempts')
    .select('id,unit_id,started_at,duration_minutes,deadline_at')
