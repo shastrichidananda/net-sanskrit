@@ -1360,7 +1360,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
     <div id="admin-test-controls-status" class="muted" role="status"></div>
     <div id="admin-unit-controls" class="admin-unit-controls"><p class="muted">Loading unit controls...</p></div>
    </div>
-   <div class="admin-subpanel"><h3>Student Management</h3><p class="muted">Search registered students and review their test activity. This section does not change student accounts.</p><div class="admin-export-actions"><button class="btn primary" type="button" id="admin-export-students">⬇ Download all student records (CSV)</button></div><input id="admin-student-search" type="search" placeholder="Search by student name..." aria-label="Search students" style="width:100%;max-width:420px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font:inherit;margin:4px 0 12px"><div id="admin-student-list" class="admin-table-wrap"><p class="muted">Loading students...</p></div><div id="admin-student-details" class="admin-subpanel hidden"><h3 id="admin-student-details-title">Student performance</h3><div id="admin-student-attempts"></div><div id="admin-attempt-review" class="admin-attempt-review"></div></div></div>
+   <div class="admin-subpanel"><h3>Student Management</h3><p class="muted">Search registered students and review their test activity. This section does not change student accounts.</p><div class="admin-export-actions"><button class="btn primary" type="button" id="admin-export-students">⬇ Download all student records (CSV)</button><button class="btn" type="button" id="admin-export-all-attempts">⬇ Download all test history (CSV)</button><span id="admin-export-status" class="muted" role="status"></span></div><input id="admin-student-search" type="search" placeholder="Search by student name..." aria-label="Search students" style="width:100%;max-width:420px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font:inherit;margin:4px 0 12px"><div id="admin-student-list" class="admin-table-wrap"><p class="muted">Loading students...</p></div><div id="admin-student-details" class="admin-subpanel hidden"><h3 id="admin-student-details-title">Student performance</h3><div id="admin-student-attempts"></div><div id="admin-attempt-review" class="admin-attempt-review"></div></div></div>
   </section>
   </div>
  </section>
@@ -1703,6 +1703,39 @@ function exportAdminStudents(){
  downloadAdminCsv('net-sanskrit-student-summary.csv',['Student','Registration date','Total tests','Completed tests','Average marks out of 200'],rows);
 }
 
+async function exportAdminAllAttempts(){
+ const button=$('admin-export-all-attempts'),status=$('admin-export-status');
+ const original=button.textContent;button.disabled=true;button.textContent='Preparing CSV...';status.textContent='Fetching test records...';
+ try{
+  const allAttempts=[];let from=0;const pageSize=1000;
+  while(true){
+   const {data,error}=await supabaseClient.from('test_attempts')
+    .select('student_id,unit_id,status,total_questions,correct_answers,incorrect_answers,unanswered,score,started_at,submitted_at,duration_minutes')
+    .order('started_at',{ascending:false}).range(from,from+pageSize-1);
+   if(error)throw error;
+   allAttempts.push(...(data||[]));
+   if(!data||data.length<pageSize)break;
+   from+=pageSize;
+  }
+  const studentNames=new Map(adminStudentCache.map(student=>[student.id,student.full_name||'Name not provided']));
+  const {data:units,error:unitError}=await supabaseClient.from('units').select('id,unit_name');
+  if(unitError)throw unitError;
+  const unitNames=new Map((units||[]).map(unit=>[unit.id,unit.unit_name||('Unit '+unit.id)]));
+  const rows=allAttempts.map(attempt=>[
+   studentNames.get(attempt.student_id)||'Unknown student',
+   unitNames.get(attempt.unit_id)||('Unit '+attempt.unit_id),
+   attempt.status,
+   attempt.started_at?new Date(attempt.started_at).toLocaleString():'',
+   attempt.submitted_at?new Date(attempt.submitted_at).toLocaleString():'',
+   attempt.total_questions,attempt.correct_answers,attempt.incorrect_answers,attempt.unanswered,
+   attempt.score,attempt.duration_minutes??''
+  ]);
+  downloadAdminCsv('net-sanskrit-all-test-history.csv',['Student','Unit','Status','Started at','Submitted at','Total questions','Correct','Incorrect','Unanswered','Marks out of 200','Duration (minutes)'],rows);
+  status.textContent=allAttempts.length+' test records exported.';
+ }catch(error){status.textContent='Export failed: '+(error.message||'Please try again.');}
+ finally{button.disabled=false;button.textContent=original;}
+}
+
  const list=$('admin-student-list');
  const term=($('admin-student-search')?.value||'').trim().toLocaleLowerCase();
  const filtered=adminStudentCache.filter(student=>(student.full_name||'').toLocaleLowerCase().includes(term));
@@ -1728,6 +1761,8 @@ function exportAdminStudents(){
 }
 const adminExportButton=$('admin-export-students');
 if(adminExportButton)adminExportButton.addEventListener('click',exportAdminStudents);
+const adminAttemptsExportButton=$('admin-export-all-attempts');
+if(adminAttemptsExportButton)adminAttemptsExportButton.addEventListener('click',exportAdminAllAttempts);
 async function loadAdminStudentDetails(student){
  const panel=$('admin-student-details'),attemptsBox=$('admin-student-attempts'),reviewBox=$('admin-attempt-review');
  panel.classList.remove('hidden');
