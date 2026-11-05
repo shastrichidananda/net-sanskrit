@@ -464,10 +464,8 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
    <div class="stat"><strong id="stat-average">—</strong><span>Average marks</span></div>
    <div class="stat"><strong id="stat-best">—</strong><span>Best marks</span></div>
   </div>
-  <div class="panel performance-panel">
-   <div class="section-head"><div><h2>Performance by unit</h2><p>Your average marks across completed tests.</p></div></div>
-   <div id="performance-list" class="performance-list"><p class="muted">Your unit-wise performance will appear here after your first test.</p></div>
-  </div>
+  <div class="section-head"><div><h2>Choose a unit</h2><p>Unlimited attempts · 100 questions per test</p></div></div>
+  <div class="units" id="dashboard-units"></div>
   <div class="panel question-revision-panel">
    <div class="section-head"><div><h2>Questions to Revisit · Incorrect Answers</h2><p>Questions you answered incorrectly in your previous tests.</p></div></div>
    <button class="btn revision-toggle" type="button" id="toggle-wrong-questions" aria-expanded="false">Show incorrectly answered questions</button>
@@ -478,12 +476,14 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
    <button class="btn revision-toggle" type="button" id="toggle-unanswered-questions" aria-expanded="false">Show unanswered questions</button>
    <div id="unanswered-question-list" class="revision-list hidden"><p class="muted">Your unanswered-question list is hidden.</p></div>
   </div>
-  <div class="section-head"><div><h2>Choose a unit</h2><p>Unlimited attempts · 100 questions per test</p></div></div>
-  <div class="units" id="dashboard-units"></div>
   <div class="panel bookmarks-panel">
    <h2>My bookmarked questions</h2>
    <p class="muted">Questions you save during practice appear here for revision.</p>
    <div id="bookmark-list" class="muted">Loading bookmarks...</div>
+  </div>
+  <div class="panel performance-panel">
+   <div class="section-head"><div><h2>Performance by unit</h2><p>Your average marks across completed tests.</p></div></div>
+   <div id="performance-list" class="performance-list"><p class="muted">Your unit-wise performance will appear here after your first test.</p></div>
   </div>
   <div class="panel">
    <h2>My test history</h2>
