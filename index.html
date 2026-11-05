@@ -1354,6 +1354,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
     <div class="stat"><strong id="admin-active-count">—</strong><span>Tests in progress</span></div>
    </div>
    <div class="admin-subpanel"><h3>Questions by unit</h3><div id="admin-unit-counts" class="admin-unit-counts"><p class="muted">Loading...</p></div></div>
+   <div class="admin-subpanel"><h3>Test performance by unit</h3><p class="muted">Completed test attempts and average marks for each unit.</p><div id="admin-unit-performance" class="admin-unit-counts"><p class="muted">Loading...</p></div></div>
    <div class="admin-subpanel"><h3>Test Controls</h3>
     <p class="muted">Manage which units students can practise and which test durations are available. Existing unfinished tests remain resumable.</p>
     <label class="admin-control-toggle"><input type="checkbox" id="admin-tests-enabled" checked> Allow students to start new tests</label>
@@ -1910,7 +1911,7 @@ async function loadAdminOverview(){
    supabaseClient.from('test_attempts').select('id',{count:'exact',head:true}).eq('status','in_progress'),
    supabaseClient.from('profiles').select('id,full_name,role,created_at').eq('role','student').order('created_at',{ascending:false}).limit(1000),
    supabaseClient.from('units').select('id,unit_name').order('id'),
-   supabaseClient.from('test_attempts').select('student_id,status,score').limit(10000)
+   supabaseClient.from('test_attempts').select('student_id,unit_id,status,score').limit(10000)
   ]);
   for(const result of [studentsCount,questionsCount,attemptsCount,activeCount,students,units,studentAttempts])if(result.error)throw result.error;
   $('admin-students-count').textContent=studentsCount.count??0;
@@ -1928,6 +1929,25 @@ async function loadAdminOverview(){
    const name=document.createElement('span');name.textContent=unit.name;
    const count=document.createElement('strong');count.textContent=unit.count;
    row.append(name,count);unitContainer.appendChild(row);
+  });
+  const unitPerformance=new Map();
+  (studentAttempts.data||[]).forEach(attempt=>{
+   const key=String(attempt.unit_id);
+   if(!unitPerformance.has(key))unitPerformance.set(key,{total:0,completed:0,score:0});
+   const stats=unitPerformance.get(key);stats.total++;
+   if(attempt.status==='submitted'){stats.completed++;stats.score+=Number(attempt.score)||0;}
+  });
+  const performanceContainer=$('admin-unit-performance');performanceContainer.replaceChildren();
+  (units.data||[]).forEach(unit=>{
+   const stats=unitPerformance.get(String(unit.id))||{total:0,completed:0,score:0};
+   const row=document.createElement('div');row.className='admin-unit-row';
+   const info=document.createElement('div');
+   const name=document.createElement('strong');name.textContent=unit.unit_name||('Unit '+unit.id);
+   const detail=document.createElement('small');detail.textContent=stats.total+' attempts · '+stats.completed+' completed';
+   info.append(name,detail);
+   const average=document.createElement('strong');average.textContent=stats.completed?Math.round(stats.score/stats.completed)+'/200':'—';
+   average.setAttribute('aria-label','Average marks');
+   row.append(info,average);performanceContainer.appendChild(row);
   });
   const attemptStats=new Map();
   (studentAttempts.data||[]).forEach(attempt=>{
