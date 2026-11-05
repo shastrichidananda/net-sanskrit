@@ -1497,24 +1497,30 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
    <div class="stat"><strong id="stat-average">—</strong><span>Average marks</span></div>
    <div class="stat"><strong id="stat-best">—</strong><span>Best marks</span></div>
   </div>
-  <section class="panel continue-panel" id="continue-panel" aria-live="polite">
-   <div class="continue-copy"><span class="eyebrow">Your study path</span><h2 id="continue-title">Continue your preparation</h2><p id="continue-description">Your latest practice activity will appear here.</p></div>
-   <button class="btn primary" id="continue-practice" type="button">Choose a unit →</button>
+  <section class="panel preparation-panel" id="continue-panel" aria-live="polite">
+   <div class="section-head"><div><span class="eyebrow">Your study path</span><h2>Start Your Preparation</h2></div></div>
+   <div class="preparation-actions">
+    <button class="preparation-action primary-action" id="continue-practice" type="button"><span class="action-icon">＋</span><span><strong>New Test</strong><small>Explore all 10 units</small></span><span class="action-arrow">→</span></button>
+    <button class="preparation-action" id="resume-tests-button" type="button"><span class="action-icon">↻</span><span><strong>Resume Test</strong><small>Continue an unfinished test</small></span><span class="action-arrow">→</span></button>
+   </div>
    <div id="active-tests-list" class="active-tests-list hidden"></div>
   </section>
-  <div class="section-head" id="dashboard-units-heading"><div><h2>Practice tests · Choose a unit</h2><p>Unlimited attempts · 100 questions per test</p></div></div>
-  <label class="unit-search-wrap" for="dashboard-unit-search"><span aria-hidden="true">⌕</span><input id="dashboard-unit-search" type="search" placeholder="Search Sanskrit units…" autocomplete="off"><span class="unit-search-count" id="unit-search-count">10 units</span></label>
-  <div class="units" id="dashboard-units"></div>
-  <div class="quick-revision-links" aria-label="Quick revision links">
-   <button type="button" class="quick-revision-link" data-dashboard-target="dashboard-bookmarks">☆ Bookmarks</button>
-   <button type="button" class="quick-revision-link" data-dashboard-target="revision-wrong">↻ Incorrect answers</button>
-   <button type="button" class="quick-revision-link" data-dashboard-target="dashboard-history">◷ Test history</button>
+  <div id="dashboard-units-section" class="hidden">
+   <div class="section-head" id="dashboard-units-heading"><div><h2>Choose a unit</h2><p>10 Sanskrit units · 100 questions per test</p></div></div>
+   <label class="unit-search-wrap" for="dashboard-unit-search"><span aria-hidden="true">⌕</span><input id="dashboard-unit-search" type="search" placeholder="Search Sanskrit units…" autocomplete="off"><span class="unit-search-count" id="unit-search-count">10 units</span></label>
+   <div class="units" id="dashboard-units"></div>
   </div>
   <div class="dashboard-tools-grid">
   <div class="panel question-revision-panel" id="revision-wrong">
-   <div class="section-head"><div><h2>Questions to Revisit · Incorrect Answers</h2><p>Questions you answered incorrectly in your previous tests.</p></div></div>
-   <button class="btn revision-toggle" type="button" id="toggle-wrong-questions" aria-expanded="false">Show incorrectly answered questions</button>
-   <div id="wrong-question-list" class="revision-list hidden"><p class="muted">Your incorrect-answer list is hidden.</p></div>
+   <div class="section-head"><div><h2>Questions to Revisit</h2><p>Incorrect answers and questions left unanswered.</p></div></div>
+   <div class="revision-shortcuts">
+    <button type="button" class="revision-shortcut" data-revision-open="wrong"><strong>Incorrect Answers</strong><span>Review mistakes →</span></button>
+    <button type="button" class="revision-shortcut" data-revision-open="unanswered"><strong>Seen, Not Answered</strong><span>Review missed questions →</span></button>
+   </div>
+   <div id="revision-wrong-list" class="hidden">
+    <button class="btn revision-toggle" type="button" id="toggle-wrong-questions" aria-expanded="false">Show incorrectly answered questions</button>
+    <div id="wrong-question-list" class="revision-list hidden"><p class="muted">Your incorrect-answer list is hidden.</p></div>
+   </div>
   </div>
   <div class="panel question-revision-panel" id="revision-unanswered">
    <div class="section-head"><div><h2>Seen but Not Answered</h2><p>Questions you viewed during tests but left unanswered in every attempt.</p></div></div>
