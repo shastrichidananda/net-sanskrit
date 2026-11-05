@@ -1773,6 +1773,12 @@ async function loadAdminAttemptReview(attempt){
   if(error)throw error;
   box.replaceChildren();
   const heading=document.createElement('h3');heading.textContent='Answer review · '+(data||[]).length+' questions';box.appendChild(heading);
+  const exportReview=document.createElement('button');exportReview.type='button';exportReview.className='btn admin-export-one';exportReview.textContent='Download answer review (CSV)';
+  exportReview.addEventListener('click',()=>downloadAdminCsv('test-answer-review.csv',
+   ['Question number','Question','Option A','Option B','Option C','Option D','Student answer','Correct answer','Result','Explanation'],
+   (data||[]).map(q=>[q.question_number,q.question_text,q.option_a,q.option_b,q.option_c,q.option_d,q.selected_option||'Not answered',q.correct_option,!q.selected_option?'Unanswered':q.selected_option===q.correct_option?'Correct':'Incorrect',q.explanation||''])
+  ));
+  box.appendChild(exportReview);
   (data||[]).forEach(q=>{
    const card=document.createElement('article');card.className='admin-review-question';
    const title=document.createElement('strong');title.textContent='Question '+q.question_number+'. '+q.question_text;card.appendChild(title);
