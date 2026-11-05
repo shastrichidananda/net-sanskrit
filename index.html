@@ -266,6 +266,23 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
  .performance-top strong{font-size:.88rem}
 }
 
+
+/* Student question bookmarks */
+.bookmark-button{margin:-3px 0 17px;border-color:#d5b27d;color:#80551f;min-height:42px}
+.bookmark-button.is-bookmarked{background:#f4e8d5;border-color:var(--saffron);color:#704817}
+.saved-bookmark{padding:14px 0;border-bottom:1px solid var(--line)}
+.saved-bookmark:last-child{border-bottom:0}
+.saved-bookmark strong{display:block;color:var(--navy);font-size:.9rem}
+.saved-bookmark p{margin:6px 0 10px;color:var(--ink);font-size:.9rem;white-space:pre-wrap}
+.saved-bookmark .btn{font-size:.82rem;padding:7px 11px}
+.bookmarks-panel{margin:18px 0}
+@media(max-width:650px){
+ .bookmark-button{width:100%;margin:0 0 15px;min-height:46px}
+ .bookmarks-panel{padding:15px}
+ .saved-bookmark{padding:13px 0}
+ .saved-bookmark .btn{min-height:40px}
+}
+
 </style>
 </head>
 
@@ -317,6 +334,11 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
   </div>
   <div class="section-head"><div><h2>Choose a unit</h2><p>Unlimited attempts · 100 questions per test</p></div></div>
   <div class="units" id="dashboard-units"></div>
+  <div class="panel bookmarks-panel">
+   <h2>My bookmarked questions</h2>
+   <p class="muted">Questions you save during practice appear here for revision.</p>
+   <div id="bookmark-list" class="muted">Loading bookmarks...</div>
+  </div>
   <div class="panel">
    <h2>My test history</h2>
    <p class="muted">Your previous submitted tests and scores.</p>
@@ -334,6 +356,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
   <div class="question-card">
    <div class="question-number" id="question-number"></div>
    <div class="question-text" id="question-text"></div>
+   <button class="btn bookmark-button" id="bookmark-current" type="button">☆ Bookmark question</button>
    <div id="options-list"></div>
   </div>
   <div class="test-controls">
@@ -503,6 +526,41 @@ async function openDashboard(){
     top.append(name,score);track.appendChild(fill);row.append(top,meta,track);performance.appendChild(row);
    });
   }
+  const {data:savedBookmarks,error:savedError}=await supabaseClient.from('bookmarked_questions')
+   .select('id,unit_id,question_number,question_data,created_at')
+   .eq('student_id',currentUser.id).order('created_at',{ascending:false});
+  if(savedError)throw savedError;
+  const bookmarkList=$('bookmark-list');
+  bookmarkList.innerHTML='';
+  if(!savedBookmarks?.length){
+   const empty=document.createElement('p');empty.className='muted';
+   empty.textContent='No bookmarked questions yet. Use ☆ Bookmark question during a test to save one.';
+   bookmarkList.appendChild(empty);
+  }else{
+   savedBookmarks.forEach(bookmark=>{
+    const card=document.createElement('div');card.className='saved-bookmark';
+    const heading=document.createElement('strong');
+    heading.textContent=(names[bookmark.unit_id]||('Unit '+bookmark.unit_id))+' · Question '+bookmark.question_number;
+    const question=document.createElement('p');
+    question.textContent=bookmark.question_data?.question_text||'Question text unavailable';
+    const remove=document.createElement('button');remove.className='btn';remove.type='button';remove.textContent='Remove bookmark';
+    remove.onclick=async()=>{
+     remove.disabled=true;
+     try{
+      const {error}=await supabaseClient.from('bookmarked_questions').delete()
+       .eq('id',bookmark.id).eq('student_id',currentUser.id);
+      if(error)throw error;
+      card.remove();
+      if(!bookmarkList.querySelector('.saved-bookmark')){
+       const empty=document.createElement('p');empty.className='muted';
+       empty.textContent='No bookmarked questions yet.';
+       bookmarkList.appendChild(empty);
+      }
+     }catch(e){message('Could not remove bookmark: '+e.message);remove.disabled=false;}
+    };
+    card.append(heading,question,remove);bookmarkList.appendChild(card);
+   });
+  }
   $('history-list').innerHTML='';
   if(!list.length){$('history-list').textContent='No completed tests yet. Choose a unit to begin.';}
   list.forEach(a=>{
@@ -529,12 +587,54 @@ async function startTest(unit){
   if(loadError)throw loadError;
   currentQuestions=questions||[];
   if(!currentQuestions.length)throw new Error('No questions were returned.');
+  const {data:bookmarks,error:bookmarkError}=await supabaseClient.from('bookmarked_questions')
+   .select('id,question_number').eq('student_id',currentUser.id).eq('unit_id',String(unit.id));
+  if(bookmarkError)throw bookmarkError;
+  const bookmarkIds=Object.fromEntries((bookmarks||[]).map(b=>[b.question_number,b.id]));
+  currentQuestions.forEach(q=>q.bookmark_id=bookmarkIds[q.question_number]||null);
   currentQuestion=0;
   $('test-heading').textContent=unit.unit_name+' Mock Test';
   $('test-unit-label').textContent=unit.unit_name;
   renderQuestion();
   showView('test');
  }catch(e){message(e.message);}
+}
+async function toggleCurrentBookmark(){
+ const q=currentQuestions[currentQuestion];
+ const button=$('bookmark-current');
+ if(!q||!currentUser)return;
+ button.disabled=true;
+ try{
+  if(q.bookmark_id){
+   const {error}=await supabaseClient.from('bookmarked_questions').delete()
+    .eq('id',q.bookmark_id).eq('student_id',currentUser.id);
+   if(error)throw error;
+   q.bookmark_id=null;
+   button.textContent='☆ Bookmark question';
+   button.classList.remove('is-bookmarked');
+  }else{
+   const questionData={
+    question_text:q.question_text,
+    option_a:q.option_a,option_b:q.option_b,
+    option_c:q.option_c,option_d:q.option_d
+   };
+   const {data,error}=await supabaseClient.from('bookmarked_questions').insert({
+    student_id:currentUser.id,
+    unit_id:String(currentUnit.id),
+    question_number:q.question_number,
+    question_data:questionData
+   }).select('id').single();
+   if(error)throw error;
+   q.bookmark_id=data.id;
+   button.textContent='★ Bookmarked · Remove';
+   button.classList.add('is-bookmarked');
+  }
+  $('save-status').textContent=q.bookmark_id?'Question bookmarked':'Bookmark removed';
+ }catch(e){
+  $('save-status').textContent='Bookmark error: '+e.message;
+ }finally{
+  button.disabled=false;
+ }
 }
 function renderQuestion(){
  const q=currentQuestions[currentQuestion];
@@ -543,6 +643,11 @@ function renderQuestion(){
 );
  $('question-number').textContent='QUESTION '+q.question_number+' OF '+currentQuestions.length;
  $('question-text').textContent=q.question_text;
+ const bookmarkButton=$('bookmark-current');
+ bookmarkButton.textContent=q.bookmark_id?'★ Bookmarked · Remove':'☆ Bookmark question';
+ bookmarkButton.classList.toggle('is-bookmarked',!!q.bookmark_id);
+ bookmarkButton.disabled=false;
+ bookmarkButton.onclick=()=>toggleCurrentBookmark();
  $('options-list').innerHTML='';
  ['A','B','C','D'].forEach(letter=>{
   const value=q['option_'+letter.toLowerCase()];
