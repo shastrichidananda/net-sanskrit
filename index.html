@@ -1118,6 +1118,17 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
   #result-view>.panel{padding:14px}
 }
 
+
+#test-view #save-status.tab-warning{
+ display:inline-block;
+ margin-top:5px;
+ padding:5px 9px;
+ border-radius:6px;
+ background:#fff1d9;
+ color:#85520b;
+ font-weight:500;
+}
+
 </style>
 </head>
 
@@ -1370,7 +1381,7 @@ let currentUnit=null, lastResult=null, reviewAttemptId=null, authMode='login';
 let seenTrackingPromise=Promise.resolve();
 let answerSaveQueue=Promise.resolve();
 let testTimerInterval=null,testDeadline=null,isSubmittingTest=false;
-let tabSwitchWarnings=0,tabWasHiddenDuringTest=false;
+let tabSwitchWarnings=0,tabWasHiddenDuringTest=false,tabSwitchStorageKey=null;
 function message(text,type='error'){
  $('global-message').textContent=text;
  $('global-message').className='message '+type;
@@ -1742,7 +1753,8 @@ document.querySelectorAll('[data-duration]').forEach(button=>{
  };
 });
 async function loadAttemptIntoTest(attempt,unit){
- tabSwitchWarnings=0;
+ tabSwitchStorageKey='netSanskritTabWarnings:'+attempt.id;
+ try{tabSwitchWarnings=Number(sessionStorage.getItem(tabSwitchStorageKey))||0;}catch(e){tabSwitchWarnings=0;}
  tabWasHiddenDuringTest=false;
  currentAttempt=attempt.id;
  currentUnit=unit;
@@ -1821,11 +1833,14 @@ document.addEventListener('visibilitychange',()=>{
  if(document.visibilityState!=='visible'||!tabWasHiddenDuringTest)return;
  tabWasHiddenDuringTest=false;
  tabSwitchWarnings++;
+ try{if(tabSwitchStorageKey)sessionStorage.setItem(tabSwitchStorageKey,String(tabSwitchWarnings));}catch(e){}
  if(tabSwitchWarnings<3){
-  alert('Warning '+tabSwitchWarnings+' of 3: You have switched away from the mock test. Please remain on the test page. After the third warning, your test will be submitted automatically.');
+  $('save-status').textContent='Warning '+tabSwitchWarnings+' of 3: You switched away from the test. Please stay on this page.';
+  $('save-status').classList.add('tab-warning');
   return;
  }
- alert('Third warning: Your test will now be submitted automatically. All answers saved so far will be included.');
+ $('save-status').textContent='Third warning: submitting your test and saving your answers...';
+ $('save-status').classList.add('tab-warning');
  finishTest(true);
 });
 
