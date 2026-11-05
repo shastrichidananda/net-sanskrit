@@ -1161,6 +1161,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
 .admin-unit-counts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .admin-unit-row{display:flex;justify-content:space-between;gap:10px;padding:11px 13px;background:#fffefa;border:1px solid var(--line);border-radius:9px}
 .admin-unit-row strong{color:var(--navy)}
+.admin-recent-filter{display:block;width:100%;max-width:260px;margin:6px 0 12px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fffefa;color:var(--navy);font:inherit;min-height:42px}
 .admin-table{width:100%;border-collapse:collapse;min-width:420px}
 .admin-table th,.admin-table td{text-align:left;padding:11px;border-bottom:1px solid var(--line);font-size:.88rem}
 .admin-table th{color:var(--navy);background:#f8f3ea}
@@ -1355,7 +1356,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
    </div>
    <div class="admin-subpanel"><h3>Questions by unit</h3><div id="admin-unit-counts" class="admin-unit-counts"><p class="muted">Loading...</p></div></div>
    <div class="admin-subpanel"><h3>Test performance by unit</h3><p class="muted">Completed test attempts and average marks for each unit.</p><div id="admin-unit-performance" class="admin-unit-counts"><p class="muted">Loading...</p></div></div>
-   <div class="admin-subpanel"><h3>Recent test activity</h3><p class="muted">The 8 most recently started student tests.</p><div id="admin-recent-activity" class="admin-unit-counts"><p class="muted">Loading...</p></div></div>
+   <div class="admin-subpanel"><h3>Recent test activity</h3><p class="muted">The 8 most recently started student tests.</p><label class="muted" for="admin-recent-filter">Show activity</label><select id="admin-recent-filter" class="admin-recent-filter" aria-label="Filter recent test activity"><option value="all">All tests</option><option value="in_progress">In-progress tests</option><option value="submitted">Completed tests</option></select><div id="admin-recent-activity" class="admin-unit-counts"><p class="muted">Loading...</p></div></div>
    <div class="admin-subpanel"><h3>Test Controls</h3>
     <p class="muted">Manage which units students can practise and which test durations are available. Existing unfinished tests remain resumable.</p>
     <label class="admin-control-toggle"><input type="checkbox" id="admin-tests-enabled" checked> Allow students to start new tests</label>
@@ -1960,14 +1961,17 @@ async function loadAdminOverview(){
    const stats=attemptStats.get(student.id)||{total:0,completed:0,score:0};
    return {...student,total_attempts:stats.total,completed_attempts:stats.completed,average_score:stats.completed?stats.score/stats.completed:0};
   });
-  const recentContainer=$('admin-recent-activity');recentContainer.replaceChildren();
-  const recentAttempts=(studentAttempts.data||[]).slice(0,8);
-  if(!recentAttempts.length){
-   const empty=document.createElement('p');empty.className='muted';empty.textContent='No test activity yet.';recentContainer.appendChild(empty);
-  }else{
-   const studentNames=new Map(adminStudentCache.map(student=>[student.id,student.full_name||'Student']));
-   const unitNames=new Map((units.data||[]).map(unit=>[unit.id,unit.unit_name||('Unit '+unit.id)]));
-   recentAttempts.forEach(attempt=>{
+  const studentNames=new Map(adminStudentCache.map(student=>[student.id,student.full_name||'Student']));
+  const unitNames=new Map((units.data||[]).map(unit=>[unit.id,unit.unit_name||('Unit '+unit.id)]));
+  const renderRecentActivity=()=>{
+   const recentContainer=$('admin-recent-activity');recentContainer.replaceChildren();
+   const filter=$('admin-recent-filter')?.value||'all';
+   const filtered=(studentAttempts.data||[]).filter(attempt=>filter==='all'||attempt.status===filter).slice(0,8);
+   if(!filtered.length){
+    const empty=document.createElement('p');empty.className='muted';empty.textContent=filter==='in_progress'?'No tests are currently in progress.':filter==='submitted'?'No completed tests found.':'No test activity yet.';
+    recentContainer.appendChild(empty);return;
+   }
+   filtered.forEach(attempt=>{
     const row=document.createElement('div');row.className='admin-unit-row';
     const info=document.createElement('div');
     const name=document.createElement('strong');name.textContent=studentNames.get(attempt.student_id)||'Student';
@@ -1978,7 +1982,10 @@ async function loadAdminOverview(){
     result.textContent=attempt.status==='submitted'?(Number(attempt.score)||0)+'/200':'In progress';
     row.append(info,result);recentContainer.appendChild(row);
    });
-  }
+  };
+  const recentFilter=$('admin-recent-filter');
+  if(recentFilter)recentFilter.onchange=renderRecentActivity;
+  renderRecentActivity();
   renderAdminStudents();
   await loadAdminTestControls();
  }catch(error){
