@@ -1360,7 +1360,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
     <div id="admin-test-controls-status" class="muted" role="status"></div>
     <div id="admin-unit-controls" class="admin-unit-controls"><p class="muted">Loading unit controls...</p></div>
    </div>
-   <div class="admin-subpanel"><h3>Student Management</h3><p class="muted">Search registered students and review their test activity. This section does not change student accounts.</p><div class="admin-export-actions"><button class="btn" type="button" id="admin-export-students">Download student report (CSV)</button></div><input id="admin-student-search" type="search" placeholder="Search by student name..." aria-label="Search students" style="width:100%;max-width:420px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font:inherit;margin:4px 0 12px"><div id="admin-student-list" class="admin-table-wrap"><p class="muted">Loading students...</p></div><div id="admin-student-details" class="admin-subpanel hidden"><h3 id="admin-student-details-title">Student performance</h3><div id="admin-student-attempts"></div><div id="admin-attempt-review" class="admin-attempt-review"></div></div></div>
+   <div class="admin-subpanel"><h3>Student Management</h3><p class="muted">Search registered students and review their test activity. This section does not change student accounts.</p><div class="admin-export-actions"><button class="btn primary" type="button" id="admin-export-students">⬇ Download all student records (CSV)</button></div><input id="admin-student-search" type="search" placeholder="Search by student name..." aria-label="Search students" style="width:100%;max-width:420px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font:inherit;margin:4px 0 12px"><div id="admin-student-list" class="admin-table-wrap"><p class="muted">Loading students...</p></div><div id="admin-student-details" class="admin-subpanel hidden"><h3 id="admin-student-details-title">Student performance</h3><div id="admin-student-attempts"></div><div id="admin-attempt-review" class="admin-attempt-review"></div></div></div>
   </section>
   </div>
  </section>
@@ -1726,7 +1726,8 @@ function exportAdminStudents(){
  });
  table.appendChild(tbody);list.appendChild(table);
 }
-$('admin-export-students').addEventListener('click',exportAdminStudents);
+const adminExportButton=$('admin-export-students');
+if(adminExportButton)adminExportButton.addEventListener('click',exportAdminStudents);
 async function loadAdminStudentDetails(student){
  const panel=$('admin-student-details'),attemptsBox=$('admin-student-attempts'),reviewBox=$('admin-attempt-review');
  panel.classList.remove('hidden');
