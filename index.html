@@ -1238,6 +1238,32 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
  #test-view .timer-pill{grid-column:1;grid-row:auto;justify-self:start;min-width:125px}
  #test-view #exit-test{grid-column:2;grid-row:auto;align-self:center;justify-self:end;min-height:44px}
 }
+
+/* Compact student dashboard for small mobile screens */
+@media(max-width:650px){
+ #dashboard-view .dashboard-content{padding-bottom:12px}
+ #dashboard-view .dashboard-mobile-menu{margin:2px 0 5px;min-height:40px}
+ #dashboard-view .hero{padding:16px 0 8px}
+ #dashboard-view .hero h1{
+  font-size:clamp(1.65rem,7vw,2.15rem);
+  line-height:1.12;
+  margin:8px 0 5px;
+  overflow-wrap:anywhere;
+ }
+ #dashboard-view .hero p{font-size:.9rem;line-height:1.4;margin:5px 0 0}
+ #dashboard-view .hero .eyebrow{font-size:.68rem;padding:5px 10px}
+ #dashboard-view .stats{margin:10px 0 12px;gap:7px}
+ #dashboard-view .stats .stat{min-height:70px;padding:10px 8px}
+ #dashboard-view .stats .stat strong{font-size:1.25rem}
+ #dashboard-view .stats .stat span{font-size:.68rem;line-height:1.25}
+ #dashboard-view .continue-panel{padding:13px!important;margin:7px 0 12px!important}
+ #dashboard-view .continue-panel h2{margin:6px 0 3px}
+ #dashboard-view .continue-panel p{font-size:.82rem;line-height:1.4}
+ #dashboard-view .continue-panel .btn{margin-top:9px;min-height:42px}
+ #dashboard-view .active-tests-list{gap:7px;margin-top:10px}
+ #dashboard-view .active-tests-list>strong{font-size:.9rem}
+ #dashboard-view .active-test-button{min-height:42px;padding:9px 11px;font-size:.84rem}
+}
 </style>
 </head>
 
@@ -2069,10 +2095,12 @@ $('admin-refresh').onclick=()=>loadAdminOverview();
 async function openDashboard(){
  if(!currentUser){openAuth('login');return;}
  showView('dashboard');
- $('welcome-title').textContent='Welcome, '+(currentUser.user_metadata?.full_name||currentUser.email||'Student')+'!';
+ $('welcome-title').textContent='Welcome back!';
  try{
   const units=await loadUnits('dashboard-units');
-  const {data:profile}=await supabaseClient.from('profiles').select('role').eq('id',currentUser.id).maybeSingle();
+  const {data:profile}=await supabaseClient.from('profiles').select('role,full_name').eq('id',currentUser.id).maybeSingle();
+  const displayName=profile?.full_name||currentUser.user_metadata?.full_name||'';
+  $('welcome-title').textContent=displayName?'Welcome, '+displayName+'!':'Welcome back!';
   const isAdmin=profile?.role==='admin';
   $('admin-sidebar-link').classList.toggle('hidden',!isAdmin);
   $('admin-panel').classList.toggle('hidden',!isAdmin);
