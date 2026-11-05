@@ -1400,6 +1400,17 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
  #revision-wrong{grid-column:1/-1}
  #revision-wrong .revision-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+header .nav{display:flex;align-items:center;gap:12px}
+header .dashboard-mobile-menu{display:none;margin:0 0 0 4px;white-space:nowrap;min-height:36px}
+body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:flex}
+header .auth-actions{margin-left:auto;min-width:0}
+@media(max-width:650px){
+ header .nav{gap:8px;min-height:58px}
+ header .brand{flex:0 0 auto;font-size:1rem}
+ header .dashboard-mobile-menu{padding:7px 9px;font-size:.78rem}
+ header .user-label{max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
 </style>
 </head>
 
@@ -1407,6 +1418,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
 <header>
  <div class="wrap nav">
   <a class="brand" href="#" id="brand-home"><span class="brand-mark">सं</span><span>NET Sanskrit</span></a>
+  <button class="dashboard-mobile-menu" id="dashboard-mobile-menu" type="button" aria-expanded="false">☰ Menu</button>
   <div class="auth-actions">
    <span class="user-label" id="user-label"></span>
    <button class="btn" id="login-open">Login</button>
@@ -1496,7 +1508,6 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
   </aside>
   <button class="sidebar-overlay" id="sidebar-overlay" type="button" aria-label="Close navigation menu"></button>
   <div class="dashboard-content">
-   <button class="dashboard-mobile-menu" id="dashboard-mobile-menu" type="button" aria-expanded="false">☰ Menu</button>
    <div class="hero" id="dashboard-top">
    <span class="eyebrow">Student dashboard</span>
    <h1 id="welcome-title">Welcome!</h1>
