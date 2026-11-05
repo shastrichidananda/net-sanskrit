@@ -411,6 +411,15 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
 .sidebar-caption{font-size:.66rem;letter-spacing:.09em;color:var(--muted);font-weight:800;padding:7px 10px 2px}
 .sidebar-link,.sidebar-collapse{display:flex;align-items:center;gap:11px;width:100%;border:0;background:transparent;color:#536074;border-radius:9px;padding:10px 11px;text-align:left;font-size:.86rem;font-weight:650;min-height:40px}
 .sidebar-link:hover,.sidebar-link.active{background:#f2eadc;color:var(--navy)}
+ .profile-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .profile-field{display:grid;gap:6px;min-width:0;font-size:.84rem;font-weight:650;color:var(--navy)}
+ .profile-field input,.profile-field select{width:100%;min-width:0;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);font:inherit;font-weight:400}
+ .profile-field input:disabled{background:#f5f2ec;color:var(--muted)}
+ .profile-targets{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 16px}
+ .profile-targets label{display:flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;font-size:.86rem}
+ .profile-section-title{margin:18px 0 11px;font-size:1rem}
+ .profile-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:15px}
+ @media(max-width:600px){.profile-form-grid{grid-template-columns:1fr}.profile-targets{gap:7px}.profile-targets label{flex:1 1 42%;}}
 .sidebar-icon{width:19px;flex:0 0 19px;text-align:center;font-size:1rem;color:#8a642f}
 .sidebar-spacer{flex:1}
 .sidebar-collapse{border-top:1px solid var(--line);border-radius:0;padding-top:13px}
@@ -1712,6 +1721,8 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
    <div class="sidebar-caption">MY PROGRESS</div>
    <button class="sidebar-link" type="button" data-dashboard-target="dashboard-performance"><span class="sidebar-icon">▥</span><span class="sidebar-label">Performance</span></button>
    <button class="sidebar-link" type="button" data-dashboard-target="dashboard-history"><span class="sidebar-icon">◷</span><span class="sidebar-label">Test History</span></button>
+    <div class="sidebar-caption">ACCOUNT</div>
+    <button class="sidebar-link" type="button" data-dashboard-target="profile-panel"><span class="sidebar-icon">♙</span><span class="sidebar-label">Profile</span></button>
    <button class="sidebar-link hidden" type="button" id="admin-sidebar-link" data-dashboard-target="admin-panel"><span class="sidebar-icon">⚙</span><span class="sidebar-label">Admin Panel</span></button>
    <div class="sidebar-spacer"></div>
    <button class="sidebar-link" type="button" id="sidebar-logout"><span class="sidebar-icon">↪</span><span class="sidebar-label">Logout</span></button>
@@ -1798,6 +1809,41 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
     <div id="admin-unit-controls" class="admin-unit-controls"><p class="muted">Loading unit controls...</p></div>
    </div>
    <div class="admin-subpanel"><h3>Student Management</h3><p class="muted">Search registered students and review their test activity. This section does not change student accounts.</p><div class="admin-export-actions"><button class="btn primary" type="button" id="admin-export-students">⬇ Download all student records (CSV)</button><button class="btn" type="button" id="admin-export-all-attempts">⬇ Download all test history (CSV)</button><span id="admin-export-status" class="muted" role="status"></span></div><input id="admin-student-search" type="search" placeholder="Search by student name..." aria-label="Search students" style="width:100%;max-width:420px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font:inherit;margin:4px 0 12px"><div id="admin-student-list" class="admin-table-wrap"><p class="muted">Loading students...</p></div><div id="admin-student-details" class="admin-subpanel hidden"><h3 id="admin-student-details-title">Student performance</h3><div id="admin-student-attempts"></div><div id="admin-attempt-review" class="admin-attempt-review"></div></div></div>
+  </section>
+  <section class="panel hidden" id="profile-panel">
+   <div class="section-head"><div><h2>Profile</h2></div></div>
+   <form id="profile-form">
+    <h3 class="profile-section-title">Personal Information</h3>
+    <div class="profile-form-grid">
+     <label class="profile-field">Full Name<input id="profile-full-name" type="text" autocomplete="name"></label>
+     <label class="profile-field">Email Address<input id="profile-email" type="email" disabled readonly></label>
+     <label class="profile-field">Mobile Number<input id="profile-mobile" type="tel" inputmode="tel" autocomplete="tel"></label>
+     <label class="profile-field">Date of Birth<input id="profile-dob" type="date"></label>
+     <label class="profile-field">Gender<select id="profile-gender"><option value="">Select gender</option><option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option></select></label>
+     <label class="profile-field">State<input id="profile-state" type="text" autocomplete="address-level1"></label>
+     <label class="profile-field">City<input id="profile-city" type="text" autocomplete="address-level2"></label>
+    </div>
+    <h3 class="profile-section-title">Academic Information</h3>
+    <div class="profile-form-grid">
+     <label class="profile-field">Highest Qualification<input id="profile-qualification" type="text" placeholder="e.g. M.A., M.Phil., PhD"></label>
+     <label class="profile-field">Subject / Specialisation<input id="profile-specialisation" type="text" placeholder="Your subject"></label>
+    </div>
+    <div class="profile-field" style="margin-top:13px">Preparation Target</div>
+    <div class="profile-targets">
+     <label><input type="checkbox" name="profile-target" value="PhD"> PhD</label>
+     <label><input type="checkbox" name="profile-target" value="Assistant Professor"> Assistant Professor</label>
+     <label><input type="checkbox" name="profile-target" value="JRF"> JRF</label>
+    </div>
+    <div class="profile-actions"><button class="btn primary" id="profile-save" type="submit">Save Profile</button><span class="muted" id="profile-status" role="status"></span></div>
+   </form>
+   <div class="profile-account-settings">
+    <h3 class="profile-section-title">Account Settings</h3>
+    <form id="profile-password-form" class="profile-form-grid">
+     <label class="profile-field">New Password<input id="profile-new-password" type="password" minlength="6" autocomplete="new-password" placeholder="At least 6 characters"></label>
+     <label class="profile-field">Confirm New Password<input id="profile-confirm-password" type="password" minlength="6" autocomplete="new-password" placeholder="Re-enter password"></label>
+     <div class="profile-actions"><button class="btn" type="submit" id="profile-password-save">Change Password</button><span class="muted" id="profile-password-status" role="status"></span></div>
+    </form>
+   </div>
   </section>
   </div>
  </section>
@@ -2162,8 +2208,14 @@ function toggleDashboardMenu(){
 $('dashboard-mobile-menu').onclick=toggleDashboardMenu;
 $('sidebar-overlay').onclick=closeDashboardMenu;
 $('sidebar-collapse').onclick=()=>{$('dashboard-view').classList.toggle('sidebar-collapsed');};
+async function openProfilePanel(){
+ const panel=$('profile-panel');panel.classList.remove('hidden');closeDashboardMenu();
+ document.querySelectorAll('[data-dashboard-target]').forEach(item=>item.classList.toggle('active',item.dataset.dashboardTarget==='profile-panel'));
+ await loadStudentProfile();panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
 document.querySelectorAll('[data-dashboard-target]').forEach(button=>{
  button.onclick=()=>{
+  if(button.dataset.dashboardTarget==='profile-panel'){openProfilePanel();return;}
   const target=$(button.dataset.dashboardTarget);
   if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
   document.querySelectorAll('[data-dashboard-target]').forEach(item=>item.classList.toggle('active',item===button));
@@ -2171,6 +2223,63 @@ document.querySelectorAll('[data-dashboard-target]').forEach(button=>{
  };
 });
 $('sidebar-logout').onclick=()=>$('logout-button').click();
+async function loadStudentProfile(){
+ if(!currentUser||!supabaseClient)return;
+ const status=$('profile-status');status.textContent='Loading...';
+ try{
+  const {data,error}=await supabaseClient.from('profiles').select('full_name,mobile_number,date_of_birth,gender,state,city,highest_qualification,subject_specialisation,preparation_targets').eq('id',currentUser.id).maybeSingle();
+  if(error)throw error;
+  const p=data||{};
+  $('profile-full-name').value=p.full_name||currentUser.user_metadata?.full_name||'';
+  $('profile-email').value=currentUser.email||'';
+  $('profile-mobile').value=p.mobile_number||'';
+  $('profile-dob').value=p.date_of_birth||'';
+  $('profile-gender').value=p.gender||'';
+  $('profile-state').value=p.state||'';
+  $('profile-city').value=p.city||'';
+  $('profile-qualification').value=p.highest_qualification||'';
+  $('profile-specialisation').value=p.subject_specialisation||'';
+  const targets=Array.isArray(p.preparation_targets)?p.preparation_targets:[];
+  document.querySelectorAll('input[name="profile-target"]').forEach(input=>input.checked=targets.includes(input.value));
+  status.textContent='';
+ }catch(error){status.textContent='Could not load profile: '+error.message;}
+}
+$('profile-form').onsubmit=async e=>{
+ e.preventDefault();if(!currentUser)return;
+ const button=$('profile-save'),status=$('profile-status');button.disabled=true;status.textContent='Saving...';
+ try{
+  const targets=[...document.querySelectorAll('input[name="profile-target"]:checked')].map(input=>input.value);
+  const payload={
+   full_name:$('profile-full-name').value.trim()||null,
+   mobile_number:$('profile-mobile').value.trim()||null,
+   date_of_birth:$('profile-dob').value||null,
+   gender:$('profile-gender').value||null,
+   state:$('profile-state').value.trim()||null,
+   city:$('profile-city').value.trim()||null,
+   highest_qualification:$('profile-qualification').value.trim()||null,
+   subject_specialisation:$('profile-specialisation').value.trim()||null,
+   preparation_targets:targets
+  };
+  const {error}=await supabaseClient.from('profiles').update(payload).eq('id',currentUser.id);
+  if(error)throw error;
+  if(payload.full_name){$('user-label').textContent=payload.full_name;$('welcome-title').textContent='Welcome, '+payload.full_name+'!';}
+  status.textContent='Profile saved successfully.';
+ }catch(error){status.textContent='Could not save profile: '+error.message;}
+ finally{button.disabled=false;}
+};
+$('profile-password-form').onsubmit=async e=>{
+ e.preventDefault();
+ const password=$('profile-new-password').value,confirm=$('profile-confirm-password').value;
+ const status=$('profile-password-status'),button=$('profile-password-save');
+ if(password.length<6){status.textContent='Password must be at least 6 characters.';return;}
+ if(password!==confirm){status.textContent='Passwords do not match.';return;}
+ button.disabled=true;status.textContent='Updating...';
+ try{
+  const {error}=await supabaseClient.auth.updateUser({password});if(error)throw error;
+  $('profile-password-form').reset();status.textContent='Password changed successfully.';
+ }catch(error){status.textContent='Could not change password: '+error.message;}
+ finally{button.disabled=false;}
+};
 $('toggle-performance').onclick=()=>{
  const list=$('performance-list'),button=$('toggle-performance');
  const opening=list.classList.contains('hidden');
