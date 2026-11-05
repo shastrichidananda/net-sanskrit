@@ -673,6 +673,9 @@ function clearMessage(){ $('global-message').className='message hidden'; }
 function showView(name){
  ['home','dashboard','test','result','review'].forEach(v=>$(`${v}-view`).classList.toggle('hidden',v!==name));
  closeDashboardMenu();
+ const onDashboard=name==='dashboard';
+ $('dashboard-open').classList.toggle('hidden',onDashboard||!currentUser);
+ $('logout-button').classList.toggle('hidden',onDashboard||!currentUser);
  clearMessage();
  window.scrollTo(0,0);
 }
