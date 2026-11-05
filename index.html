@@ -2035,7 +2035,7 @@ async function openDashboard(){
  showView('dashboard');
  $('welcome-title').textContent='Welcome, '+(currentUser.user_metadata?.full_name||currentUser.email||'Student')+'!';
  try{
-  await loadUnits('dashboard-units');
+  const units=await loadUnits('dashboard-units');
   const {data:profile}=await supabaseClient.from('profiles').select('role').eq('id',currentUser.id).maybeSingle();
   const isAdmin=profile?.role==='admin';
   $('admin-sidebar-link').classList.toggle('hidden',!isAdmin);
