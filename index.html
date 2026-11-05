@@ -377,6 +377,24 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
 }
 
 
+
+/* Sidebar defaults and desktop icon-only collapse */
+.sidebar-overlay{display:none}
+#dashboard-view.sidebar-collapsed{grid-template-columns:64px minmax(0,1fr)}
+#dashboard-view.sidebar-collapsed .dashboard-sidebar{padding:12px 7px}
+#dashboard-view.sidebar-collapsed .sidebar-brand,
+#dashboard-view.sidebar-collapsed .sidebar-caption,
+#dashboard-view.sidebar-collapsed .sidebar-label{display:none}
+#dashboard-view.sidebar-collapsed .sidebar-link,
+#dashboard-view.sidebar-collapsed .sidebar-collapse{justify-content:center;padding:10px 5px}
+@media(max-width:850px){
+ #dashboard-view.sidebar-collapsed{grid-template-columns:1fr}
+ #dashboard-view.sidebar-collapsed .dashboard-sidebar{padding:17px 12px}
+ #dashboard-view.sidebar-collapsed .sidebar-brand,
+ #dashboard-view.sidebar-collapsed .sidebar-caption,
+ #dashboard-view.sidebar-collapsed .sidebar-label{display:block}
+}
+
 /* Minimalist student workspace and responsive navigation */
 #dashboard-view{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:start;width:min(1320px,calc(100% - 40px))}
 #dashboard-view.hidden{display:none!important}
