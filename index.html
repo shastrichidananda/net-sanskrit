@@ -594,9 +594,9 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
    <div id="performance-list" class="performance-list"><p class="muted">Your unit-wise performance will appear here after your first test.</p></div>
   </div>
   <div class="panel" id="dashboard-history">
-   <h2>My test history</h2>
-   <p class="muted">Your previous submitted tests and scores.</p>
-   <div id="history-list" class="muted">Loading your history...</div>
+   <div class="section-head"><div><h2>My test history</h2><p>Your previous submitted tests and scores.</p></div></div>
+   <button class="btn revision-toggle" type="button" id="toggle-test-history" aria-expanded="false">Show test history</button>
+   <div id="history-list" class="muted hidden">Loading your history...</div>
   </div>
   <div id="admin-note" class="notice hidden"><strong>Administrator account detected.</strong> Admin question-management tools will be added in the next stage.</div>
   </div>
@@ -838,6 +838,12 @@ document.querySelectorAll('[data-dashboard-target]').forEach(button=>{
  };
 });
 $('sidebar-logout').onclick=()=>$('logout-button').click();
+$('toggle-test-history').onclick=()=>{
+ const list=$('history-list');
+ const isHidden=list.classList.toggle('hidden');
+ $('toggle-test-history').textContent=isHidden?'Show test history':'Hide test history';
+ $('toggle-test-history').setAttribute('aria-expanded',isHidden?'false':'true');
+};
 
 async function openDashboard(){
  if(!currentUser){openAuth('login');return;}
