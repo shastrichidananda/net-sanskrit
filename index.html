@@ -1356,6 +1356,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
    </div>
    <div class="admin-subpanel"><h3>Questions by unit</h3><div id="admin-unit-counts" class="admin-unit-counts"><p class="muted">Loading...</p></div></div>
    <div class="admin-subpanel"><h3>Test performance by unit</h3><p class="muted">Completed test attempts and average marks for each unit.</p><div id="admin-unit-performance" class="admin-unit-counts"><p class="muted">Loading...</p></div></div>
+   <div class="admin-subpanel"><h3>Top student performers</h3><p class="muted">Top 5 students by average marks in completed tests.</p><div id="admin-top-performers" class="admin-unit-counts"><p class="muted">Loading...</p></div></div>
    <div class="admin-subpanel"><h3>Recent test activity</h3><p class="muted">The 8 most recently started student tests.</p><label class="muted" for="admin-recent-filter">Show activity</label><select id="admin-recent-filter" class="admin-recent-filter" aria-label="Filter recent test activity"><option value="all">All tests</option><option value="in_progress">In-progress tests</option><option value="submitted">Completed tests</option></select><div id="admin-recent-activity" class="admin-unit-counts"><p class="muted">Loading...</p></div></div>
    <div class="admin-subpanel"><h3>Test Controls</h3>
     <p class="muted">Manage which units students can practise and which test durations are available. Existing unfinished tests remain resumable.</p>
@@ -1976,6 +1977,22 @@ async function loadAdminOverview(){
    const stats=attemptStats.get(student.id)||{total:0,completed:0,score:0};
    return {...student,total_attempts:stats.total,completed_attempts:stats.completed,average_score:stats.completed?stats.score/stats.completed:0};
   });
+  const topPerformers=adminStudentCache.filter(student=>student.completed_attempts>0)
+   .sort((a,b)=>b.average_score-a.average_score||b.completed_attempts-a.completed_attempts).slice(0,5);
+  const topContainer=$('admin-top-performers');topContainer.replaceChildren();
+  if(!topPerformers.length){
+   const empty=document.createElement('p');empty.className='muted';empty.textContent='No completed tests yet.';topContainer.appendChild(empty);
+  }else{
+   topPerformers.forEach((student,index)=>{
+    const row=document.createElement('div');row.className='admin-unit-row';
+    const info=document.createElement('div');
+    const name=document.createElement('strong');name.textContent=(index+1)+'. '+(student.full_name||'Name not provided');
+    const detail=document.createElement('small');detail.textContent=student.completed_attempts+' completed test'+(student.completed_attempts===1?'':'s');
+    info.append(name,detail);
+    const average=document.createElement('strong');average.textContent=Math.round(student.average_score)+'/200';
+    row.append(info,average);topContainer.appendChild(row);
+   });
+  }
   const studentNames=new Map(adminStudentCache.map(student=>[student.id,student.full_name||'Student']));
   const unitNames=new Map((units.data||[]).map(unit=>[unit.id,unit.unit_name||('Unit '+unit.id)]));
   const renderRecentActivity=()=>{
