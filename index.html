@@ -1913,6 +1913,47 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
   }
 }
 
+
+/* Compact desktop sidebar: use page scrolling, not an inner menu scrollbar */
+@media (min-width:851px){
+  #dashboard-view .dashboard-sidebar{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+    overflow-y:visible!important;
+    overflow-x:visible!important;
+    align-self:start!important;
+    gap:2px!important;
+    padding:12px 10px!important;
+  }
+  #dashboard-view .sidebar-brand{
+    padding:5px 9px 8px!important;
+    margin:0 0 4px!important;
+    line-height:1.25;
+  }
+  #dashboard-view .sidebar-account{
+    margin:4px 0 6px!important;
+    padding:9px 10px!important;
+  }
+  #dashboard-view .sidebar-caption{
+    padding:6px 9px 2px!important;
+    margin:2px 0 0!important;
+    line-height:1.2;
+  }
+  #dashboard-view .sidebar-link,
+  #dashboard-view .sidebar-collapse{
+    min-height:34px!important;
+    padding:6px 9px!important;
+    line-height:1.2!important;
+    gap:8px;
+  }
+  #dashboard-view .sidebar-collapse{
+    margin-top:4px;
+    padding-top:8px!important;
+  }
+}
+
 </style>
 </head>
 
