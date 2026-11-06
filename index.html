@@ -2343,6 +2343,15 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
   }
 }
 
+
+/* Desktop navigation stays permanently expanded */
+@media (min-width:851px){
+  #dashboard-view .sidebar-collapse,
+  #dashboard-view #sidebar-collapse{
+    display:none!important;
+  }
+}
+
 </style>
 </head>
 
