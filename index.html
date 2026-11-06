@@ -2398,6 +2398,62 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
   }
 }
 
+
+/* Consistent original NET Sanskrit palette and clear hover feedback */
+button{
+  transition:background-color .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+button:not(:disabled):hover{
+  filter:brightness(.93);
+}
+button:focus-visible{
+  outline:2px solid var(--saffron);
+  outline-offset:2px;
+}
+.btn:not(:disabled):hover{
+  border-color:var(--saffron);
+}
+.btn.primary:not(:disabled):hover{
+  background:var(--saffron);
+  border-color:var(--saffron);
+  color:#fff;
+  filter:none;
+}
+.btn.gold:not(:disabled):hover{
+  background:var(--navy);
+  border-color:var(--navy);
+  color:#fff;
+  filter:none;
+}
+.preparation-action:not(:disabled):hover,
+.revision-shortcut:not(:disabled):hover,
+.dashboard-quick-button:not(:disabled):hover{
+  background:var(--navy);
+  border-color:var(--navy);
+  color:#fff;
+  filter:none;
+}
+.preparation-action:not(:disabled):hover strong,
+.preparation-action:not(:disabled):hover small,
+.revision-shortcut:not(:disabled):hover strong,
+.revision-shortcut:not(:disabled):hover span{
+  color:#fff;
+}
+.dashboard-quick-button[aria-expanded="true"]{
+  background:#f2e5d0;
+  border-color:var(--saffron);
+  color:var(--navy);
+}
+.dashboard-quick-button[aria-expanded="true"]:not(:disabled):hover{
+  background:var(--navy);
+  border-color:var(--navy);
+  color:#fff;
+}
+button:disabled{filter:none;transition:none}
+@media(prefers-reduced-motion:reduce){
+  button{transition:none!important}
+}
+
 </style>
 </head>
 
