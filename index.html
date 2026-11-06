@@ -1954,6 +1954,78 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
   }
 }
 
+
+/* Three-card desktop dashboard row: revisit, saved activity and performance */
+@media (min-width:851px){
+  #dashboard-view .dashboard-tools-grid{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:16px!important;
+    align-items:stretch!important;
+    margin:14px 0 20px!important;
+  }
+  #dashboard-view .dashboard-tools-grid>#revision-wrong,
+  #dashboard-view .dashboard-tools-grid>.dashboard-quick-actions,
+  #dashboard-view .dashboard-tools-grid>#dashboard-performance{
+    grid-column:auto!important;
+    width:100%!important;
+    min-width:0!important;
+    height:100%!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:18px!important;
+    box-sizing:border-box!important;
+    align-self:stretch!important;
+  }
+  #dashboard-view .dashboard-tools-grid>#revision-wrong .section-head,
+  #dashboard-view .dashboard-tools-grid>#dashboard-performance .section-head{
+    margin:0 0 14px!important;
+  }
+  #dashboard-view .dashboard-tools-grid>#revision-wrong .revision-shortcuts{
+    grid-template-columns:1fr!important;
+    gap:9px!important;
+  }
+  #dashboard-view .dashboard-tools-grid>#revision-wrong .revision-shortcut{
+    min-height:58px!important;
+    padding:10px 12px!important;
+  }
+  #dashboard-view .dashboard-tools-grid>.dashboard-quick-actions{
+    display:grid!important;
+    grid-column:auto!important;
+    grid-template-columns:1fr!important;
+    align-content:center!important;
+    gap:10px!important;
+    padding:18px!important;
+  }
+  #dashboard-view .dashboard-tools-grid>.dashboard-quick-actions .dashboard-quick-button{
+    min-height:58px!important;
+    justify-content:center!important;
+    padding:10px 12px!important;
+  }
+  #dashboard-view .dashboard-tools-grid>#dashboard-performance{
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:center!important;
+    gap:10px!important;
+  }
+  #dashboard-view .dashboard-tools-grid>#dashboard-performance .section-head{
+    margin:0!important;
+  }
+  #dashboard-view .dashboard-tools-grid>#dashboard-performance .section-head p{
+    margin:6px 0 0!important;
+    line-height:1.45;
+  }
+  #dashboard-view .dashboard-tools-grid>#dashboard-performance #toggle-performance{
+    align-self:flex-start;
+    margin-top:5px;
+  }
+  #dashboard-view .dashboard-tools-grid>#dashboard-bookmarks,
+  #dashboard-view .dashboard-tools-grid>#dashboard-history{
+    grid-column:1/-1!important;
+    height:auto!important;
+  }
+}
+
 </style>
 </head>
 
@@ -2109,11 +2181,11 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
    <div class="expand-panel-heading"><h2>Test History</h2></div>
    <div id="history-list" class="muted">Loading your history...</div>
   </div>
-  </div>
   <div class="panel performance-panel" id="dashboard-performance">
    <div class="section-head"><div><h2>Performance by unit</h2><p>Your average marks across completed tests.</p></div></div>
    <button class="btn revision-toggle" type="button" id="toggle-performance" aria-expanded="false">View unit-wise performance</button>
    <div id="performance-list" class="performance-list hidden"><p class="muted">Your unit-wise performance will appear here after your first test.</p></div>
+  </div>
   </div>
   <section class="panel admin-panel hidden" id="admin-panel">
    <div class="section-head"><div><span class="eyebrow">Administration</span><h2>Admin Overview</h2><p>Read-only overview of student registrations, question banks and test activity.</p></div><button class="btn" type="button" id="admin-refresh">Refresh</button></div>
