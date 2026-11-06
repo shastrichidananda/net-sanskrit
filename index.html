@@ -1628,6 +1628,18 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
  #dashboard-view .dashboard-quick-actions{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:9px!important;margin:7px 0!important}
  #dashboard-view .dashboard-quick-button{min-height:52px;padding:10px 7px;font-size:.9rem}
 }
+/* Persistent mark-for-review state in the mock test */
+.review-flag-button{margin:0 0 14px;border-color:#a99acb;color:#59477d;min-height:42px}
+.review-flag-button.is-marked{background:#eee9f7;border-color:#8068aa;color:#49366e}
+.navigator-legend{display:flex;flex-wrap:wrap;gap:8px 13px;margin:9px 0 12px;color:var(--muted);font-size:.76rem}
+.navigator-legend span{display:inline-flex;align-items:center;gap:5px}
+.legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#fff;border:1px solid #cfc7b9}
+.answered-dot{background:#f2e5d0;border-color:var(--saffron)}
+.unanswered-dot{background:#fff;border-color:#cfc7b9}
+.current-dot{background:var(--navy);border-color:var(--navy)}
+.review-dot{background:#eee9f7;border:1px solid #8068aa}
+#test-view .qjump.marked-for-review:not(.current){background:#eee9f7;border-color:#8068aa;color:#49366e}
+#test-view .qjump.marked-for-review.answered:not(.current){background:#e7def3;border-color:#8068aa;color:#49366e}
 </style>
 </head>
 
@@ -1860,6 +1872,7 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
    <div class="question-number" id="question-number"></div>
    <div class="question-text" id="question-text"></div>
    <button class="btn bookmark-button" id="bookmark-current" type="button">☆ Bookmark question</button>
+   <button class="btn review-flag-button" id="mark-review-current" type="button" aria-pressed="false">⚑ Mark for review</button>
    <div id="options-list"></div>
   </div>
   <div class="test-controls">
@@ -1872,6 +1885,7 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
     <span><i class="legend-dot answered-dot"></i>Attempted</span>
     <span><i class="legend-dot unanswered-dot"></i>Unattempted</span>
     <span><i class="legend-dot current-dot"></i>Current</span>
+    <span><i class="legend-dot review-dot"></i>Marked for review</span>
    </div>
    <div class="question-grid" id="question-grid"></div>
    <button class="btn gold" id="submit-test">Submit test</button>
@@ -2850,6 +2864,10 @@ async function loadAttemptIntoTest(attempt,unit){
  if(bookmarkError)throw bookmarkError;
  const bookmarkIds=Object.fromEntries((bookmarks||[]).map(b=>[b.question_number,b.id]));
  currentQuestions.forEach(q=>q.bookmark_id=bookmarkIds[q.question_number]||null);
+ const {data:reviewFlags,error:reviewFlagsError}=await supabaseClient.rpc('get_test_question_review_flags',{p_attempt_id:currentAttempt});
+ if(reviewFlagsError)throw reviewFlagsError;
+ const reviewFlagMap=Object.fromEntries((reviewFlags||[]).map(item=>[item.question_number,!!item.marked_for_review]));
+ currentQuestions.forEach(q=>q.marked_for_review=reviewFlagMap[q.question_number]||false);
  const firstUnanswered=currentQuestions.findIndex(q=>!q.selected_option);
  currentQuestion=firstUnanswered>=0?firstUnanswered:0;
  $('test-heading').textContent=unit.unit_name+' Mock Test';
@@ -2969,6 +2987,27 @@ async function toggleCurrentBookmark(){
   button.disabled=false;
  }
 }
+async function toggleCurrentReviewFlag(){
+ const q=currentQuestions[currentQuestion];
+ const button=$('mark-review-current');
+ if(!q||!currentUser||!currentAttempt)return;
+ const nextState=!q.marked_for_review;
+ button.disabled=true;
+ try{
+  const {error}=await supabaseClient.rpc('set_test_question_review_flag',{
+   p_attempt_id:currentAttempt,
+   p_question_number:q.question_number,
+   p_marked:nextState
+  });
+  if(error)throw error;
+  q.marked_for_review=nextState;
+  $('save-status').textContent=nextState?'Marked for review':'Review mark removed';
+  renderQuestion();
+ }catch(e){
+  $('save-status').textContent='Could not update review mark: '+e.message;
+  button.disabled=false;
+ }
+}
 function renderQuestion(){
  const q=currentQuestions[currentQuestion];
    seenTrackingPromise=seenTrackingPromise.then(
@@ -2981,6 +3020,12 @@ function renderQuestion(){
  bookmarkButton.classList.toggle('is-bookmarked',!!q.bookmark_id);
  bookmarkButton.disabled=false;
  bookmarkButton.onclick=()=>toggleCurrentBookmark();
+ const reviewButton=$('mark-review-current');
+ reviewButton.textContent=q.marked_for_review?'⚑ Marked for review · Remove':'⚑ Mark for review';
+ reviewButton.classList.toggle('is-marked',!!q.marked_for_review);
+ reviewButton.setAttribute('aria-pressed',String(!!q.marked_for_review));
+ reviewButton.disabled=false;
+ reviewButton.onclick=()=>toggleCurrentReviewFlag();
  $('options-list').innerHTML='';
  ['A','B','C','D'].forEach(letter=>{
   const value=q['option_'+letter.toLowerCase()];
@@ -2997,8 +3042,9 @@ function renderQuestion(){
  $('next-question').classList.toggle('hidden',currentQuestion===currentQuestions.length-1);
  $('question-grid').innerHTML='';
  currentQuestions.forEach((item,index)=>{
-  const b=document.createElement('button');b.className='qjump'+(index===currentQuestion?' current':'')+(item.selected_option?' answered':'');
+  const b=document.createElement('button');b.className='qjump'+(index===currentQuestion?' current':'')+(item.selected_option?' answered':'')+(item.marked_for_review?' marked-for-review':'');
   b.textContent=item.question_number;b.onclick=()=>{currentQuestion=index;renderQuestion();};
+  if(item.marked_for_review)b.setAttribute('aria-label','Question '+item.question_number+', marked for review');
   $('question-grid').appendChild(b);
  });
 }
