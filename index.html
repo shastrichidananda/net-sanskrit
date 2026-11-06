@@ -2695,6 +2695,171 @@ button:disabled{
   #dashboard-view #dashboard-performance .section-head{margin:0 0 8px!important}
 }
 
+
+/* Unit coverage and recent results panels */
+#dashboard-view .dashboard-progress-main{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:14px;
+  min-width:0;
+}
+#dashboard-view .recent-test-preview{
+  min-width:0;
+  padding-top:12px;
+  border-top:1px solid var(--line);
+}
+#dashboard-view .recent-test-preview-heading{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+  margin:0 0 7px;
+}
+#dashboard-view .recent-test-preview-heading h3{
+  margin:0;
+  color:var(--navy);
+  font-family:Georgia,serif;
+  font-size:.98rem;
+}
+#dashboard-view .recent-test-preview-heading .muted{font-size:.72rem}
+#dashboard-view .recent-result-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  align-items:center;
+  gap:9px;
+  padding:8px 0;
+  border-top:1px solid #eee7dc;
+}
+#dashboard-view .recent-result-details{
+  display:grid;
+  gap:2px;
+  min-width:0;
+}
+#dashboard-view .recent-result-details strong{
+  color:var(--navy);
+  font-size:.82rem;
+  overflow-wrap:anywhere;
+}
+#dashboard-view .recent-result-details .muted{font-size:.7rem}
+#dashboard-view .recent-result-score{
+  color:var(--navy);
+  font-size:.86rem;
+  white-space:nowrap;
+}
+#dashboard-view .recent-result-review{
+  padding:5px 8px!important;
+  min-height:32px;
+  font-size:.74rem;
+}
+#dashboard-view .unit-preparation-panel{
+  width:100%;
+  margin:14px 0 20px!important;
+  padding:18px!important;
+  box-sizing:border-box;
+}
+#dashboard-view .unit-preparation-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  margin:0 0 14px;
+}
+#dashboard-view .unit-preparation-header h2{
+  margin:0 0 4px;
+  font-size:1.18rem;
+}
+#dashboard-view .unit-preparation-header p{
+  margin:0;
+  font-size:.84rem;
+  line-height:1.45;
+}
+#dashboard-view .unit-progress-legend{
+  color:var(--muted);
+  font-size:.74rem;
+  white-space:nowrap;
+  padding:5px 8px;
+  background:#f7f3eb;
+  border-radius:7px;
+}
+#dashboard-view .unit-preparation-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+#dashboard-view .unit-progress-card{
+  min-width:0;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:#fffefa;
+}
+#dashboard-view .unit-progress-card-heading{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin:0 0 8px;
+}
+#dashboard-view .unit-progress-card-heading strong{
+  min-width:0;
+  color:var(--navy);
+  font-size:.86rem;
+  line-height:1.35;
+}
+#dashboard-view .unit-progress-coverage{
+  color:var(--muted);
+  font-size:.73rem;
+  white-space:nowrap;
+}
+#dashboard-view .unit-progress-track{
+  height:7px;
+  width:100%;
+  overflow:hidden;
+  border-radius:99px;
+  background:#eee8dd;
+}
+#dashboard-view .unit-progress-fill{
+  height:100%;
+  border-radius:99px;
+  background:var(--saffron);
+  transition:width .2s ease;
+}
+#dashboard-view .unit-progress-metrics{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px 12px;
+  margin-top:8px;
+}
+#dashboard-view .unit-progress-metrics span{
+  color:var(--muted);
+  font-size:.72rem;
+  white-space:nowrap;
+}
+#dashboard-view .unit-progress-note{
+  margin:11px 0 0;
+  font-size:.72rem;
+  line-height:1.4;
+}
+@media(min-width:851px){
+  #dashboard-view .dashboard-progress-main{gap:12px}
+  #dashboard-view .recent-test-preview{padding-top:10px}
+  #dashboard-view .recent-result-row{gap:7px;padding:7px 0}
+  #dashboard-view .unit-preparation-panel{margin-top:12px!important}
+}
+@media(max-width:850px){
+  #dashboard-view .unit-preparation-panel{padding:15px!important}
+  #dashboard-view .unit-preparation-grid{grid-template-columns:1fr}
+}
+@media(max-width:650px){
+  #dashboard-view .unit-preparation-header{display:block}
+  #dashboard-view .unit-progress-legend{
+    display:inline-block;
+    margin-top:8px;
+  }
+  #dashboard-view .unit-progress-card{padding:11px}
+  #dashboard-view .recent-result-row{grid-template-columns:minmax(0,1fr) auto auto}
+}
+
 </style>
 </head>
 
@@ -2853,13 +3018,22 @@ button:disabled{
    <section class="panel dashboard-group dashboard-progress-group" aria-labelledby="dashboard-progress-heading">
     <div class="dashboard-group-heading"><h2 id="dashboard-progress-heading">My Progress</h2></div>
     <div class="dashboard-group-items">
-     <div class="panel performance-panel" id="dashboard-performance">
-      <div class="section-head"><div><h2>Performance by unit</h2><p>Your average marks across completed tests.</p></div></div>
-      <button class="btn revision-toggle" type="button" id="toggle-performance" aria-expanded="false">View unit-wise performance</button>
-      <div id="performance-list" class="performance-list hidden"><p class="muted">Your unit-wise performance will appear here after your first test.</p></div>
+     <div class="dashboard-progress-main">
+      <div class="panel performance-panel" id="dashboard-performance">
+       <div class="section-head"><div><h2>Performance by Unit</h2><p>Your average marks across completed tests.</p></div></div>
+       <button class="btn revision-toggle" type="button" id="toggle-performance" aria-expanded="false">View unit-wise performance</button>
+       <div id="performance-list" class="performance-list hidden"><p class="muted">Your unit-wise performance will appear here after your first test.</p></div>
+      </div>
+      <div class="recent-test-preview">
+       <div class="recent-test-preview-heading">
+        <h3>Recent Test Results</h3>
+        <span class="muted">Latest 3 attempts</span>
+       </div>
+       <div id="recent-test-preview-list"><p class="muted">Your recent results will appear here after your first test.</p></div>
+      </div>
      </div>
      <div class="dashboard-group-action">
-      <button class="dashboard-quick-button" type="button" id="history-open-button" aria-expanded="false">◷ Test History</button>
+      <button class="dashboard-quick-button" type="button" id="history-open-button" aria-expanded="false">View All Test History</button>
      </div>
      <div class="panel hidden" id="dashboard-history">
       <div class="expand-panel-heading"><h2>Test History</h2></div>
@@ -2868,6 +3042,19 @@ button:disabled{
     </div>
    </section>
   </div>
+  <section class="panel unit-preparation-panel" id="unit-preparation-panel" aria-labelledby="unit-preparation-heading">
+   <div class="unit-preparation-header">
+    <div>
+     <h2 id="unit-preparation-heading">Unit-wise Preparation Status</h2>
+     <p>Track the questions you have seen, answered and answered correctly in each unit.</p>
+    </div>
+    <span class="unit-progress-legend">Coverage = Seen / Total</span>
+   </div>
+   <div id="unit-preparation-list" class="unit-preparation-grid">
+    <p class="muted">Loading your unit-wise progress...</p>
+   </div>
+   <p class="unit-progress-note">Counts are for unique questions in each unit. Correct answers are counted from submitted tests.</p>
+  </section>
   <section class="panel admin-panel hidden" id="admin-panel">
    <div class="section-head"><div><span class="eyebrow">Administration</span><h2>Admin Overview</h2><p>Read-only overview of student registrations, question banks and test activity.</p></div><button class="btn" type="button" id="admin-refresh">Refresh</button></div>
    <div id="admin-message" class="message hidden" role="status"></div>
@@ -3747,6 +3934,77 @@ async function loadAdminOverview(){
 }
 $('admin-refresh').onclick=()=>loadAdminOverview();
 
+async function loadUnitPreparationStatus(){
+ const target=$('unit-preparation-list');
+ if(!target||!supabaseClient||!currentUser)return;
+ target.innerHTML='';
+ const loading=document.createElement('p');
+ loading.className='muted';
+ loading.textContent='Loading your unit-wise progress...';
+ target.appendChild(loading);
+ try{
+  const {data,error}=await supabaseClient.rpc('get_student_unit_progress');
+  if(error)throw error;
+  const rows=data||[];
+  target.innerHTML='';
+  if(!rows.length){
+   const empty=document.createElement('p');
+   empty.className='muted';
+   empty.textContent='Unit progress is not available yet.';
+   target.appendChild(empty);
+   return;
+  }
+  rows.forEach(unit=>{
+   const total=Math.max(0,Number(unit.total_count)||0);
+   const seen=Math.max(0,Number(unit.seen_count)||0);
+   const answered=Math.max(0,Number(unit.answered_count)||0);
+   const correct=Math.max(0,Number(unit.correct_count)||0);
+   const percent=total?Math.min(100,Math.round((seen/total)*100)):0;
+   const card=document.createElement('article');
+   card.className='unit-progress-card';
+   const heading=document.createElement('div');
+   heading.className='unit-progress-card-heading';
+   const name=document.createElement('strong');
+   name.textContent=unit.unit_name||('Unit '+unit.unit_id);
+   const coverage=document.createElement('span');
+   coverage.className='unit-progress-coverage';
+   coverage.textContent=total?seen+' / '+total+' seen':'No questions yet';
+   heading.append(name,coverage);
+   const track=document.createElement('div');
+   track.className='unit-progress-track';
+   track.setAttribute('role','progressbar');
+   track.setAttribute('aria-label',(unit.unit_name||('Unit '+unit.unit_id))+' question coverage');
+   track.setAttribute('aria-valuemin','0');
+   track.setAttribute('aria-valuemax','100');
+   track.setAttribute('aria-valuenow',String(percent));
+   const fill=document.createElement('div');
+   fill.className='unit-progress-fill';
+   fill.style.width=percent+'%';
+   track.appendChild(fill);
+   const metrics=document.createElement('div');
+   metrics.className='unit-progress-metrics';
+   [
+    ['Seen',seen],
+    ['Answered',answered],
+    ['Correct',correct]
+   ].forEach(([label,value])=>{
+    const metric=document.createElement('span');
+    metric.textContent=label+': '+value;
+    metrics.appendChild(metric);
+   });
+   card.append(heading,track,metrics);
+   target.appendChild(card);
+  });
+ }catch(error){
+  target.innerHTML='';
+  const failed=document.createElement('p');
+  failed.className='muted';
+  failed.textContent='Could not load unit-wise progress. Please refresh the dashboard.';
+  target.appendChild(failed);
+  console.error('Unit progress load failed:',error);
+ }
+}
+
 async function openDashboard(){
  if(!currentUser){openAuth('login');return;}
  showView('dashboard');
@@ -3851,6 +4109,7 @@ async function openDashboard(){
     top.append(name,score);track.appendChild(fill);row.append(top,meta,track);performance.appendChild(row);
    });
   }
+  await loadUnitPreparationStatus();
   const {data:savedBookmarks,error:savedError}=await supabaseClient.from('bookmarked_questions')
    .select('id,unit_id,question_number,question_data,created_at')
    .eq('student_id',currentUser.id).order('created_at',{ascending:false});
@@ -3884,6 +4143,30 @@ async function openDashboard(){
      }catch(e){message('Could not remove bookmark: '+e.message);remove.disabled=false;}
     };
     card.append(heading,question,remove);bookmarkList.appendChild(card);
+   });
+  }
+  const recentPreview=$('recent-test-preview-list');
+  recentPreview.innerHTML='';
+  if(!list.length){
+   const emptyPreview=document.createElement('p');emptyPreview.className='muted';
+   emptyPreview.textContent='Complete your first mock test to see recent results here.';
+   recentPreview.appendChild(emptyPreview);
+  }else{
+   list.slice(0,3).forEach(a=>{
+    const row=document.createElement('div');row.className='recent-result-row';
+    const details=document.createElement('div');details.className='recent-result-details';
+    const name=document.createElement('strong');name.textContent=names[a.unit_id]||('Unit '+a.unit_id);
+    const date=document.createElement('span');date.className='muted';
+    date.textContent=a.submitted_at?new Date(a.submitted_at).toLocaleDateString():'';
+    details.append(name,date);
+    const score=document.createElement('strong');score.className='recent-result-score';
+    score.textContent=(a.score??0)+'/200';
+    const review=document.createElement('button');review.type='button';review.className='btn recent-result-review';
+    review.textContent='Review';
+    review.setAttribute('aria-label','Review '+(names[a.unit_id]||('Unit '+a.unit_id))+' test');
+    review.onclick=()=>showReview(a.id);
+    row.append(details,score,review);
+    recentPreview.appendChild(row);
    });
   }
   $('history-list').innerHTML='';
