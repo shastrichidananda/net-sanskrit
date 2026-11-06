@@ -224,6 +224,19 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d9a3
 #test-view .panel{padding:20px}
 #test-view .panel>strong{color:var(--navy)}
 #test-view #submit-test{min-height:46px;padding-left:22px;padding-right:22px}
+#test-submit-summary{position:fixed;inset:0;z-index:1200;background:#172b4970;display:flex;align-items:center;justify-content:center;padding:18px}
+#test-submit-summary.hidden{display:none}
+#test-submit-summary .summary-dialog{width:min(100%,430px);background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 18px 60px #172b4930}
+#test-submit-summary h3{margin:0 0 6px;color:var(--navy);font-size:1.25rem}
+#test-submit-summary .summary-note{color:var(--muted);margin:0 0 16px;font-size:.9rem}
+#test-submit-summary .summary-counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0 18px}
+#test-submit-summary .summary-count{border:1px solid var(--line);border-radius:10px;padding:12px 8px;text-align:center;background:#fff}
+#test-submit-summary .summary-count strong{display:block;font-size:1.55rem;color:var(--navy)}
+#test-submit-summary .summary-count span{font-size:.78rem;color:var(--muted)}
+#test-submit-summary .summary-actions{display:flex;gap:10px}
+#test-submit-summary .summary-actions .btn{flex:1;min-height:44px}
+@media(max-width:420px){#test-submit-summary .summary-dialog{padding:17px}#test-submit-summary .summary-counts{gap:6px}#test-submit-summary .summary-count{padding:10px 4px}#test-submit-summary .summary-count span{font-size:.7rem}}
+
 #test-view .qjump{font-weight:700;transition:transform .12s ease,border-color .12s ease}
 #test-view .qjump:active{transform:scale(.96)}
 #test-view .qjump.answered{background:#f2e5d0;border-color:var(--saffron);color:#684719}
@@ -1894,6 +1907,21 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
    <div class="question-grid" id="question-grid"></div>
    <button class="btn gold" id="submit-test">Submit test</button>
   </div>
+  <div id="test-submit-summary" class="hidden" role="dialog" aria-modal="true" aria-labelledby="submit-summary-title">
+   <div class="summary-dialog">
+    <h3 id="submit-summary-title">Review before submission</h3>
+    <p class="summary-note">Check your progress before you submit. You cannot change answers after submission.</p>
+    <div class="summary-counts">
+     <div class="summary-count"><strong id="summary-answered">0</strong><span>Attempted</span></div>
+     <div class="summary-count"><strong id="summary-unanswered">0</strong><span>Unattempted</span></div>
+     <div class="summary-count"><strong id="summary-marked">0</strong><span>For review</span></div>
+    </div>
+    <div class="summary-actions">
+     <button class="btn" id="summary-continue" type="button">Continue test</button>
+     <button class="btn gold" id="summary-confirm-submit" type="button">Submit now</button>
+    </div>
+   </div>
+  </div>
  </section>
 
  <section id="result-view" class="hidden">
@@ -3114,10 +3142,31 @@ $('previous-question').onclick=()=>{if(currentQuestion>0){currentQuestion--;rend
 $('next-question').onclick=()=>{if(currentQuestion<currentQuestions.length-1){currentQuestion++;renderQuestion();}};
 $('exit-test').onclick=()=>{if(confirm('Exit this test? Your saved answers will remain, and the attempt will stay in progress.'))openDashboard();};
 
-async function finishTest(autoSubmit=false){
- if(isSubmittingTest||!currentAttempt)return;
+function openTestSubmitSummary(){
  const answered=currentQuestions.filter(q=>q.selected_option).length;
- if(!autoSubmit&&!confirm('Submit your test now? You have answered '+answered+' of '+currentQuestions.length+' questions. You cannot change answers after submission.'))return;
+ const marked=currentQuestions.filter(q=>q.marked_for_review).length;
+ $('summary-answered').textContent=answered;
+ $('summary-unanswered').textContent=currentQuestions.length-answered;
+ $('summary-marked').textContent=marked;
+ $('test-submit-summary').classList.remove('hidden');
+ $('summary-continue').focus();
+}
+function closeTestSubmitSummary(){
+ $('test-submit-summary').classList.add('hidden');
+ $('submit-test').focus();
+}
+$('summary-continue').onclick=closeTestSubmitSummary;
+$('summary-confirm-submit').onclick=()=>{
+ closeTestSubmitSummary();
+ finishTest(false,true);
+};
+
+async function finishTest(autoSubmit=false,confirmed=false){
+ if(isSubmittingTest||!currentAttempt)return;
+ if(!autoSubmit&&!confirmed){
+  openTestSubmitSummary();
+  return;
+ }
  isSubmittingTest=true;
  $('submit-test').disabled=true;
  try{
@@ -3146,7 +3195,7 @@ async function finishTest(autoSubmit=false){
   $('submit-test').disabled=false;
  }
 }
-$('submit-test').onclick=()=>finishTest(false);
+$('submit-test').onclick=()=>finishTest(false,false);
 
 async function showReview(attemptId){
  try{
