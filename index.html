@@ -1863,6 +1863,56 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
   #dashboard-view #profile-panel>.section-head{margin:0 0 15px}
 }
 
+
+/* Desktop dashboard refinement based on the latest desktop screenshots */
+@media (min-width:851px){
+  body:has(#dashboard-view:not(.hidden)) header #dashboard-mobile-menu{
+    display:none!important;
+  }
+  #dashboard-view .preparation-actions{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-template-areas:none!important;
+    grid-auto-flow:row!important;
+    justify-content:stretch!important;
+    align-items:stretch!important;
+    gap:14px!important;
+  }
+  #dashboard-view #continue-practice{
+    grid-area:auto!important;
+    grid-column:1!important;
+    grid-row:1!important;
+  }
+  #dashboard-view #resume-tests-button{
+    grid-area:auto!important;
+    grid-column:2!important;
+    grid-row:1!important;
+  }
+  #dashboard-view .dashboard-quick-actions{
+    height:auto!important;
+    min-height:0!important;
+    align-self:start!important;
+    align-content:stretch!important;
+    padding:14px!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+  }
+  #dashboard-view .dashboard-tools-grid>.dashboard-quick-actions{
+    height:auto!important;
+    min-height:0!important;
+  }
+  #dashboard-view .dashboard-quick-button{
+    min-height:64px;
+    height:auto;
+  }
+  #dashboard-view .performance-panel{
+    height:auto!important;
+    min-height:0!important;
+    padding:20px!important;
+    margin:14px 0 20px!important;
+  }
+}
+
 </style>
 </head>
 
