@@ -1640,6 +1640,9 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
 .review-dot{background:#eee9f7;border:1px solid #8068aa}
 #test-view .qjump.marked-for-review:not(.current){background:#eee9f7;border-color:#8068aa;color:#49366e}
 #test-view .qjump.marked-for-review.answered:not(.current){background:#e7def3;border-color:#8068aa;color:#49366e}
+.clear-response-button{margin:10px 0 0;padding:8px 12px;min-height:38px;border:1px solid #d8d1c6;background:transparent;color:#655e55;border-radius:8px;font-size:.88rem}
+.clear-response-button:hover{background:#f7f4ef;border-color:#b9ad9d}
+.clear-response-button:disabled{opacity:.55;cursor:not-allowed}
 </style>
 </head>
 
@@ -1874,6 +1877,7 @@ body:has(#dashboard-view:not(.hidden)) header .dashboard-mobile-menu{display:fle
    <button class="btn bookmark-button" id="bookmark-current" type="button">☆ Bookmark question</button>
    <button class="btn review-flag-button" id="mark-review-current" type="button" aria-pressed="false">⚑ Mark for review</button>
    <div id="options-list"></div>
+   <button class="clear-response-button" id="clear-response" type="button">Clear response</button>
   </div>
   <div class="test-controls">
    <button class="btn" id="previous-question">← Previous</button>
@@ -3026,6 +3030,9 @@ function renderQuestion(){
  reviewButton.setAttribute('aria-pressed',String(!!q.marked_for_review));
  reviewButton.disabled=false;
  reviewButton.onclick=()=>toggleCurrentReviewFlag();
+ const clearButton=$('clear-response');
+ clearButton.disabled=!q.selected_option;
+ clearButton.onclick=()=>clearCurrentResponse();
  $('options-list').innerHTML='';
  ['A','B','C','D'].forEach(letter=>{
   const value=q['option_'+letter.toLowerCase()];
@@ -3076,6 +3083,32 @@ async function saveAnswer(number,answer){
   await operation;
   renderQuestion();
  }catch(e){$('save-status').textContent='Save failed: '+e.message;}
+}
+async function clearCurrentResponse(){
+ const q=currentQuestions[currentQuestion];
+ const button=$('clear-response');
+ if(!q||!q.selected_option||!currentAttempt)return;
+ button.disabled=true;
+ $('save-status').textContent='Clearing response...';
+ const operation=answerSaveQueue.then(async()=>{
+  const {error}=await supabaseClient.rpc('save_test_answer',{
+   p_attempt_id:currentAttempt,
+   p_question_number:q.question_number,
+   p_answer:null
+  });
+  if(error)throw error;
+  q.selected_option=null;
+  $('save-status').textContent='Response cleared';
+ });
+ answerSaveQueue=operation.catch(()=>{});
+ try{
+  await operation;
+  renderQuestion();
+ }catch(e){
+  $('save-status').textContent='Could not clear response: '+e.message;
+ }finally{
+  button.disabled=false;
+ }
 }
 $('previous-question').onclick=()=>{if(currentQuestion>0){currentQuestion--;renderQuestion();}};
 $('next-question').onclick=()=>{if(currentQuestion<currentQuestions.length-1){currentQuestion++;renderQuestion();}};
